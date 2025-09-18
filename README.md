@@ -18,10 +18,10 @@ Specifically, ScaleCUA delivers strong gains over baselines (+**26.6** on WebAre
 
 https://github.com/user-attachments/assets/15da764b-d586-490c-b852-cd1d0b42bb2d
 
-
 ## 📋 Table of Contents
 - [ScaleCUA: An Open-Source Agent for Cross-Platform GUI Automation](#scalecua-an-open-source-agent-for-cross-platform-gui-automation)
   - [📋 Table of Contents](#-table-of-contents)
+  - [🎉 News](#-news)
   - [🚀 Key Features](#-key-features)
   - [📂 Project Structure](#-project-structure)
   - [⚙️ Setup](#️-setup)
@@ -31,6 +31,10 @@ https://github.com/user-attachments/assets/15da764b-d586-490c-b852-cd1d0b42bb2d
   - [💐 Acknowledgements](#-acknowledgements)
   - [⚖️ License](#️-license)
   - [📜 Citation](#-citation)
+
+## 🎉 News
+- `2025/09/19`: ScaleCUA-Data is being uploaded to HuggingFace. Please be patient.
+- `2025/09/19`: We have released models and code of ScaleCUA.
 
 ## 🚀 Key Features
 
