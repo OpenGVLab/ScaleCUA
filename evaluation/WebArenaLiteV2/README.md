@@ -2,7 +2,27 @@
 
 WebArena-Lite-v2 is a truthful benchmark that provides a more suitable  framework designed specifically for evaluating pure visual GUI agents in web environments. Developed as an improvement upon [WebArena-Lite](https://github.com/THUDM/VisualAgentBench), it offers 154 tasks across five different types of websites,  encompassing various task modalities including QA, page content matching and more, enabling comprehensive evaluation of GUI agents' capabilities in multiple dimensions. We acknowledge the excellent contributions of  WebArena-related work.
 
-## 📥Preparation (Download and Load Images)
+## 📥Preparation 
+
+### Download and Extract the "launcher" Code
+Since the folder is quite large, you need to download the ["launcher" code](https://github.com/OpenGVLab/ScaleCUA/releases/download/launch_zip_v1/launcher.zip) first, then place the extracted contents in the `WebArenaLiteV2` directory.
+
+After completion, the project structure will be as follows:
+
+<pre>
+
+WebArenaLiteV2(root)
+
+├── launcher
+
+├── agents
+
+├── config
+
+└── ...
+</pre>
+
+### Download and Load Images
 
 Refer to the [WebArena repository](https://github.com/web-arena-x/webarena/blob/main/environment_docker/README.md) to download the required images. Note that at this stage, you only need to **download** six docker images for five websites (Shopping, ShoppingAdmin, Reddit,  Gitlab, OpenStreetMap). You don't need to download the Wikipedia image  or create containers. The download list is as follows:
 
