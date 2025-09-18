@@ -16,7 +16,8 @@ Specifically, ScaleCUA delivers strong gains over baselines (+**26.6** on WebAre
 ## 🤖 Video Demo
 **<a id="draggan_demo"></a>**
 
-https://github.com/user-attachments/assets/4c68bdc9-a292-4342-9040-ba7f61eaea29
+https://github.com/user-attachments/assets/15da764b-d586-490c-b852-cd1d0b42bb2d
+
 
 ## 📋 Table of Contents
 - [ScaleCUA: An Open-Source Agent for Cross-Platform GUI Automation](#scalecua-an-open-source-agent-for-cross-platform-gui-automation)
