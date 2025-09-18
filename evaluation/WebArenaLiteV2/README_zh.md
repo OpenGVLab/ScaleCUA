@@ -2,7 +2,28 @@
 
 WebArena-Lite-v2 是一个真实可靠的基准测试，提供了一个更适合的框架，专门用于评估纯视觉GUI网络代理。作为对[WebArena-Lite](https://github.com/THUDM/VisualAgentBench)的改进，它提供了跨五种不同类型网站的154个任务，涵盖问答、页面内容匹配等多种任务模式，能够全面评测GUI智能体的各方位能力。我们感谢WebArena相关工作的杰出贡献。
 
-## 📥评测前准备（下载镜像 + 加载镜像）
+## 📥评测前准备
+
+### 下载"launcher"文件夹代码
+
+由于文件夹较大，您需要先下载["launcher"](https://github.com/OpenGVLab/ScaleCUA/releases/download/launch_zip_v1/launcher.zip)文件夹的压缩包，然后将解压后的内容放置在`WebArenaLiteV2`目录下。
+
+完成后，项目结构如下：
+
+<pre>
+
+WebArenaLiteV2(根目录)
+
+├── launcher
+
+├── agents
+
+├── config
+
+└── ...
+</pre>
+
+### 下载镜像并加载镜像
 
 参考 [WebArena 仓库](https://github.com/web-arena-x/webarena/blob/main/environment_docker/README.md) 下载所需镜像。注意当前步骤仅需**下载**五个网站的六个镜像（Shopping、ShoppingAdmin、Reddit、Gitlab、OpenStreetMap），无需下载 Wikipedia 镜像，也无需创建容器。下载清单如下：
 
