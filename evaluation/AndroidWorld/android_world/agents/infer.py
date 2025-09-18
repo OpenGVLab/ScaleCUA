@@ -31,67 +31,63 @@ from PIL import Image
 import requests
 
 
-ERROR_CALLING_LLM = 'Error calling LLM'
+ERROR_CALLING_LLM = "Error calling LLM"
 
 
 def array_to_jpeg_bytes(image: np.ndarray) -> bytes:
-  """Converts a numpy array into a byte string for a JPEG image."""
-  image = Image.fromarray(image)
-  return image_to_jpeg_bytes(image)
+    """Converts a numpy array into a byte string for a JPEG image."""
+    image = Image.fromarray(image)
+    return image_to_jpeg_bytes(image)
 
 
 def image_to_jpeg_bytes(image: Image.Image) -> bytes:
-  in_mem_file = io.BytesIO()
-  image.save(in_mem_file, format='JPEG')
-  # Reset file pointer to start
-  in_mem_file.seek(0)
-  img_bytes = in_mem_file.read()
-  return img_bytes
+    in_mem_file = io.BytesIO()
+    image.save(in_mem_file, format="JPEG")
+    # Reset file pointer to start
+    in_mem_file.seek(0)
+    img_bytes = in_mem_file.read()
+    return img_bytes
 
 
 class LlmWrapper(abc.ABC):
-  """Abstract interface for (text only) LLM."""
+    """Abstract interface for (text only) LLM."""
 
-  @abc.abstractmethod
-  def predict(
-      self,
-      text_prompt: str,
-  ) -> tuple[str, Optional[bool], Any]:
-    """Calling multimodal LLM with a prompt and a list of images.
+    @abc.abstractmethod
+    def predict(
+        self,
+        text_prompt: str,
+    ) -> tuple[str, Optional[bool], Any]:
+        """Calling multimodal LLM with a prompt and a list of images.
 
-    Args:
-      text_prompt: Text prompt.
+        Args:
+          text_prompt: Text prompt.
 
-    Returns:
-      Text output, is_safe, and raw output.
-    """
+        Returns:
+          Text output, is_safe, and raw output.
+        """
 
 
 class MultimodalLlmWrapper(abc.ABC):
-  """Abstract interface for Multimodal LLM."""
+    """Abstract interface for Multimodal LLM."""
 
-  @abc.abstractmethod
-  def predict_mm(
-      self, text_prompt: str, images: list[np.ndarray]
-  ) -> tuple[str, Optional[bool], Any]:
-    """Calling multimodal LLM with a prompt and a list of images.
+    @abc.abstractmethod
+    def predict_mm(
+        self, text_prompt: str, images: list[np.ndarray]
+    ) -> tuple[str, Optional[bool], Any]:
+        """Calling multimodal LLM with a prompt and a list of images.
 
-    Args:
-      text_prompt: Text prompt.
-      images: List of images as numpy ndarray.
+        Args:
+          text_prompt: Text prompt.
+          images: List of images as numpy ndarray.
 
-    Returns:
-      Text output and raw output.
-    """
+        Returns:
+          Text output and raw output.
+        """
 
 
 SAFETY_SETTINGS_BLOCK_NONE = {
-    types.HarmCategory.HARM_CATEGORY_HARASSMENT: (
-        types.HarmBlockThreshold.BLOCK_NONE
-    ),
-    types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: (
-        types.HarmBlockThreshold.BLOCK_NONE
-    ),
+    types.HarmCategory.HARM_CATEGORY_HARASSMENT: (types.HarmBlockThreshold.BLOCK_NONE),
+    types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: (types.HarmBlockThreshold.BLOCK_NONE),
     types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: (
         types.HarmBlockThreshold.BLOCK_NONE
     ),
@@ -102,249 +98,245 @@ SAFETY_SETTINGS_BLOCK_NONE = {
 
 
 class GeminiGcpWrapper(LlmWrapper, MultimodalLlmWrapper):
-  """Gemini GCP interface."""
+    """Gemini GCP interface."""
 
-  def __init__(
-      self,
-      model_name: str | None = None,
-      max_retry: int = 3,
-      temperature: float = 0.0,
-      top_p: float = 0.95,
-      enable_safety_checks: bool = True,
-  ):
-    if 'GCP_API_KEY' not in os.environ:
-      raise RuntimeError('GCP API key not set.')
-    genai.configure(api_key=os.environ['GCP_API_KEY'])
-    self.llm = genai.GenerativeModel(
-        model_name,
-        safety_settings=None
-        if enable_safety_checks
-        else SAFETY_SETTINGS_BLOCK_NONE,
-        generation_config=generation_types.GenerationConfig(
-            temperature=temperature, top_p=top_p, max_output_tokens=1000
-        ),
-    )
-    if max_retry <= 0:
-      max_retry = 3
-      print('Max_retry must be positive. Reset it to 3')
-    self.max_retry = min(max_retry, 5)
-
-  def predict(
-      self,
-      text_prompt: str,
-      enable_safety_checks: bool = True,
-      generation_config: generation_types.GenerationConfigType | None = None,
-  ) -> tuple[str, Optional[bool], Any]:
-    return self.predict_mm(
-        text_prompt, [], enable_safety_checks, generation_config
-    )
-
-  def is_safe(self, raw_response):
-    try:
-      return (
-          raw_response.candidates[0].finish_reason
-          != answer_types.FinishReason.SAFETY
-      )
-    except Exception:  # pylint: disable=broad-exception-caught
-      #  Assume safe if the response is None or doesn't have candidates.
-      return True
-
-  def predict_mm(
-      self,
-      text_prompt: str,
-      images: list[np.ndarray],
-      enable_safety_checks: bool = True,
-      generation_config: generation_types.GenerationConfigType | None = None,
-  ) -> tuple[str, Optional[bool], Any]:
-    counter = self.max_retry
-    retry_delay = 1.0
-    output = None
-    while counter > 0:
-      try:
-        output = self.llm.generate_content(
-            [text_prompt] + [Image.fromarray(image) for image in images],
-            safety_settings=None
-            if enable_safety_checks
-            else SAFETY_SETTINGS_BLOCK_NONE,
-            generation_config=generation_config,
+    def __init__(
+        self,
+        model_name: str | None = None,
+        max_retry: int = 3,
+        temperature: float = 0.0,
+        top_p: float = 0.95,
+        enable_safety_checks: bool = True,
+    ):
+        if "GCP_API_KEY" not in os.environ:
+            raise RuntimeError("GCP API key not set.")
+        genai.configure(api_key=os.environ["GCP_API_KEY"])
+        self.llm = genai.GenerativeModel(
+            model_name,
+            safety_settings=(
+                None if enable_safety_checks else SAFETY_SETTINGS_BLOCK_NONE
+            ),
+            generation_config=generation_types.GenerationConfig(
+                temperature=temperature, top_p=top_p, max_output_tokens=1000
+            ),
         )
-        return output.text, True, output
-      except Exception as e:  # pylint: disable=broad-exception-caught
-        counter -= 1
-        print('Error calling LLM, will retry in {retry_delay} seconds')
-        print(e)
-        if counter > 0:
-          # Expo backoff
-          time.sleep(retry_delay)
-          retry_delay *= 2
+        if max_retry <= 0:
+            max_retry = 3
+            print("Max_retry must be positive. Reset it to 3")
+        self.max_retry = min(max_retry, 5)
 
-    if (output is not None) and (not self.is_safe(output)):
-      return ERROR_CALLING_LLM, False, output
-    return ERROR_CALLING_LLM, None, None
+    def predict(
+        self,
+        text_prompt: str,
+        enable_safety_checks: bool = True,
+        generation_config: generation_types.GenerationConfigType | None = None,
+    ) -> tuple[str, Optional[bool], Any]:
+        return self.predict_mm(text_prompt, [], enable_safety_checks, generation_config)
 
-  def generate(
-      self,
-      contents: (
-          content_types.ContentsType | list[str | np.ndarray | Image.Image]
-      ),
-      safety_settings: safety_types.SafetySettingOptions | None = None,
-      generation_config: generation_types.GenerationConfigType | None = None,
-  ) -> tuple[str, Any]:
-    """Exposes the generate_content API.
+    def is_safe(self, raw_response):
+        try:
+            return (
+                raw_response.candidates[0].finish_reason
+                != answer_types.FinishReason.SAFETY
+            )
+        except Exception:  # pylint: disable=broad-exception-caught
+            #  Assume safe if the response is None or doesn't have candidates.
+            return True
 
-    Args:
-      contents: The input to the LLM.
-      safety_settings: Safety settings.
-      generation_config: Generation config.
+    def predict_mm(
+        self,
+        text_prompt: str,
+        images: list[np.ndarray],
+        enable_safety_checks: bool = True,
+        generation_config: generation_types.GenerationConfigType | None = None,
+    ) -> tuple[str, Optional[bool], Any]:
+        counter = self.max_retry
+        retry_delay = 1.0
+        output = None
+        while counter > 0:
+            try:
+                output = self.llm.generate_content(
+                    [text_prompt] + [Image.fromarray(image) for image in images],
+                    safety_settings=(
+                        None if enable_safety_checks else SAFETY_SETTINGS_BLOCK_NONE
+                    ),
+                    generation_config=generation_config,
+                )
+                return output.text, True, output
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                counter -= 1
+                print("Error calling LLM, will retry in {retry_delay} seconds")
+                print(e)
+                if counter > 0:
+                    # Expo backoff
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
 
-    Returns:
-      The output text and the raw response.
-    Raises:
-      RuntimeError:
-    """
-    counter = self.max_retry
-    retry_delay = 1.0
-    response = None
-    if isinstance(contents, list):
-      contents = self.convert_content(contents)
-    while counter > 0:
-      try:
-        response = self.llm.generate_content(
-            contents=contents,
-            safety_settings=safety_settings,
-            generation_config=generation_config,
-        )
-        return response.text, response
-      except Exception as e:  # pylint: disable=broad-exception-caught
-        counter -= 1
-        print('Error calling LLM, will retry in {retry_delay} seconds')
-        print(e)
-        if counter > 0:
-          # Expo backoff
-          time.sleep(retry_delay)
-          retry_delay *= 2
-    raise RuntimeError(f'Error calling LLM. {response}.')
+        if (output is not None) and (not self.is_safe(output)):
+            return ERROR_CALLING_LLM, False, output
+        return ERROR_CALLING_LLM, None, None
 
-  def convert_content(
-      self,
-      contents: list[str | np.ndarray | Image.Image],
-  ) -> content_types.ContentsType:
-    """Converts a list of contents to a ContentsType."""
-    converted = []
-    for item in contents:
-      if isinstance(item, str):
-        converted.append(item)
-      elif isinstance(item, np.ndarray):
-        converted.append(Image.fromarray(item))
-      elif isinstance(item, Image.Image):
-        converted.append(item)
-    return converted
+    def generate(
+        self,
+        contents: content_types.ContentsType | list[str | np.ndarray | Image.Image],
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        generation_config: generation_types.GenerationConfigType | None = None,
+    ) -> tuple[str, Any]:
+        """Exposes the generate_content API.
+
+        Args:
+          contents: The input to the LLM.
+          safety_settings: Safety settings.
+          generation_config: Generation config.
+
+        Returns:
+          The output text and the raw response.
+        Raises:
+          RuntimeError:
+        """
+        counter = self.max_retry
+        retry_delay = 1.0
+        response = None
+        if isinstance(contents, list):
+            contents = self.convert_content(contents)
+        while counter > 0:
+            try:
+                response = self.llm.generate_content(
+                    contents=contents,
+                    safety_settings=safety_settings,
+                    generation_config=generation_config,
+                )
+                return response.text, response
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                counter -= 1
+                print("Error calling LLM, will retry in {retry_delay} seconds")
+                print(e)
+                if counter > 0:
+                    # Expo backoff
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
+        raise RuntimeError(f"Error calling LLM. {response}.")
+
+    def convert_content(
+        self,
+        contents: list[str | np.ndarray | Image.Image],
+    ) -> content_types.ContentsType:
+        """Converts a list of contents to a ContentsType."""
+        converted = []
+        for item in contents:
+            if isinstance(item, str):
+                converted.append(item)
+            elif isinstance(item, np.ndarray):
+                converted.append(Image.fromarray(item))
+            elif isinstance(item, Image.Image):
+                converted.append(item)
+        return converted
 
 
 class Gpt4Wrapper(LlmWrapper, MultimodalLlmWrapper):
-  """OpenAI GPT4 wrapper.
+    """OpenAI GPT4 wrapper.
 
-  Attributes:
-    openai_api_key: The class gets the OpenAI api key either explicitly, or
-      through env variable in which case just leave this empty.
-    max_retry: Max number of retries when some error happens.
-    temperature: The temperature parameter in LLM to control result stability.
-    model: GPT model to use based on if it is multimodal.
-  """
+    Attributes:
+      openai_api_key: The class gets the OpenAI api key either explicitly, or
+        through env variable in which case just leave this empty.
+      max_retry: Max number of retries when some error happens.
+      temperature: The temperature parameter in LLM to control result stability.
+      model: GPT model to use based on if it is multimodal.
+    """
 
-  RETRY_WAITING_SECONDS = 20
+    RETRY_WAITING_SECONDS = 20
 
-  def __init__(
-      self,
-      model_name: str,
-      max_retry: int = 3,
-      temperature: float = 0.0,
-  ):
-    # if 'OPENAI_API_KEY' not in os.environ:
-    #   raise RuntimeError('OpenAI API key not set.')
-    # self.openai_api_key = os.environ['OPENAI_API_KEY']
-    self.openai_api_key = "sk-"
-    if max_retry <= 0:
-      max_retry = 3
-      print('Max_retry must be positive. Reset it to 3')
-    self.max_retry = min(max_retry, 5)
-    self.temperature = temperature
-    self.model = model_name
+    def __init__(
+        self,
+        model_name: str,
+        max_retry: int = 3,
+        temperature: float = 0.0,
+    ):
+        # if 'OPENAI_API_KEY' not in os.environ:
+        #   raise RuntimeError('OpenAI API key not set.')
+        # self.openai_api_key = os.environ['OPENAI_API_KEY']
+        self.openai_api_key = "sk-"
+        if max_retry <= 0:
+            max_retry = 3
+            print("Max_retry must be positive. Reset it to 3")
+        self.max_retry = min(max_retry, 5)
+        self.temperature = temperature
+        self.model = model_name
 
-  @classmethod
-  def encode_image(cls, image: np.ndarray) -> str:
-    return base64.b64encode(array_to_jpeg_bytes(image)).decode('utf-8')
+    @classmethod
+    def encode_image(cls, image: np.ndarray) -> str:
+        return base64.b64encode(array_to_jpeg_bytes(image)).decode("utf-8")
 
-  def predict(
-      self,
-      text_prompt: str,
-  ) -> tuple[str, Optional[bool], Any]:
-    return self.predict_mm(text_prompt, [])
+    def predict(
+        self,
+        text_prompt: str,
+    ) -> tuple[str, Optional[bool], Any]:
+        return self.predict_mm(text_prompt, [])
 
-  def predict_mm(
-      self, text_prompt: str, images: list[np.ndarray]
-  ) -> tuple[str, Optional[bool], Any]:
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {self.openai_api_key}',
-    }
+    def predict_mm(
+        self, text_prompt: str, images: list[np.ndarray]
+    ) -> tuple[str, Optional[bool], Any]:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.openai_api_key}",
+        }
 
-    content_parts = []
-    content_parts.append({'type': 'text', 'text': text_prompt})
+        content_parts = []
+        content_parts.append({"type": "text", "text": text_prompt})
 
-    for image_np_array in images:
-        base64_image = self.encode_image(image_np_array)
-        if base64_image: # Ensure encoding was successful
-            content_parts.append({
-                'type': 'image_url',
-                'image_url': {
-                    # Assuming JPEG format for the data URI
-                    'url': f'data:image/jpeg;base64,{base64_image}'
-                }
-            })
+        for image_np_array in images:
+            base64_image = self.encode_image(image_np_array)
+            if base64_image:  # Ensure encoding was successful
+                content_parts.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            # Assuming JPEG format for the data URI
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        },
+                    }
+                )
 
-    # Create the single message for the payload
-    # The 'messages' list will contain one dictionary
-    messages = [{
-        'role': 'user',
-        'content': content_parts
-    }]
+        # Create the single message for the payload
+        # The 'messages' list will contain one dictionary
+        messages = [{"role": "user", "content": content_parts}]
 
-    payload = {
-        "model": self.model,
-        "temperature": self.temperature,
-        "messages": messages,
-        "max_tokens": 1000,
-    }
-    counter = self.max_retry
-    wait_seconds = self.RETRY_WAITING_SECONDS
-    while counter > 0:
-      try:
-        response = requests.post(
-            'https://api.boyuerichdata.opensphereai.com/v1/chat/completions',
-            headers=headers,
-            json=payload,
-        )
-        if response.ok and 'choices' in response.json():
-          return (
-              response.json()['choices'][0]['message']['content'],
-              None,
-              response,
-          )
-        print(
-            'Error calling OpenAI API with error message: '
-            + response.json()['error']['message']
-        )
-        time.sleep(wait_seconds)
-        wait_seconds *= 2
-      except Exception as e:  # pylint: disable=broad-exception-caught
-        # Want to catch all exceptions happened during LLM calls.
-        time.sleep(wait_seconds)
-        wait_seconds *= 2
-        counter -= 1
-        print('Error calling LLM, will retry soon...')
-        print(e)
-    return ERROR_CALLING_LLM, None, None
+        payload = {
+            "model": self.model,
+            "temperature": self.temperature,
+            "messages": messages,
+            "max_tokens": 1000,
+        }
+        counter = self.max_retry
+        wait_seconds = self.RETRY_WAITING_SECONDS
+        while counter > 0:
+            try:
+                response = requests.post(
+                    "https://api.boyuerichdata.opensphereai.com/v1/chat/completions",
+                    headers=headers,
+                    json=payload,
+                )
+                if response.ok and "choices" in response.json():
+                    return (
+                        response.json()["choices"][0]["message"]["content"],
+                        None,
+                        response,
+                    )
+                print(
+                    "Error calling OpenAI API with error message: "
+                    + response.json()["error"]["message"]
+                )
+                time.sleep(wait_seconds)
+                wait_seconds *= 2
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                # Want to catch all exceptions happened during LLM calls.
+                time.sleep(wait_seconds)
+                wait_seconds *= 2
+                counter -= 1
+                print("Error calling LLM, will retry soon...")
+                print(e)
+        return ERROR_CALLING_LLM, None, None
+
 
 import time
 import base64
@@ -353,6 +345,7 @@ import httpx
 from typing import Any, Optional, List
 from openai import OpenAI, DefaultHttpxClient
 from anthropic import Anthropic
+
 
 class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
     """Claude 3.7 wrapper via Anthropic SDK with proxy using httpx.Client."""
@@ -369,14 +362,14 @@ class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
         self.api_key = "sk-"
         if max_retry <= 0:
             max_retry = 3
-            print('Max_retry must be positive. Reset it to 3')
+            print("Max_retry must be positive. Reset it to 3")
         self.max_retry = min(max_retry, 5)
         self.temperature = temperature
         self.model = model_name
 
     @classmethod
     def encode_image(cls, image: np.ndarray) -> str:
-        return base64.b64encode(array_to_jpeg_bytes(image)).decode('utf-8')
+        return base64.b64encode(array_to_jpeg_bytes(image)).decode("utf-8")
 
     def predict(
         self,
@@ -385,29 +378,24 @@ class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
         return self.predict_mm(text_prompt, [])
 
     def predict_mm(
-        self,
-        text_prompt: str,
-        images: List[np.ndarray]
+        self, text_prompt: str, images: List[np.ndarray]
     ) -> tuple[str, Optional[bool], Any]:
         # Build a single Anthropic-style multimodal message
         multimodal_content = [{"type": "text", "text": text_prompt}]
         for img in images:
             data_b64 = self.encode_image(img)
-            multimodal_content.append({
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": "image/jpeg",
-                    "data": data_b64
+            multimodal_content.append(
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": data_b64,
+                    },
                 }
-            })
+            )
 
-        messages = [
-            {
-                "role": "user",
-                "content": multimodal_content
-            }
-        ]
+        messages = [{"role": "user", "content": multimodal_content}]
 
         # Prepare payload
         payload = {
@@ -425,9 +413,9 @@ class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
             try:
                 text, resp = self.get_response(payload)
                 return text, None, resp
-            
+
             except Exception as e:
-                print('Error calling Claude, retrying:', e)
+                print("Error calling Claude, retrying:", e)
                 time.sleep(wait)
                 wait *= 2
                 counter -= 1
@@ -436,7 +424,7 @@ class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
 
     def get_response(self, payload: dict) -> str:
         # Extract key
-        key = payload.pop('api_key')
+        key = payload.pop("api_key")
         # Create Anthropic client with httpx proxy
         client = Anthropic(
             api_key=key,
@@ -447,131 +435,136 @@ class ClaudeWrapper(LlmWrapper, MultimodalLlmWrapper):
         )
         # Call the Messages API
         resp = client.messages.create(
-            model=payload['model'],
-            messages=payload['messages'],
-            max_tokens=payload.get('max_tokens', 1000),
-            temperature=payload.get('temperature', 0.0),
+            model=payload["model"],
+            messages=payload["messages"],
+            max_tokens=payload.get("max_tokens", 1000),
+            temperature=payload.get("temperature", 0.0),
         )
         print(f"Claude response: {resp.content[0].text}")
-        return resp.content[0].text,resp
-    
+        return resp.content[0].text, resp
+
+
 class Claude2Wrapper(LlmWrapper, MultimodalLlmWrapper):
-  """OpenAI GPT4 wrapper.
+    """OpenAI GPT4 wrapper.
 
-  Attributes:
-    openai_api_key: The class gets the OpenAI api key either explicitly, or
-      through env variable in which case just leave this empty.
-    max_retry: Max number of retries when some error happens.
-    temperature: The temperature parameter in LLM to control result stability.
-    model: GPT model to use based on if it is multimodal.
-  """
+    Attributes:
+      openai_api_key: The class gets the OpenAI api key either explicitly, or
+        through env variable in which case just leave this empty.
+      max_retry: Max number of retries when some error happens.
+      temperature: The temperature parameter in LLM to control result stability.
+      model: GPT model to use based on if it is multimodal.
+    """
 
-  RETRY_WAITING_SECONDS = 20
+    RETRY_WAITING_SECONDS = 20
 
-  def __init__(
-      self,
-      model_name: str,
-      max_retry: int = 3,
-      temperature: float = 0.0,
-  ):
-    # if 'OPENAI_API_KEY' not in os.environ:
-    #   raise RuntimeError('OpenAI API key not set.')
-    # self.openai_api_key = os.environ['OPENAI_API_KEY']
-    self.openai_api_key = "sk-"
-    if max_retry <= 0:
-      max_retry = 3
-      print('Max_retry must be positive. Reset it to 3')
-    self.max_retry = min(max_retry, 5)
-    self.temperature = temperature
-    self.model = model_name
+    def __init__(
+        self,
+        model_name: str,
+        max_retry: int = 3,
+        temperature: float = 0.0,
+    ):
+        # if 'OPENAI_API_KEY' not in os.environ:
+        #   raise RuntimeError('OpenAI API key not set.')
+        # self.openai_api_key = os.environ['OPENAI_API_KEY']
+        self.openai_api_key = "sk-"
+        if max_retry <= 0:
+            max_retry = 3
+            print("Max_retry must be positive. Reset it to 3")
+        self.max_retry = min(max_retry, 5)
+        self.temperature = temperature
+        self.model = model_name
 
-  @classmethod
-  def encode_image(cls, image: np.ndarray) -> str:
-    return base64.b64encode(array_to_jpeg_bytes(image)).decode('utf-8')
+    @classmethod
+    def encode_image(cls, image: np.ndarray) -> str:
+        return base64.b64encode(array_to_jpeg_bytes(image)).decode("utf-8")
 
-  def predict(
-      self,
-      text_prompt: str,
-  ) -> tuple[str, Optional[bool], Any]:
-    return self.predict_mm(text_prompt, [])
+    def predict(
+        self,
+        text_prompt: str,
+    ) -> tuple[str, Optional[bool], Any]:
+        return self.predict_mm(text_prompt, [])
 
-  def predict_mm(
-      self, text_prompt: str, images: list[np.ndarray]
-  ) -> tuple[str, Optional[bool], Any]:
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {self.openai_api_key}',
-    }
+    def predict_mm(
+        self, text_prompt: str, images: list[np.ndarray]
+    ) -> tuple[str, Optional[bool], Any]:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.openai_api_key}",
+        }
 
-    # payload = {
-    #     'model': self.model,
-    #     'temperature': self.temperature,
-    #     'messages': [{
-    #         'role': 'user',
-    #         'content': [
-    #             {'type': 'text', 'text': text_prompt},
-    #         ],
-    #     }],
-    #     'max_tokens': 1000,
-    # }
+        # payload = {
+        #     'model': self.model,
+        #     'temperature': self.temperature,
+        #     'messages': [{
+        #         'role': 'user',
+        #         'content': [
+        #             {'type': 'text', 'text': text_prompt},
+        #         ],
+        #     }],
+        #     'max_tokens': 1000,
+        # }
 
-    # # Gpt-4v supports multiple images, just need to insert them in the content
-    # # list.
-    # for image in images:
-    #   print(f"type of images: {type(image)}, encoding images:{type(self.encode_image(image))}")
-    #   payload['messages'][0]['content'].append({
-    #       'type': 'image_url',
-    #       'image_url': {
-    #           'url': f'data:image/jpeg;base64,{self.encode_image(image)}'
-    #       },
-    #   })
-    messages = []
+        # # Gpt-4v supports multiple images, just need to insert them in the content
+        # # list.
+        # for image in images:
+        #   print(f"type of images: {type(image)}, encoding images:{type(self.encode_image(image))}")
+        #   payload['messages'][0]['content'].append({
+        #       'type': 'image_url',
+        #       'image_url': {
+        #           'url': f'data:image/jpeg;base64,{self.encode_image(image)}'
+        #       },
+        #   })
+        messages = []
 
-    messages.append({
-        "role": "user",
-        "content": text_prompt,      
-    })
-
-    for img in images:
-        b64 = self.encode_image(img)  
-        data_uri = f"data:image/jpeg;base64,{b64}"
-        messages.append({
-            "role": "user",
-            "content": data_uri,    
-        })
-
-    payload = {
-        "model": self.model,
-        "temperature": self.temperature,
-        "messages": messages,
-        "max_tokens": 1000,
-    }
-    counter = self.max_retry
-    wait_seconds = self.RETRY_WAITING_SECONDS
-    while counter > 0:
-      try:
-        response = requests.post(
-            'https://.../v1/chat/completions', # Replace with actual endpoint
-            headers=headers,
-            json=payload,
+        messages.append(
+            {
+                "role": "user",
+                "content": text_prompt,
+            }
         )
-        if response.ok and 'choices' in response.json():
-          return (
-              response.json()['choices'][0]['message']['content'],
-              None,
-              response,
-          )
-        print(
-            'Error calling OpenAI API with error message: '
-            + response.json()['error']['message']
-        )
-        time.sleep(wait_seconds)
-        wait_seconds *= 2
-      except Exception as e:  # pylint: disable=broad-exception-caught
-        # Want to catch all exceptions happened during LLM calls.
-        time.sleep(wait_seconds)
-        wait_seconds *= 2
-        counter -= 1
-        print('Error calling LLM, will retry soon...')
-        print(e)
-    return ERROR_CALLING_LLM, None, None
+
+        for img in images:
+            b64 = self.encode_image(img)
+            data_uri = f"data:image/jpeg;base64,{b64}"
+            messages.append(
+                {
+                    "role": "user",
+                    "content": data_uri,
+                }
+            )
+
+        payload = {
+            "model": self.model,
+            "temperature": self.temperature,
+            "messages": messages,
+            "max_tokens": 1000,
+        }
+        counter = self.max_retry
+        wait_seconds = self.RETRY_WAITING_SECONDS
+        while counter > 0:
+            try:
+                response = requests.post(
+                    "https://.../v1/chat/completions",  # Replace with actual endpoint
+                    headers=headers,
+                    json=payload,
+                )
+                if response.ok and "choices" in response.json():
+                    return (
+                        response.json()["choices"][0]["message"]["content"],
+                        None,
+                        response,
+                    )
+                print(
+                    "Error calling OpenAI API with error message: "
+                    + response.json()["error"]["message"]
+                )
+                time.sleep(wait_seconds)
+                wait_seconds *= 2
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                # Want to catch all exceptions happened during LLM calls.
+                time.sleep(wait_seconds)
+                wait_seconds *= 2
+                counter -= 1
+                print("Error calling LLM, will retry soon...")
+                print(e)
+        return ERROR_CALLING_LLM, None, None

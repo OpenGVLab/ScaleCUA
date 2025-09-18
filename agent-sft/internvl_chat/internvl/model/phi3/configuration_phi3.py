@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Phi-3 model configuration"""
+"""Phi-3 model configuration"""
 
 
 from transformers.configuration_utils import PretrainedConfig
@@ -21,8 +21,8 @@ from transformers.utils import logging
 logger = logging.get_logger(__name__)
 
 PHI3_PRETRAINED_CONFIG_ARCHIVE_MAP = {
-    'microsoft/Phi-3-mini-4k-instruct': 'https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/resolve/main/config.json',
-    'microsoft/Phi-3-mini-128k-instruct': 'https://huggingface.co/microsoft/Phi-3-mini-128k-instruct/resolve/main/config.json',
+    "microsoft/Phi-3-mini-4k-instruct": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct/resolve/main/config.json",
+    "microsoft/Phi-3-mini-128k-instruct": "https://huggingface.co/microsoft/Phi-3-mini-128k-instruct/resolve/main/config.json",
 }
 
 
@@ -109,8 +109,8 @@ class Phi3Config(PretrainedConfig):
     >>> configuration = model.config
     ```"""
 
-    model_type = 'phi3'
-    keys_to_ignore_at_inference = ['past_key_values']
+    model_type = "phi3"
+    keys_to_ignore_at_inference = ["past_key_values"]
 
     def __init__(
         self,
@@ -123,7 +123,7 @@ class Phi3Config(PretrainedConfig):
         resid_pdrop=0.0,
         embd_pdrop=0.0,
         attention_dropout=0.0,
-        hidden_act='silu',
+        hidden_act="silu",
         max_position_embeddings=4096,
         original_max_position_embeddings=4096,
         initializer_range=0.02,
@@ -179,14 +179,16 @@ class Phi3Config(PretrainedConfig):
 
         if not isinstance(self.rope_scaling, dict) or len(self.rope_scaling) != 3:
             raise ValueError(
-                '`rope_scaling` must be a dictionary with three fields, `type`, `short_factor` and `long_factor`, '
-                f'got {self.rope_scaling}'
+                "`rope_scaling` must be a dictionary with three fields, `type`, `short_factor` and `long_factor`, "
+                f"got {self.rope_scaling}"
             )
-        rope_scaling_type = self.rope_scaling.get('type', None)
-        rope_scaling_short_factor = self.rope_scaling.get('short_factor', None)
-        rope_scaling_long_factor = self.rope_scaling.get('long_factor', None)
-        if rope_scaling_type is None or rope_scaling_type not in ['su', 'yarn']:
-            raise ValueError(f"`rope_scaling`'s type field must be one of ['su', 'yarn'], got {rope_scaling_type}")
+        rope_scaling_type = self.rope_scaling.get("type", None)
+        rope_scaling_short_factor = self.rope_scaling.get("short_factor", None)
+        rope_scaling_long_factor = self.rope_scaling.get("long_factor", None)
+        if rope_scaling_type is None or rope_scaling_type not in ["su", "yarn"]:
+            raise ValueError(
+                f"`rope_scaling`'s type field must be one of ['su', 'yarn'], got {rope_scaling_type}"
+            )
         if not (
             isinstance(rope_scaling_short_factor, list)
             and all(isinstance(x, (int, float)) for x in rope_scaling_short_factor)
@@ -194,7 +196,10 @@ class Phi3Config(PretrainedConfig):
             raise ValueError(
                 f"`rope_scaling`'s short_factor field must be a list of numbers, got {rope_scaling_short_factor}"
             )
-        if not len(rope_scaling_short_factor) == self.hidden_size // self.num_attention_heads // 2:
+        if (
+            not len(rope_scaling_short_factor)
+            == self.hidden_size // self.num_attention_heads // 2
+        ):
             raise ValueError(
                 f"`rope_scaling`'s short_factor field must have length {self.hidden_size // self.num_attention_heads // 2}, got {len(rope_scaling_short_factor)}"
             )
@@ -205,7 +210,10 @@ class Phi3Config(PretrainedConfig):
             raise ValueError(
                 f"`rope_scaling`'s long_factor field must be a list of numbers, got {rope_scaling_long_factor}"
             )
-        if not len(rope_scaling_long_factor) == self.hidden_size // self.num_attention_heads // 2:
+        if (
+            not len(rope_scaling_long_factor)
+            == self.hidden_size // self.num_attention_heads // 2
+        ):
             raise ValueError(
                 f"`rope_scaling`'s long_factor field must have length {self.hidden_size // self.num_attention_heads // 2}, got {len(rope_scaling_long_factor)}"
             )

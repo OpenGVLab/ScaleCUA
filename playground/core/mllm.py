@@ -128,7 +128,6 @@ class VLMEngine:
                 elif self.messages[-1]["role"] == "assistant":
                     role = "user"
 
-            
             message = {
                 "role": role,
                 "content": [{"type": "text", "text": text_content}],

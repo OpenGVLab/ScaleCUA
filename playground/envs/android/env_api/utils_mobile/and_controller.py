@@ -7,13 +7,11 @@ from typing import Union
 import uiautomator2 as u2
 from env_tools.docker_utils import execute_adb_command, cp_docker
 from utils_mobile.packages import *
+
 # from config import load_config
 from utils_mobile.utils import print_with_color
 from utils_mobile.utils import time_within_ten_secs
 import threading
-
-
-
 
 
 class AndroidController:
@@ -39,7 +37,7 @@ class AndroidController:
         else:
             power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
             self.execute_adb(power_cmd, self.type)
-            time.sleep(2) 
+            time.sleep(2)
             power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
             self.execute_adb(power_cmd, self.type)
             self.home()
@@ -58,7 +56,9 @@ class AndroidController:
             #     print_with_color(f"Command execution failed: {adb_command}", "red")
             #     print_with_color(result.stderr, "red")
             # return "ERROR"
-            result = subprocess.run(adb_command, shell=True, capture_output=True, text=True)
+            result = subprocess.run(
+                adb_command, shell=True, capture_output=True, text=True
+            )
             return result.stdout
         elif type == "docker":
             port = self.port
@@ -81,14 +81,17 @@ class AndroidController:
                 test_time += 1
                 time.sleep(2)
         assert False, "Error in getting device size"
-        
 
     def get_screenshot(self, prefix, save_dir):
-        cap_command = f"adb -s {self.device} shell screencap -p " \
-                      f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
-        pull_command = f"adb -s {self.device} pull " \
-                       f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')} " \
-                       f"{os.path.join(save_dir, prefix + '.png')}"
+        cap_command = (
+            f"adb -s {self.device} shell screencap -p "
+            f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
+        )
+        pull_command = (
+            f"adb -s {self.device} pull "
+            f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')} "
+            f"{os.path.join(save_dir, prefix + '.png')}"
+        )
         result = self.execute_adb(cap_command, self.type)
         if result != "ERROR":
             result = self.execute_adb(pull_command, self.type)
@@ -98,7 +101,7 @@ class AndroidController:
         return result
 
     def save_screenshot(self, save_path):
-        prefix = os.path.basename(save_path).replace('.png', '')
+        prefix = os.path.basename(save_path).replace(".png", "")
         remote_path = f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
         # print(f"remote_path: {remote_path}")
         # print(f"save_path: {save_path}")
@@ -116,19 +119,24 @@ class AndroidController:
         # print(f"pull_command result: {result}")
         if result != "ERROR":
             if self.type == "docker":
-                cp_docker(save_path, save_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    save_path, save_path, self.container_id, local_to_docker=False
+                )
             return save_path
         return result
 
     def get_xml(self, prefix, save_dir):
         if not self.is_physical_device:
-            remote_path = os.path.join(self.xml_dir, prefix + '.xml').replace(self.backslash, '/')
-            local_path = os.path.join(save_dir, prefix + '.xml')
+            remote_path = os.path.join(self.xml_dir, prefix + ".xml").replace(
+                self.backslash, "/"
+            )
+            local_path = os.path.join(save_dir, prefix + ".xml")
             dump_command = f"adb -s {self.device} shell uiautomator dump {remote_path}"
             pull_command = f"adb -s {self.device} pull {remote_path} {local_path}"
 
             def is_file_empty(file_path):
                 return os.path.exists(file_path) and os.path.getsize(file_path) == 0
+
             # print("Begin to try get xml")
             for attempt in range(5):
                 result = self.execute_adb(dump_command, self.type)
@@ -143,7 +151,9 @@ class AndroidController:
                     time.sleep(2)
                     continue
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
                 return local_path
 
             # Final attempt after 3 retries
@@ -151,20 +161,24 @@ class AndroidController:
             result = self.execute_adb(pull_command, self.type)
             if result != "ERROR" and not is_file_empty(local_path):
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
                 return local_path
 
             return result
         else:
-            local_path = os.path.join(save_dir, prefix + '.xml')
+            local_path = os.path.join(save_dir, prefix + ".xml")
             xml = self.xml_device.dump_hierarchy()
-            with open(local_path, 'w', encoding='utf-8') as f:
+            with open(local_path, "w", encoding="utf-8") as f:
                 f.write(xml)
             return local_path
 
     def get_ac_xml(self, prefix, save_dir):
-        remote_path = f"{os.path.join(self.ac_xml_dir, 'ui.xml').replace(self.backslash, '/')}"
-        local_path = os.path.join(save_dir, prefix + '.xml')
+        remote_path = (
+            f"{os.path.join(self.ac_xml_dir, 'ui.xml').replace(self.backslash, '/')}"
+        )
+        local_path = os.path.join(save_dir, prefix + ".xml")
         pull_command = f"adb -s {self.device} pull {remote_path} {local_path}"
 
         def is_file_empty(file_path):
@@ -174,7 +188,9 @@ class AndroidController:
             result = self.execute_adb(pull_command, self.type)
             if result != "ERROR" and not is_file_empty(local_path):
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
                 return local_path
             time.sleep(2)
 
@@ -182,7 +198,9 @@ class AndroidController:
         result = self.execute_adb(pull_command, self.type)
         if result != "ERROR" and not is_file_empty(local_path):
             if self.type == "docker":
-                cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    local_path, local_path, self.container_id, local_to_docker=False
+                )
             return local_path
 
         return result
@@ -214,24 +232,24 @@ class AndroidController:
         adb_command = f"adb -s {self.device} shell input keyevent KEYCODE_HOME"
         ret = self.execute_adb(adb_command, self.type)
         return ret
-    
+
     def restart(self):
         power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
         self.execute_adb(power_cmd, self.type)
         print("Press power key to wake up the device")
-        time.sleep(2) 
+        time.sleep(2)
         power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
         self.execute_adb(power_cmd, self.type)
         self.home()
         print("Press home key to return to home screen")
-        time.sleep(3) 
+        time.sleep(3)
 
     def safe_tap(self, x, y, duration=100):
         print(f"before check ime active: {self.check_ime_active()}")
         if self.check_ime_active():
             back_command = f"adb -s {self.device} shell input keyevent KEYCODE_BACK"
             self.execute_adb(back_command, self.type)
-            time.sleep(0.3) 
+            time.sleep(0.3)
         print(f"after check ime active: {self.check_ime_active()}")
         return self.tap(x, y, duration)
 
@@ -246,28 +264,29 @@ class AndroidController:
         command = f"adb -s {self.device} shell input touchscreen tap {x} {y}"
         # print(f"ime active: {self.check_ime_active()}")
         return self.execute_adb(command, self.type)
+
     def text(self, input_str):
         # adb_command = f'adb -s {self.device} input keyevent KEYCODE_MOVE_END'
         # ret = self.execute_adb(adb_command, self.type)
         adb_command = f'adb -s {self.device} shell input keyevent --press $(for i in {{1..100}}; do echo -n "67 "; done)'
         ret = self.execute_adb(adb_command, self.type)
         chars = input_str
-        charsb64 = str(base64.b64encode(chars.encode('utf-8')))[1:]
+        charsb64 = str(base64.b64encode(chars.encode("utf-8")))[1:]
         # adb_command = f"adb -s {self.device} shell am broadcast -a ADB_INPUT_B64 --es msg {charsb64}"
         adb_command = f"adb -s {self.device} shell input text {chars}"
         ret = self.execute_adb(adb_command, self.type)
         return ret
 
     def long_press(self, x, y, duration=1000):
-        adb_command = f"adb -s {self.device} shell input swipe {x} {y} {x} {y} {duration}"
+        adb_command = (
+            f"adb -s {self.device} shell input swipe {x} {y} {x} {y} {duration}"
+        )
         ret = self.execute_adb(adb_command, self.type)
         return ret
 
     def kill_app(self, package_name):
         command = f"adb -s {self.device} shell am force-stop {package_name}"
         self.execute_adb(command, self.type)
-
-    
 
     def swipe(self, x, y, direction, dist: Union[str, int] = "medium", quick=False):
         if x == None:
@@ -310,10 +329,11 @@ class AndroidController:
         Returns:
             bool: True means IME is in use, False means not active
         """
-        command = f"adb -s {self.device} shell dumpsys input_method | grep mShowRequested"
+        command = (
+            f"adb -s {self.device} shell dumpsys input_method | grep mShowRequested"
+        )
         result = self.execute_adb(command, self.type)
         return "true" in result.lower() if result else False
-
 
     def toggle_keyboard(self, enable=True):
         """
@@ -332,7 +352,7 @@ class AndroidController:
 
     def start_screen_record(self, prefix):
         print("Starting screen record")
-        command = f'adb -s {self.device} shell screenrecord /sdcard/{prefix}.mp4'
+        command = f"adb -s {self.device} shell screenrecord /sdcard/{prefix}.mp4"
         return subprocess.Popen(command, shell=True)
 
     def launch(self, package_name):
@@ -346,20 +366,27 @@ class AndroidController:
     def check_ac_survive(self):
         try:
             time_command = f"adb -s {self.device} shell stat -c %y /sdcard/Android/data/com.example.android.xml_parser/files/ui.xml"
-            time_phone_command = f"adb -s {self.device} shell date +\"%H:%M:%S\""
+            time_phone_command = f'adb -s {self.device} shell date +"%H:%M:%S"'
             time_command_output = self.execute_adb(time_command, self.type)
             time_phone_command_output = self.execute_adb(time_phone_command, self.type)
             if time_command_output == "ERROR" or time_phone_command_output == "ERROR":
                 return False
             print("time_command output:", self.execute_adb(time_command, self.type))
-            print("time_phone_command output:", self.execute_adb(time_phone_command, self.type))
-            result = time_within_ten_secs(time_command_output, time_phone_command_output)
+            print(
+                "time_phone_command output:",
+                self.execute_adb(time_phone_command, self.type),
+            )
+            result = time_within_ten_secs(
+                time_command_output, time_phone_command_output
+            )
         except Exception as e:
             print(e)
             return False
         return result
-    
-    def start_screen_record_segmented(self, prefix: str, save_dir, segment_time: int = 180):
+
+    def start_screen_record_segmented(
+        self, prefix: str, save_dir, segment_time: int = 180
+    ):
         """
         Segmented recording: continuously start screenrecord in a background thread, each segment up to segment_time seconds, until manually stopped.
         """
@@ -370,12 +397,12 @@ class AndroidController:
 
         # Start background thread
         self._record_thread = threading.Thread(
-            target=self._record_loop,
-            args=(segment_time,),
-            daemon=True
+            target=self._record_loop, args=(segment_time,), daemon=True
         )
         self._record_thread.start()
-        print(f"[start_screen_record_segmented] Segmented recording thread started, each segment max {segment_time} seconds.")
+        print(
+            f"[start_screen_record_segmented] Segmented recording thread started, each segment max {segment_time} seconds."
+        )
 
     def stop_screen_record_segmented(self, merge=True):
         """
@@ -385,7 +412,9 @@ class AndroidController:
             print("[stop_screen_record_segmented] No ongoing segmented recording.")
             return "ERROR"
 
-        print("[stop_screen_record_segmented] Requesting to stop segmented recording thread...")
+        print(
+            "[stop_screen_record_segmented] Requesting to stop segmented recording thread..."
+        )
         self._record_stop_flag = True
         self._record_thread.join()  # Wait for recording thread to fully end
 
@@ -393,10 +422,14 @@ class AndroidController:
             if len(self._record_segments) > 1:
                 print("[stop_screen_record_segmented] Start merging all segments...")
                 merged_path = self._merge_segments(self._record_segments)
-                print(f"[stop_screen_record_segmented] All segments merged => {merged_path}")
+                print(
+                    f"[stop_screen_record_segmented] All segments merged => {merged_path}"
+                )
                 return merged_path
             elif len(self._record_segments) == 1:
-                print(f"[stop_screen_record_segmented] Only one segment, path: {self._record_segments[0]}")
+                print(
+                    f"[stop_screen_record_segmented] Only one segment, path: {self._record_segments[0]}"
+                )
                 return self._record_segments[0] if self._record_segments else "ERROR"
             else:
                 print("[stop_screen_record_segmented] No segments to merge.")
@@ -416,7 +449,9 @@ class AndroidController:
         segment_index = 1
         while not self._record_stop_flag:
             remote_path = f"/sdcard/{self._record_prefix}_{segment_index}.mp4"
-            local_path = os.path.join(self._record_save_dir, f"{self._record_prefix}_{segment_index}.mp4")
+            local_path = os.path.join(
+                self._record_save_dir, f"{self._record_prefix}_{segment_index}.mp4"
+            )
 
             print(f"[record_loop] => Start recording segment {segment_index} ...")
             # Different start methods based on type
@@ -424,20 +459,24 @@ class AndroidController:
                 # Local use Popen
                 proc = subprocess.Popen(
                     f"adb -s {self.device} shell screenrecord --time-limit {segment_time} {remote_path}",
-                    shell=True
+                    shell=True,
                 )
 
                 start_t = time.time()
                 while proc.poll() is None:
                     if self._record_stop_flag:
-                        print(f"[record_loop] Stop requested, forcibly end segment {segment_index} recording (local) ...")
+                        print(
+                            f"[record_loop] Stop requested, forcibly end segment {segment_index} recording (local) ..."
+                        )
                         self._docker_force_stop_screenrecord()
                         break
                     time.sleep(0.5)
 
                 # Wait process exit
                 retcode = proc.wait(timeout=5) if proc.poll() is None else proc.poll()
-                print(f"[record_loop] Segment {segment_index} recording ended, returncode={retcode}")
+                print(
+                    f"[record_loop] Segment {segment_index} recording ended, returncode={retcode}"
+                )
 
             else:
                 # Docker mode: use thread + pkill
@@ -446,23 +485,29 @@ class AndroidController:
                 record_thread = threading.Thread(
                     target=self._docker_blocking_record,
                     args=(segment_time, remote_path),
-                    daemon=True
+                    daemon=True,
                 )
                 record_thread.start()
 
                 # Poll wait
                 while record_thread.is_alive():
                     if self._record_stop_flag:
-                        print(f"[record_loop] Stop requested, forcibly end segment {segment_index} recording (docker) ...")
+                        print(
+                            f"[record_loop] Stop requested, forcibly end segment {segment_index} recording (docker) ..."
+                        )
                         self._docker_force_stop_screenrecord()
                         break
                     time.sleep(0.5)
 
                 record_thread.join(timeout=5)
-                print(f"[record_loop] Segment {segment_index} (docker) recording ended.")
-            check_cmd = f"adb shell '[ -e {remote_path} ] && echo \"exists\" || echo \"not_exists\"'"
+                print(
+                    f"[record_loop] Segment {segment_index} (docker) recording ended."
+                )
+            check_cmd = f'adb shell \'[ -e {remote_path} ] && echo "exists" || echo "not_exists"\''
             check_res = self.execute_adb(check_cmd, self.type)
-            print(f"[record_loop] Segment {segment_index} video file exists?: {check_res}")
+            print(
+                f"[record_loop] Segment {segment_index} video file exists?: {check_res}"
+            )
             size_cmd = f"adb -s {self.device} shell ls -l {remote_path}"
             size_res = self.execute_adb(size_cmd, self.type)
             print("remote_path file info:", size_res)
@@ -473,23 +518,33 @@ class AndroidController:
             if pull_res != "ERROR":
                 print(f"local path{local_path}")
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
-                print(f"os.path.exists(record_save_dir):{os.path.exists(self._record_save_dir)}")
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
+                print(
+                    f"os.path.exists(record_save_dir):{os.path.exists(self._record_save_dir)}"
+                )
                 print(f"os.path.exists(local_path):{os.path.exists(local_path)}")
                 print(f"os.path.getsize(local_path):{os.path.getsize(local_path)}")
                 if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
-                    print(f"[record_loop] Segment {segment_index} video saved locally: {local_path}")
+                    print(
+                        f"[record_loop] Segment {segment_index} video saved locally: {local_path}"
+                    )
                     self._record_segments.append(local_path)
                 else:
                     self._record_segments.append(local_path)
-                    print(f"[record_loop] Segment {segment_index} video file is empty after pull! Possibly too short or forcibly stopped.")
+                    print(
+                        f"[record_loop] Segment {segment_index} video file is empty after pull! Possibly too short or forcibly stopped."
+                    )
             else:
                 print(f"[record_loop] Segment {segment_index} video file pull failed.")
 
             if pull_res != "ERROR":
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
-        
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
+
             # Delete residue on device
             rm_cmd = f"adb -s {self.device} shell rm {remote_path}"
             self.execute_adb(rm_cmd, self.type)
@@ -511,7 +566,9 @@ class AndroidController:
         cmd = f"adb -s {self.device} shell screenrecord --size 720x1280 --time-limit {segment_time} {remote_path}"
         # Ensure not to remove "adb -s ..." because self.execute_adb does not auto prepend here
         print(f"[docker_blocking_record] => {cmd}")
-        result = self.execute_adb(cmd, self.type)  # This blocks until screenrecord exits
+        result = self.execute_adb(
+            cmd, self.type
+        )  # This blocks until screenrecord exits
         print("[docker_blocking_record] => screenrecord exited.")
 
     def _docker_force_stop_screenrecord(self):
@@ -531,15 +588,21 @@ class AndroidController:
     def _merge_segments(self, segments: list[str]) -> str:
         """Use ffmpeg to merge all segments. Requires ffmpeg installed in host or Docker container."""
         # Build a segment list file using absolute paths to ensure ffmpeg can locate segments
-        txt_path = os.path.join(self._record_save_dir, f"{self._record_prefix}_segments.txt")
+        txt_path = os.path.join(
+            self._record_save_dir, f"{self._record_prefix}_segments.txt"
+        )
         with open(txt_path, "w", encoding="utf-8") as f:
             for seg in segments:
                 # Write absolute path or path relative to current working directory
                 abs_path = os.path.abspath(seg)
                 f.write(f"file '{abs_path}'\n")
 
-        merged_path = os.path.join(self._record_save_dir, f"{self._record_prefix}_merged.mp4")
-        ffmpeg_cmd = f"ffmpeg -y -f concat -safe 0 -i '{txt_path}' -c copy '{merged_path}'"
+        merged_path = os.path.join(
+            self._record_save_dir, f"{self._record_prefix}_merged.mp4"
+        )
+        ffmpeg_cmd = (
+            f"ffmpeg -y -f concat -safe 0 -i '{txt_path}' -c copy '{merged_path}'"
+        )
         print(f"[merge_segments] => {ffmpeg_cmd}")
 
         # Use execute_adb to execute merge command to support Docker environment
@@ -554,6 +617,5 @@ class AndroidController:
             return "ERROR"
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     And = AndroidController("emulator-5554")

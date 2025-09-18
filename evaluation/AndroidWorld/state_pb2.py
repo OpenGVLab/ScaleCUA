@@ -2,590 +2,1017 @@
 # source: state.proto
 
 import sys
-_b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+
+_b = sys.version_info[0] < 3 and (lambda x: x) or (lambda x: x.encode("latin1"))
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
 DESCRIPTOR = _descriptor.FileDescriptor(
-  name='state.proto',
-  package='android_world.task_evals.information_retrieval.proto',
-  syntax='proto2',
-  serialized_options=None,
-  serialized_pb=_b('\n\x0bstate.proto\x12\x34\x61ndroid_world.task_evals.information_retrieval.proto\"\xe5\x02\n\x05State\x12P\n\x08\x63\x61lendar\x18\x01 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.Calendar\x12Q\n\ttasks_app\x18\x02 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.TasksApp\x12\x64\n\x13sports_activity_app\x18\x03 \x01(\x0b\x32G.android_world.task_evals.information_retrieval.proto.SportsActivityApp\x12Q\n\tnotes_app\x18\x04 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.NotesApp\"U\n\x08NotesApp\x12I\n\x05notes\x18\x01 \x03(\x0b\x32:.android_world.task_evals.information_retrieval.proto.Note\"\\\n\x04Note\x12\x0e\n\x06\x66older\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x0c\n\x04\x62ody\x18\x03 \x01(\t\x12\x0f\n\x07is_todo\x18\x04 \x01(\t\x12\x16\n\x0etodo_completed\x18\x05 \x01(\t\"t\n\x11SportsActivityApp\x12_\n\x11sports_activities\x18\x01 \x03(\x0b\x32\x44.android_world.task_evals.information_retrieval.proto.SportsActivity\"\xc7\x01\n\x0eSportsActivity\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x03 \x01(\t\x12\x12\n\nstart_date\x18\x04 \x01(\t\x12\x12\n\nstart_time\x18\x05 \x01(\t\x12\x10\n\x08\x64uration\x18\x06 \x01(\t\x12\x16\n\x0etotal_distance\x18\x07 \x01(\t\x12\x16\n\x0e\x65levation_gain\x18\x08 \x01(\t\x12\x16\n\x0e\x65levation_loss\x18\t \x01(\t\"g\n\x08TasksApp\x12[\n\x0ftasks_app_tasks\x18\x01 \x03(\x0b\x32\x42.android_world.task_evals.information_retrieval.proto.TasksAppTask\"\xc6\x01\n\x0cTasksAppTask\x12\r\n\x05title\x18\x01 \x01(\t\x12\x12\n\nimportance\x18\x02 \x01(\t\x12\x10\n\x08\x64ue_date\x18\x03 \x01(\t\x12\x10\n\x08\x64ue_time\x18\x04 \x01(\t\x12\x17\n\x0fhide_until_date\x18\x05 \x01(\t\x12\x17\n\x0fhide_until_time\x18\x06 \x01(\t\x12\x16\n\x0e\x63ompleted_date\x18\x08 \x01(\t\x12\x16\n\x0e\x63ompleted_time\x18\t \x01(\t\x12\r\n\x05notes\x18\n \x01(\t\"i\n\x08\x43\x61lendar\x12\x10\n\x08\x61pp_name\x18\x02 \x01(\t\x12K\n\x06\x65vents\x18\x01 \x03(\x0b\x32;.android_world.task_evals.information_retrieval.proto.Event\"w\n\x05\x45vent\x12\x12\n\nstart_date\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x10\n\x08\x64uration\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\r\n\x05title\x18\x05 \x01(\t\x12\x10\n\x08location\x18\x06 \x01(\t')
+    name="state.proto",
+    package="android_world.task_evals.information_retrieval.proto",
+    syntax="proto2",
+    serialized_options=None,
+    serialized_pb=_b(
+        '\n\x0bstate.proto\x12\x34\x61ndroid_world.task_evals.information_retrieval.proto"\xe5\x02\n\x05State\x12P\n\x08\x63\x61lendar\x18\x01 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.Calendar\x12Q\n\ttasks_app\x18\x02 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.TasksApp\x12\x64\n\x13sports_activity_app\x18\x03 \x01(\x0b\x32G.android_world.task_evals.information_retrieval.proto.SportsActivityApp\x12Q\n\tnotes_app\x18\x04 \x01(\x0b\x32>.android_world.task_evals.information_retrieval.proto.NotesApp"U\n\x08NotesApp\x12I\n\x05notes\x18\x01 \x03(\x0b\x32:.android_world.task_evals.information_retrieval.proto.Note"\\\n\x04Note\x12\x0e\n\x06\x66older\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x0c\n\x04\x62ody\x18\x03 \x01(\t\x12\x0f\n\x07is_todo\x18\x04 \x01(\t\x12\x16\n\x0etodo_completed\x18\x05 \x01(\t"t\n\x11SportsActivityApp\x12_\n\x11sports_activities\x18\x01 \x03(\x0b\x32\x44.android_world.task_evals.information_retrieval.proto.SportsActivity"\xc7\x01\n\x0eSportsActivity\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x03 \x01(\t\x12\x12\n\nstart_date\x18\x04 \x01(\t\x12\x12\n\nstart_time\x18\x05 \x01(\t\x12\x10\n\x08\x64uration\x18\x06 \x01(\t\x12\x16\n\x0etotal_distance\x18\x07 \x01(\t\x12\x16\n\x0e\x65levation_gain\x18\x08 \x01(\t\x12\x16\n\x0e\x65levation_loss\x18\t \x01(\t"g\n\x08TasksApp\x12[\n\x0ftasks_app_tasks\x18\x01 \x03(\x0b\x32\x42.android_world.task_evals.information_retrieval.proto.TasksAppTask"\xc6\x01\n\x0cTasksAppTask\x12\r\n\x05title\x18\x01 \x01(\t\x12\x12\n\nimportance\x18\x02 \x01(\t\x12\x10\n\x08\x64ue_date\x18\x03 \x01(\t\x12\x10\n\x08\x64ue_time\x18\x04 \x01(\t\x12\x17\n\x0fhide_until_date\x18\x05 \x01(\t\x12\x17\n\x0fhide_until_time\x18\x06 \x01(\t\x12\x16\n\x0e\x63ompleted_date\x18\x08 \x01(\t\x12\x16\n\x0e\x63ompleted_time\x18\t \x01(\t\x12\r\n\x05notes\x18\n \x01(\t"i\n\x08\x43\x61lendar\x12\x10\n\x08\x61pp_name\x18\x02 \x01(\t\x12K\n\x06\x65vents\x18\x01 \x03(\x0b\x32;.android_world.task_evals.information_retrieval.proto.Event"w\n\x05\x45vent\x12\x12\n\nstart_date\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x10\n\x08\x64uration\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\r\n\x05title\x18\x05 \x01(\t\x12\x10\n\x08location\x18\x06 \x01(\t'
+    ),
 )
 
 
-
-
 _STATE = _descriptor.Descriptor(
-  name='State',
-  full_name='android_world.task_evals.information_retrieval.proto.State',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='calendar', full_name='android_world.task_evals.information_retrieval.proto.State.calendar', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='tasks_app', full_name='android_world.task_evals.information_retrieval.proto.State.tasks_app', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='sports_activity_app', full_name='android_world.task_evals.information_retrieval.proto.State.sports_activity_app', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='notes_app', full_name='android_world.task_evals.information_retrieval.proto.State.notes_app', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=70,
-  serialized_end=427,
+    name="State",
+    full_name="android_world.task_evals.information_retrieval.proto.State",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="calendar",
+            full_name="android_world.task_evals.information_retrieval.proto.State.calendar",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="tasks_app",
+            full_name="android_world.task_evals.information_retrieval.proto.State.tasks_app",
+            index=1,
+            number=2,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="sports_activity_app",
+            full_name="android_world.task_evals.information_retrieval.proto.State.sports_activity_app",
+            index=2,
+            number=3,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="notes_app",
+            full_name="android_world.task_evals.information_retrieval.proto.State.notes_app",
+            index=3,
+            number=4,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=70,
+    serialized_end=427,
 )
 
 
 _NOTESAPP = _descriptor.Descriptor(
-  name='NotesApp',
-  full_name='android_world.task_evals.information_retrieval.proto.NotesApp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='notes', full_name='android_world.task_evals.information_retrieval.proto.NotesApp.notes', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=429,
-  serialized_end=514,
+    name="NotesApp",
+    full_name="android_world.task_evals.information_retrieval.proto.NotesApp",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="notes",
+            full_name="android_world.task_evals.information_retrieval.proto.NotesApp.notes",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=429,
+    serialized_end=514,
 )
 
 
 _NOTE = _descriptor.Descriptor(
-  name='Note',
-  full_name='android_world.task_evals.information_retrieval.proto.Note',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='folder', full_name='android_world.task_evals.information_retrieval.proto.Note.folder', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='title', full_name='android_world.task_evals.information_retrieval.proto.Note.title', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='body', full_name='android_world.task_evals.information_retrieval.proto.Note.body', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='is_todo', full_name='android_world.task_evals.information_retrieval.proto.Note.is_todo', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='todo_completed', full_name='android_world.task_evals.information_retrieval.proto.Note.todo_completed', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=516,
-  serialized_end=608,
+    name="Note",
+    full_name="android_world.task_evals.information_retrieval.proto.Note",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="folder",
+            full_name="android_world.task_evals.information_retrieval.proto.Note.folder",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="title",
+            full_name="android_world.task_evals.information_retrieval.proto.Note.title",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="body",
+            full_name="android_world.task_evals.information_retrieval.proto.Note.body",
+            index=2,
+            number=3,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="is_todo",
+            full_name="android_world.task_evals.information_retrieval.proto.Note.is_todo",
+            index=3,
+            number=4,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="todo_completed",
+            full_name="android_world.task_evals.information_retrieval.proto.Note.todo_completed",
+            index=4,
+            number=5,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=516,
+    serialized_end=608,
 )
 
 
 _SPORTSACTIVITYAPP = _descriptor.Descriptor(
-  name='SportsActivityApp',
-  full_name='android_world.task_evals.information_retrieval.proto.SportsActivityApp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='sports_activities', full_name='android_world.task_evals.information_retrieval.proto.SportsActivityApp.sports_activities', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=610,
-  serialized_end=726,
+    name="SportsActivityApp",
+    full_name="android_world.task_evals.information_retrieval.proto.SportsActivityApp",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="sports_activities",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivityApp.sports_activities",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=610,
+    serialized_end=726,
 )
 
 
 _SPORTSACTIVITY = _descriptor.Descriptor(
-  name='SportsActivity',
-  full_name='android_world.task_evals.information_retrieval.proto.SportsActivity',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='name', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='description', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.description', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='category', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.category', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='start_date', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.start_date', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='start_time', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.start_time', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='duration', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.duration', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='total_distance', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.total_distance', index=6,
-      number=7, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='elevation_gain', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.elevation_gain', index=7,
-      number=8, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='elevation_loss', full_name='android_world.task_evals.information_retrieval.proto.SportsActivity.elevation_loss', index=8,
-      number=9, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=729,
-  serialized_end=928,
+    name="SportsActivity",
+    full_name="android_world.task_evals.information_retrieval.proto.SportsActivity",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="name",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.name",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="description",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.description",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="category",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.category",
+            index=2,
+            number=3,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="start_date",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.start_date",
+            index=3,
+            number=4,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="start_time",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.start_time",
+            index=4,
+            number=5,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="duration",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.duration",
+            index=5,
+            number=6,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="total_distance",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.total_distance",
+            index=6,
+            number=7,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="elevation_gain",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.elevation_gain",
+            index=7,
+            number=8,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="elevation_loss",
+            full_name="android_world.task_evals.information_retrieval.proto.SportsActivity.elevation_loss",
+            index=8,
+            number=9,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=729,
+    serialized_end=928,
 )
 
 
 _TASKSAPP = _descriptor.Descriptor(
-  name='TasksApp',
-  full_name='android_world.task_evals.information_retrieval.proto.TasksApp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='tasks_app_tasks', full_name='android_world.task_evals.information_retrieval.proto.TasksApp.tasks_app_tasks', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=930,
-  serialized_end=1033,
+    name="TasksApp",
+    full_name="android_world.task_evals.information_retrieval.proto.TasksApp",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="tasks_app_tasks",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksApp.tasks_app_tasks",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=930,
+    serialized_end=1033,
 )
 
 
 _TASKSAPPTASK = _descriptor.Descriptor(
-  name='TasksAppTask',
-  full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='title', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.title', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='importance', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.importance', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='due_date', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.due_date', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='due_time', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.due_time', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='hide_until_date', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.hide_until_date', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='hide_until_time', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.hide_until_time', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='completed_date', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.completed_date', index=6,
-      number=8, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='completed_time', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.completed_time', index=7,
-      number=9, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='notes', full_name='android_world.task_evals.information_retrieval.proto.TasksAppTask.notes', index=8,
-      number=10, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1036,
-  serialized_end=1234,
+    name="TasksAppTask",
+    full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="title",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.title",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="importance",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.importance",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="due_date",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.due_date",
+            index=2,
+            number=3,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="due_time",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.due_time",
+            index=3,
+            number=4,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="hide_until_date",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.hide_until_date",
+            index=4,
+            number=5,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="hide_until_time",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.hide_until_time",
+            index=5,
+            number=6,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="completed_date",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.completed_date",
+            index=6,
+            number=8,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="completed_time",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.completed_time",
+            index=7,
+            number=9,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="notes",
+            full_name="android_world.task_evals.information_retrieval.proto.TasksAppTask.notes",
+            index=8,
+            number=10,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1036,
+    serialized_end=1234,
 )
 
 
 _CALENDAR = _descriptor.Descriptor(
-  name='Calendar',
-  full_name='android_world.task_evals.information_retrieval.proto.Calendar',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='app_name', full_name='android_world.task_evals.information_retrieval.proto.Calendar.app_name', index=0,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='events', full_name='android_world.task_evals.information_retrieval.proto.Calendar.events', index=1,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1236,
-  serialized_end=1341,
+    name="Calendar",
+    full_name="android_world.task_evals.information_retrieval.proto.Calendar",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="app_name",
+            full_name="android_world.task_evals.information_retrieval.proto.Calendar.app_name",
+            index=0,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="events",
+            full_name="android_world.task_evals.information_retrieval.proto.Calendar.events",
+            index=1,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1236,
+    serialized_end=1341,
 )
 
 
 _EVENT = _descriptor.Descriptor(
-  name='Event',
-  full_name='android_world.task_evals.information_retrieval.proto.Event',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='start_date', full_name='android_world.task_evals.information_retrieval.proto.Event.start_date', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='start_time', full_name='android_world.task_evals.information_retrieval.proto.Event.start_time', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='duration', full_name='android_world.task_evals.information_retrieval.proto.Event.duration', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='description', full_name='android_world.task_evals.information_retrieval.proto.Event.description', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='title', full_name='android_world.task_evals.information_retrieval.proto.Event.title', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='location', full_name='android_world.task_evals.information_retrieval.proto.Event.location', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1343,
-  serialized_end=1462,
+    name="Event",
+    full_name="android_world.task_evals.information_retrieval.proto.Event",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="start_date",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.start_date",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="start_time",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.start_time",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="duration",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.duration",
+            index=2,
+            number=3,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="description",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.description",
+            index=3,
+            number=4,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="title",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.title",
+            index=4,
+            number=5,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+        _descriptor.FieldDescriptor(
+            name="location",
+            full_name="android_world.task_evals.information_retrieval.proto.Event.location",
+            index=5,
+            number=6,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=_b("").decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto2",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1343,
+    serialized_end=1462,
 )
 
-_STATE.fields_by_name['calendar'].message_type = _CALENDAR
-_STATE.fields_by_name['tasks_app'].message_type = _TASKSAPP
-_STATE.fields_by_name['sports_activity_app'].message_type = _SPORTSACTIVITYAPP
-_STATE.fields_by_name['notes_app'].message_type = _NOTESAPP
-_NOTESAPP.fields_by_name['notes'].message_type = _NOTE
-_SPORTSACTIVITYAPP.fields_by_name['sports_activities'].message_type = _SPORTSACTIVITY
-_TASKSAPP.fields_by_name['tasks_app_tasks'].message_type = _TASKSAPPTASK
-_CALENDAR.fields_by_name['events'].message_type = _EVENT
-DESCRIPTOR.message_types_by_name['State'] = _STATE
-DESCRIPTOR.message_types_by_name['NotesApp'] = _NOTESAPP
-DESCRIPTOR.message_types_by_name['Note'] = _NOTE
-DESCRIPTOR.message_types_by_name['SportsActivityApp'] = _SPORTSACTIVITYAPP
-DESCRIPTOR.message_types_by_name['SportsActivity'] = _SPORTSACTIVITY
-DESCRIPTOR.message_types_by_name['TasksApp'] = _TASKSAPP
-DESCRIPTOR.message_types_by_name['TasksAppTask'] = _TASKSAPPTASK
-DESCRIPTOR.message_types_by_name['Calendar'] = _CALENDAR
-DESCRIPTOR.message_types_by_name['Event'] = _EVENT
+_STATE.fields_by_name["calendar"].message_type = _CALENDAR
+_STATE.fields_by_name["tasks_app"].message_type = _TASKSAPP
+_STATE.fields_by_name["sports_activity_app"].message_type = _SPORTSACTIVITYAPP
+_STATE.fields_by_name["notes_app"].message_type = _NOTESAPP
+_NOTESAPP.fields_by_name["notes"].message_type = _NOTE
+_SPORTSACTIVITYAPP.fields_by_name["sports_activities"].message_type = _SPORTSACTIVITY
+_TASKSAPP.fields_by_name["tasks_app_tasks"].message_type = _TASKSAPPTASK
+_CALENDAR.fields_by_name["events"].message_type = _EVENT
+DESCRIPTOR.message_types_by_name["State"] = _STATE
+DESCRIPTOR.message_types_by_name["NotesApp"] = _NOTESAPP
+DESCRIPTOR.message_types_by_name["Note"] = _NOTE
+DESCRIPTOR.message_types_by_name["SportsActivityApp"] = _SPORTSACTIVITYAPP
+DESCRIPTOR.message_types_by_name["SportsActivity"] = _SPORTSACTIVITY
+DESCRIPTOR.message_types_by_name["TasksApp"] = _TASKSAPP
+DESCRIPTOR.message_types_by_name["TasksAppTask"] = _TASKSAPPTASK
+DESCRIPTOR.message_types_by_name["Calendar"] = _CALENDAR
+DESCRIPTOR.message_types_by_name["Event"] = _EVENT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-State = _reflection.GeneratedProtocolMessageType('State', (_message.Message,), dict(
-  DESCRIPTOR = _STATE,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.State)
-  ))
+State = _reflection.GeneratedProtocolMessageType(
+    "State",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_STATE,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.State)
+    ),
+)
 _sym_db.RegisterMessage(State)
 
-NotesApp = _reflection.GeneratedProtocolMessageType('NotesApp', (_message.Message,), dict(
-  DESCRIPTOR = _NOTESAPP,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.NotesApp)
-  ))
+NotesApp = _reflection.GeneratedProtocolMessageType(
+    "NotesApp",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_NOTESAPP,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.NotesApp)
+    ),
+)
 _sym_db.RegisterMessage(NotesApp)
 
-Note = _reflection.GeneratedProtocolMessageType('Note', (_message.Message,), dict(
-  DESCRIPTOR = _NOTE,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Note)
-  ))
+Note = _reflection.GeneratedProtocolMessageType(
+    "Note",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_NOTE,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Note)
+    ),
+)
 _sym_db.RegisterMessage(Note)
 
-SportsActivityApp = _reflection.GeneratedProtocolMessageType('SportsActivityApp', (_message.Message,), dict(
-  DESCRIPTOR = _SPORTSACTIVITYAPP,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.SportsActivityApp)
-  ))
+SportsActivityApp = _reflection.GeneratedProtocolMessageType(
+    "SportsActivityApp",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_SPORTSACTIVITYAPP,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.SportsActivityApp)
+    ),
+)
 _sym_db.RegisterMessage(SportsActivityApp)
 
-SportsActivity = _reflection.GeneratedProtocolMessageType('SportsActivity', (_message.Message,), dict(
-  DESCRIPTOR = _SPORTSACTIVITY,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.SportsActivity)
-  ))
+SportsActivity = _reflection.GeneratedProtocolMessageType(
+    "SportsActivity",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_SPORTSACTIVITY,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.SportsActivity)
+    ),
+)
 _sym_db.RegisterMessage(SportsActivity)
 
-TasksApp = _reflection.GeneratedProtocolMessageType('TasksApp', (_message.Message,), dict(
-  DESCRIPTOR = _TASKSAPP,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.TasksApp)
-  ))
+TasksApp = _reflection.GeneratedProtocolMessageType(
+    "TasksApp",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_TASKSAPP,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.TasksApp)
+    ),
+)
 _sym_db.RegisterMessage(TasksApp)
 
-TasksAppTask = _reflection.GeneratedProtocolMessageType('TasksAppTask', (_message.Message,), dict(
-  DESCRIPTOR = _TASKSAPPTASK,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.TasksAppTask)
-  ))
+TasksAppTask = _reflection.GeneratedProtocolMessageType(
+    "TasksAppTask",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_TASKSAPPTASK,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.TasksAppTask)
+    ),
+)
 _sym_db.RegisterMessage(TasksAppTask)
 
-Calendar = _reflection.GeneratedProtocolMessageType('Calendar', (_message.Message,), dict(
-  DESCRIPTOR = _CALENDAR,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Calendar)
-  ))
+Calendar = _reflection.GeneratedProtocolMessageType(
+    "Calendar",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_CALENDAR,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Calendar)
+    ),
+)
 _sym_db.RegisterMessage(Calendar)
 
-Event = _reflection.GeneratedProtocolMessageType('Event', (_message.Message,), dict(
-  DESCRIPTOR = _EVENT,
-  __module__ = 'state_pb2'
-  # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Event)
-  ))
+Event = _reflection.GeneratedProtocolMessageType(
+    "Event",
+    (_message.Message,),
+    dict(
+        DESCRIPTOR=_EVENT,
+        __module__="state_pb2",
+        # @@protoc_insertion_point(class_scope:android_world.task_evals.information_retrieval.proto.Event)
+    ),
+)
 _sym_db.RegisterMessage(Event)
 
 

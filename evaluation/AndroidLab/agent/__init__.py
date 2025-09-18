@@ -23,7 +23,6 @@ except:
 from .model import *
 
 
-
 def get_agent(agent_module: str, **kwargs) -> Agent:
     class_ = globals().get(agent_module)
 

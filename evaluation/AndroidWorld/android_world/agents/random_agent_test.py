@@ -21,68 +21,68 @@ from android_world.utils import test_utils
 
 class TestGenerateRandomAction(absltest.TestCase):
 
-  def setUp(self):
-    super().setUp()
-    self.screen_size = (1080, 1920)
+    def setUp(self):
+        super().setUp()
+        self.screen_size = (1080, 1920)
 
-  def test_action_type_is_valid(self):
-    action = random_agent._generate_random_action(self.screen_size)
-    self.assertIn(
-        action.action_type,
-        [
-            'click',
-            'double_tap',
-            'scroll',
-            'swipe',
-            'navigate_home',
-            'navigate_back',
-            'wait',
-            'input_text',
-            'keyboard_enter',
-        ],
-    )
+    def test_action_type_is_valid(self):
+        action = random_agent._generate_random_action(self.screen_size)
+        self.assertIn(
+            action.action_type,
+            [
+                "click",
+                "double_tap",
+                "scroll",
+                "swipe",
+                "navigate_home",
+                "navigate_back",
+                "wait",
+                "input_text",
+                "keyboard_enter",
+            ],
+        )
 
-  def test_coordinates_within_bounds_for_click(self):
-    for _ in range(100):
-      action = random_agent._generate_random_action(self.screen_size)
-      if action.action_type in ['click', 'double_tap', 'swipe']:
-        self.assertGreaterEqual(action.x, 0)
-        self.assertLess(action.x, self.screen_size[0])
-        self.assertGreaterEqual(action.y, 0)
-        self.assertLess(action.y, self.screen_size[1])
+    def test_coordinates_within_bounds_for_click(self):
+        for _ in range(100):
+            action = random_agent._generate_random_action(self.screen_size)
+            if action.action_type in ["click", "double_tap", "swipe"]:
+                self.assertGreaterEqual(action.x, 0)
+                self.assertLess(action.x, self.screen_size[0])
+                self.assertGreaterEqual(action.y, 0)
+                self.assertLess(action.y, self.screen_size[1])
 
-  def test_text_generated_for_input_text(self):
-    for _ in range(100):
-      action = random_agent._generate_random_action(self.screen_size)
-      if action.action_type == 'input_text':
-        self.assertIsInstance(action.text, str)
-        self.assertLen(action.text, 10)
-        self.assertGreaterEqual(action.x, 0)
-        self.assertLess(action.x, self.screen_size[0])
-        self.assertGreaterEqual(action.y, 0)
-        self.assertLess(action.y, self.screen_size[1])
+    def test_text_generated_for_input_text(self):
+        for _ in range(100):
+            action = random_agent._generate_random_action(self.screen_size)
+            if action.action_type == "input_text":
+                self.assertIsInstance(action.text, str)
+                self.assertLen(action.text, 10)
+                self.assertGreaterEqual(action.x, 0)
+                self.assertLess(action.x, self.screen_size[0])
+                self.assertGreaterEqual(action.y, 0)
+                self.assertLess(action.y, self.screen_size[1])
 
-  def test_direction_valid_for_scroll(self):
-    for _ in range(100):
-      action = random_agent._generate_random_action(self.screen_size)
-      if action.action_type == 'scroll':
-        self.assertIn(action.direction, ['up', 'down', 'left', 'right'])
+    def test_direction_valid_for_scroll(self):
+        for _ in range(100):
+            action = random_agent._generate_random_action(self.screen_size)
+            if action.action_type == "scroll":
+                self.assertIn(action.direction, ["up", "down", "left", "right"])
 
 
 class RandomAgentInteractionTest(absltest.TestCase):
 
-  @mock.patch.object(actuation, 'execute_adb_action')
-  def test_step_method(self, mock_execute_adb_action):
-    env = test_utils.FakeAsyncEnv()
-    agent = random_agent.RandomAgent(env, verbose=True)
-    mock_execute_adb_action.return_value = None
+    @mock.patch.object(actuation, "execute_adb_action")
+    def test_step_method(self, mock_execute_adb_action):
+        env = test_utils.FakeAsyncEnv()
+        agent = random_agent.RandomAgent(env, verbose=True)
+        mock_execute_adb_action.return_value = None
 
-    goal = 'do something'
-    step_data = agent.step(goal)
+        goal = "do something"
+        step_data = agent.step(goal)
 
-    self.assertIn('raw_screenshot', step_data.data)
-    self.assertIn('ui_elements', step_data.data)
+        self.assertIn("raw_screenshot", step_data.data)
+        self.assertIn("ui_elements", step_data.data)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

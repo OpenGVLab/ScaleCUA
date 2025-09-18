@@ -16,7 +16,9 @@ class SingleTask_Setting_0(SingleTask):
 class SingleTask_Setting_1(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Turn on Wi‑Fi automatically")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Turn on Wi‑Fi automatically"
+        )
         if len(outs) == 0:
             return False
         return True
@@ -24,7 +26,9 @@ class SingleTask_Setting_1(SingleTask):
     def judge(self, xml_compressed_tree, line):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Turn on Wi‑Fi automatically")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Turn on Wi‑Fi automatically"
+        )
         for out in outs:
             for key, value in out.items():
                 for judge_key, _ in value.items():
@@ -36,7 +40,9 @@ class SingleTask_Setting_1(SingleTask):
 class SingleTask_Setting_2(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Private DNS provider hostname")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Private DNS provider hostname"
+        )
         if len(outs) == 0:
             return False
         return True
@@ -84,7 +90,9 @@ class SingleTask_Setting_4(SingleTask):
 class SingleTask_Setting_5(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Battery percentage")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Battery percentage"
+        )
         if len(outs) == 0:
             return False
         return True
@@ -92,7 +100,9 @@ class SingleTask_Setting_5(SingleTask):
     def judge(self, xml_compressed_tree, line):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Battery percentage")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Battery percentage"
+        )
         for out in outs:
             for key, value in out.items():
                 for judge_key, _ in value.items():
@@ -141,7 +151,9 @@ class SingleTask_Setting_7(SingleTask):
                 for key, value in single_out.items():
                     if "RecyclerView" in key:
                         found = True
-                        item = find_subtrees_of_parents_with_key(xml_compressed_tree, "Use Dark theme ")
+                        item = find_subtrees_of_parents_with_key(
+                            xml_compressed_tree, "Use Dark theme "
+                        )
                         for it in item:
                             it = it.values()
                             for single_it_ in it:
@@ -168,7 +180,9 @@ class SingleTask_Setting_7(SingleTask):
                 for key, value in single_out.items():
                     if "RecyclerView" in key:
                         found = True
-                        item = find_subtrees_of_parents_with_key(xml_compressed_tree, "Dark theme ")
+                        item = find_subtrees_of_parents_with_key(
+                            xml_compressed_tree, "Dark theme "
+                        )
                         for it in item:
                             it = it.values()
                             for single_it_ in it:
@@ -187,7 +201,9 @@ class SingleTask_Setting_7(SingleTask):
 class SingleTask_Setting_8(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Brightness level ")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Brightness level "
+        )
         if len(outs) == 0:
             return False
         return True
@@ -195,7 +211,9 @@ class SingleTask_Setting_8(SingleTask):
     def judge(self, xml_compressed_tree, line):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Brightness level ")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Brightness level "
+        )
         finish = False
         for out in outs:
             out = out.values()
@@ -241,7 +259,9 @@ class SingleTask_Setting_10(SingleTask):
 class SingleTask_Setting_11(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        if not find_subtrees_of_parents_with_key(xml_compressed_tree, "Text-to-speech output"):
+        if not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Text-to-speech output"
+        ):
             return False
         return True
 
@@ -260,7 +280,9 @@ class SingleTask_Setting_11(SingleTask):
 class SingleTask_Setting_12(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        if not find_subtrees_of_parents_with_key(xml_compressed_tree, "Set time automatically"):
+        if not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Set time automatically"
+        ):
             return False
         return True
 
@@ -331,7 +353,9 @@ class SingleTask_Setting_15(SingleTask):
     def judge(self, xml_compressed_tree, line):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Español (Estados Unidos)")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Español (Estados Unidos)"
+        )
         if len(outs) == 0:
             return {"judge_page": True, "1": False, "complete": False}
         for out in outs:
@@ -339,9 +363,19 @@ class SingleTask_Setting_15(SingleTask):
                 for idx, judge_key in enumerate(value.keys()):
                     if "Español (Estados Unidos)" in judge_key:
                         if "2" in list(value.keys())[idx + 1]:
-                            return {"judge_page": True, "1": True, "2": True, "complete": True}
+                            return {
+                                "judge_page": True,
+                                "1": True,
+                                "2": True,
+                                "complete": True,
+                            }
                         else:
-                            return {"judge_page": True, "1": True, "2": False, "complete": False}
+                            return {
+                                "judge_page": True,
+                                "1": True,
+                                "2": False,
+                                "complete": False,
+                            }
 
 
 class SingleTask_Setting_16(SingleTask):
@@ -391,7 +425,9 @@ class SingleTask_Setting_18(SingleTask):
         return True
 
     def setting_18_ch(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Allow notification access")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Allow notification access"
+        )
         found = 0
         finish = False
         for out in outs:
@@ -447,7 +483,9 @@ class SingleTask_Setting_18(SingleTask):
 class SingleTask_Setting_19(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Default browser app")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Default browser app"
+        )
         if len(outs) == 0:
             return False
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Firefox")
@@ -458,7 +496,9 @@ class SingleTask_Setting_19(SingleTask):
     def judge(self, xml_compressed_tree, line):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Default browser app")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Default browser app"
+        )
         for out in outs:
             for key, value in out.items():
                 for judge_key, _ in value.items():
@@ -485,7 +525,9 @@ class SingleTask_Setting_21(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Settings ")
-        outs1 = find_subtrees_of_parents_with_key(xml_compressed_tree, "Search settings")
+        outs1 = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Search settings"
+        )
         if len(outs) == 0 or len(outs1) == 0:
             return False
         return True

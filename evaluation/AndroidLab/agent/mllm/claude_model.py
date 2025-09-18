@@ -4,14 +4,15 @@ import anthropic
 
 from agent.model import *
 
+
 class Claude_official(OpenAIAgent):
     def __init__(
-            self,
-            model_name: str,
-            model_key: str,
-            max_new_tokens: int = 512,
-            temperature: float = 0.0,
-            **kwargs
+        self,
+        model_name: str,
+        model_key: str,
+        max_new_tokens: int = 512,
+        temperature: float = 0.0,
+        **kwargs,
     ) -> None:
         self.key = model_key
         self.temperature = temperature
@@ -21,10 +22,11 @@ class Claude_official(OpenAIAgent):
         self.sleep = 3
 
     @backoff.on_exception(
-        backoff.expo, Exception,
+        backoff.expo,
+        Exception,
         on_backoff=handle_backoff,
         on_giveup=handle_giveup,
-        max_tries=10
+        max_tries=10,
     )
     def act(self, messages: List[Dict[str, Any]]) -> str:
         client = anthropic.Anthropic(
@@ -41,7 +43,7 @@ class Claude_official(OpenAIAgent):
                     messages=messages,
                     stream=False,
                     temperature=0.0,
-                    system=system_prompt
+                    system=system_prompt,
                 )
             else:
                 res = client.messages.create(
@@ -49,7 +51,7 @@ class Claude_official(OpenAIAgent):
                     max_tokens=512,
                     messages=messages,
                     stream=False,
-                    temperature=0.0
+                    temperature=0.0,
                 )
         except Exception as e:
             return False, str(e)
@@ -65,23 +67,28 @@ class Claude_official(OpenAIAgent):
             else:
                 new_message = {"role": "user", "content": []}
                 if isinstance(message["content"], str):
-                    new_message["content"].append({
-                        "type": "text",
-                        "text": message["content"]
-                    })
+                    new_message["content"].append(
+                        {"type": "text", "text": message["content"]}
+                    )
                 else:
                     for content in message["content"]:
                         if content["type"] == "text":
                             new_message["content"].append(content)
                         elif content["type"] == "image_url":
-                            new_message["content"].append({
-                                "type": "image",
-                                "source": {
-                                    "type": "base64",
-                                    "media_type": content["image_url"]["url"].split(";base64,")[0].split("data:")[1],
-                                    "data": content["image_url"]["url"].split(";base64,")[1]
+                            new_message["content"].append(
+                                {
+                                    "type": "image",
+                                    "source": {
+                                        "type": "base64",
+                                        "media_type": content["image_url"]["url"]
+                                        .split(";base64,")[0]
+                                        .split("data:")[1],
+                                        "data": content["image_url"]["url"].split(
+                                            ";base64,"
+                                        )[1],
+                                    },
                                 }
-                            })
+                            )
                         else:
                             return False, "Invalid content type."
                 new_messages.append(new_message)
@@ -94,23 +101,20 @@ if __name__ == "__main__":
     messages = [
         {
             "role": "system",
-            "content": "You are a helpful assistant. Please response concisely."
+            "content": "You are a helpful assistant. Please response concisely.",
         },
         {
             "role": "user",
             "content": [
-                {
-                    "type": "text",
-                    "text": "What can you see?"
-                },
+                {"type": "text", "text": "What can you see?"},
                 {
                     "type": "image_url",
                     "image_url": {
                         "url": f"data:image/png;base64,{path_to_image}",
-                        "detail": "high"
-                    }
-                }
-            ]
-        }
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
     ]
     print(agent.act(messages))

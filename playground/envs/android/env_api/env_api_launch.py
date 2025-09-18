@@ -15,13 +15,16 @@ import time
 # Data models for request bodies
 # ------------------------
 
+
 class CreateEnvRequest(BaseModel):
     config_path: str = "config.yaml"
+
 
 class ScreenshotRequest(BaseModel):
     env_id: str
     prefix: Optional[str] = None
     suffix: Optional[str] = "before"
+
 
 class StepRequest(BaseModel):
     env_id: str
@@ -29,21 +32,28 @@ class StepRequest(BaseModel):
     element: Optional[List[float]] = None
     kwargs: Optional[dict] = None
 
+
 class StopRequest(BaseModel):
     env_id: str
+
 
 class GetXmlRequest(BaseModel):
     env_id: str
 
+
 class StartRecordRequest(BaseModel):
     env_id: str
+
 
 class EndRecordRequest(BaseModel):
     env_id: str
 
+
 class ResetRequest(BaseModel):
     env_id: str
-    app_name: Optional[str] = None 
+    app_name: Optional[str] = None
+
+
 # ------------------------
 # Create application & EnvManager singleton
 # ------------------------
@@ -58,14 +68,14 @@ env_manager = EnvManager()
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
-        status_code=exc.status_code,
-        content={"success": False, "message": exc.detail}
+        status_code=exc.status_code, content={"success": False, "message": exc.detail}
     )
 
 
 # ------------------------
 # Route definitions
 # ------------------------
+
 
 @app.post("/create_env")
 async def create_env(file: UploadFile = File(...)):
@@ -90,9 +100,7 @@ def get_screenshot(request: ScreenshotRequest):
     """Get environment screenshot and return Base64 encoded JSON data."""
     try:
         screenshot_path = env_manager.get_screenshot(
-            env_id=request.env_id,
-            prefix=request.prefix,
-            suffix=request.suffix
+            env_id=request.env_id, prefix=request.prefix, suffix=request.suffix
         )
         if not os.path.exists(screenshot_path):
             raise HTTPException(status_code=404, detail="Screenshot file not found")
@@ -104,6 +112,7 @@ def get_screenshot(request: ScreenshotRequest):
         print("screenshot error:", e)
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.post("/step")
 def step(request: StepRequest):
@@ -126,6 +135,7 @@ def step(request: StepRequest):
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.post("/get_screen_size")
 def get_screen_size(request: ScreenshotRequest):
     """Get screen size."""
@@ -137,6 +147,7 @@ def get_screen_size(request: ScreenshotRequest):
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.post("/stop_env")
 def stop_env(request: StopRequest):
     """Stop and destroy the environment."""
@@ -147,6 +158,7 @@ def stop_env(request: StopRequest):
         print("stop_env error:", e)
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.post("/get_xml")
 def get_xml(request: GetXmlRequest):
@@ -165,6 +177,7 @@ def get_xml(request: GetXmlRequest):
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.post("/start_record")
 def start_record(request: StartRecordRequest):
     """Start recording current environment operations."""
@@ -176,7 +189,8 @@ def start_record(request: StartRecordRequest):
         print("start_record error:", e)
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+
 @app.post("/end_record")
 def end_record(request: EndRecordRequest):
     """Stop recording and return the recorded video file."""
@@ -186,17 +200,18 @@ def end_record(request: EndRecordRequest):
         print("absolute path:", abs_record_path)
         if not os.path.exists(abs_record_path):
             raise HTTPException(status_code=404, detail="Record file not found")
-        
+
         return FileResponse(
             path=abs_record_path,
-            media_type="video/mp4", 
-            filename=os.path.basename(abs_record_path)
+            media_type="video/mp4",
+            filename=os.path.basename(abs_record_path),
         )
     except Exception as e:
         print("end_record error:", e)
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
-    
+
+
 @app.post("/reset")
 def reset_env(request: ResetRequest):
     """Reset the current environment."""

@@ -14,12 +14,7 @@ def extract_bills_NewEditBK(xml_compressed_tree) -> Dict:
     note: EditText ;click long-click ; ;; -> str
     """
     type = date = cash = note = ""
-    results = {
-        "type": type,
-        "date": date,
-        "cash": cash,
-        "note": note
-    }
+    results = {"type": type, "date": date, "cash": cash, "note": note}
 
     try:
         type_date_datas = find_matching_subtrees(xml_compressed_tree, "TextView ;; ;;")
@@ -28,7 +23,10 @@ def extract_bills_NewEditBK(xml_compressed_tree) -> Dict:
         type_key = type_key.split(";; ;;")[-1].strip()
         type = type_key.split()[-1].strip()
         for key in keys:
-            if re.search(r"January|February|March|April|May|June|July|August|September|October|November|December", key):
+            if re.search(
+                r"January|February|March|April|May|June|July|August|September|October|November|December",
+                key,
+            ):
                 date = key.split(";; ;;")[-1].strip()
                 break
         results["type"] = type
@@ -37,8 +35,10 @@ def extract_bills_NewEditBK(xml_compressed_tree) -> Dict:
         pass
 
     try:
-        cash_datas = find_subtrees_of_parents_with_key(xml_compressed_tree, "click ; ;;CNY")  
-        cash_datas = list(cash_datas[0].values())[0] 
+        cash_datas = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "click ; ;;CNY"
+        )
+        cash_datas = list(cash_datas[0].values())[0]
         for key in cash_datas.keys():
             if "EditText" in key and "long-click" in key:
                 cash = key.split(";;")[-1].strip()
@@ -49,7 +49,11 @@ def extract_bills_NewEditBK(xml_compressed_tree) -> Dict:
     try:
         note_datas = find_matching_subtrees(xml_compressed_tree, "EditText")[-1]
         note = list(note_datas.keys())[0].split(";;")[-1].strip()
-        results["note"] = "None" if note in ("Notes", "Payee or item purchased", "Name of income") else note
+        results["note"] = (
+            "None"
+            if note in ("Notes", "Payee or item purchased", "Name of income")
+            else note
+        )
     except IndexError:
         pass
 
@@ -181,7 +185,7 @@ class SingleTask_bluecoins_6(SingleTask):
             "judge_page": True,
             "1": judge_type,
             "2": judge_cash,
-            "complete": judge_type & judge_cash
+            "complete": judge_type & judge_cash,
         }
 
 
@@ -214,7 +218,7 @@ class SingleTask_bluecoins_7(SingleTask):
             "1": judge_type,
             "2": judge_cash,
             "3": judge_note,
-            "complete": judge_type & judge_cash & judge_note
+            "complete": judge_type & judge_cash & judge_note,
         }
 
 
@@ -247,7 +251,7 @@ class SingleTask_bluecoins_8(SingleTask):
             "1": judge_type,
             "2": judge_date,
             "3": judge_cash,
-            "complete": judge_type & judge_date & judge_cash
+            "complete": judge_type & judge_date & judge_cash,
         }
 
 
@@ -284,7 +288,7 @@ class SingleTask_bluecoins_9(SingleTask):
             "2": judge_date,
             "3": judge_cash,
             "4": judge_note,
-            "complete": judge_type & judge_date & judge_cash & judge_note
+            "complete": judge_type & judge_date & judge_cash & judge_note,
         }
 
 
@@ -321,7 +325,7 @@ class SingleTask_bluecoins_10(SingleTask):
             "2": judge_date,
             "3": judge_cash,
             "4": judge_note,
-            "complete": judge_type & judge_date & judge_cash & judge_note
+            "complete": judge_type & judge_date & judge_cash & judge_note,
         }
 
 
@@ -356,7 +360,7 @@ class SingleTask_bluecoins_11(SingleTask):
                 "judge_page": True,
                 "1": judge_date,
                 "2": judge_cash,
-                "complete": judge_date & judge_cash
+                "complete": judge_date & judge_cash,
             }
 
         return {"judge_page": False}
@@ -393,7 +397,7 @@ class SingleTask_bluecoins_12(SingleTask):
                 "judge_page": True,
                 "1": judge_date,
                 "2": judge_cash,
-                "complete": judge_date & judge_cash
+                "complete": judge_date & judge_cash,
             }
 
         return {"judge_page": False}
@@ -445,7 +449,7 @@ class SingleTask_bluecoins_13(SingleTask):
                 "2": judge_sign,
                 "3": judge_date,
                 "4": judge_note,
-                "complete": judge_type & judge_sign & judge_date & judge_note
+                "complete": judge_type & judge_sign & judge_date & judge_note,
             }
 
         return {"judge_page": False}
@@ -502,7 +506,11 @@ class SingleTask_bluecoins_14(SingleTask):
                 "3": judge_date,
                 "4": judge_cash,
                 "5": judge_note,
-                "complete": judge_type & judge_sign & judge_date & judge_cash & judge_note
+                "complete": judge_type
+                & judge_sign
+                & judge_date
+                & judge_cash
+                & judge_note,
             }
 
         return {"judge_page": False}
@@ -543,7 +551,7 @@ class SingleTask_bluecoins_15(SingleTask):
                 "1": judge_date,
                 "2": judge_cash,
                 "3": judge_note,
-                "complete": judge_date & judge_cash & judge_note
+                "complete": judge_date & judge_cash & judge_note,
             }
 
         return {"judge_page": False}

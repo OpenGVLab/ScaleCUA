@@ -22,29 +22,27 @@ from android_world.utils import test_utils
 
 class MarkorPhoneTest(test_utils.AdbEvalTestBase):
 
-  @mock.patch.object(random, "choice", autospec=True)
-  @mock.patch.object(user_data_generation, "generate_apartments", autospec=True)
-  def test_generate_random_params(
-      self, mock_generate_apartments, mock_random_choice
-  ):
-    mock_candidates = {"John": ["1234567890"], "Doe": ["0987654321"]}
-    mock_generate_apartments.return_value = mock_candidates
-    mock_random_choice.side_effect = lambda x: x[0]  # Return first key
+    @mock.patch.object(random, "choice", autospec=True)
+    @mock.patch.object(user_data_generation, "generate_apartments", autospec=True)
+    def test_generate_random_params(self, mock_generate_apartments, mock_random_choice):
+        mock_candidates = {"John": ["1234567890"], "Doe": ["0987654321"]}
+        mock_generate_apartments.return_value = mock_candidates
+        mock_random_choice.side_effect = lambda x: x[0]  # Return first key
 
-    result = phone.MarkorCallApartment.generate_random_params()
+        result = phone.MarkorCallApartment.generate_random_params()
 
-    # Verify
-    expected_result = {"name": "John", "phone_number": "1234567890"}
-    self.assertEqual(result, expected_result)
+        # Verify
+        expected_result = {"name": "John", "phone_number": "1234567890"}
+        self.assertEqual(result, expected_result)
 
-  def test_markor_phone_successful(self):
-    self.mock_get_call_state.return_value = "OFFHOOK"
-    self.mock_dialer_with_phone_number.return_value = True
-    params = {"name": "apt1", "phone_number": "123"}
-    task = phone.MarkorCallApartment(params)
-    self.assertTrue(test_utils.perform_task(task, self.mock_env))
-    self.mock_create_file.assert_called_once()
+    def test_markor_phone_successful(self):
+        self.mock_get_call_state.return_value = "OFFHOOK"
+        self.mock_dialer_with_phone_number.return_value = True
+        params = {"name": "apt1", "phone_number": "123"}
+        task = phone.MarkorCallApartment(params)
+        self.assertTrue(test_utils.perform_task(task, self.mock_env))
+        self.mock_create_file.assert_called_once()
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

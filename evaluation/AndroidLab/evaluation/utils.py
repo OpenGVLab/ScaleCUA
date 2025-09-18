@@ -72,7 +72,9 @@ def find_subtrees_of_parents_with_key(tree, search_key):
         for key, value in current_tree.items():
             if search_key in key:
                 if parent:
-                    parent_subtrees.append({parent: current_tree})  # Capture the parent's subtree
+                    parent_subtrees.append(
+                        {parent: current_tree}
+                    )  # Capture the parent's subtree
                 return True  # Found the key, mark this path as containing the key
             elif isinstance(value, dict):
                 # If the value is a dictionary, recurse into it
@@ -86,14 +88,27 @@ def find_subtrees_of_parents_with_key(tree, search_key):
 
 def get_avd_serial_number(avd_name):
     try:
-        result = subprocess.run(['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            ["adb", "devices"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         devices_output = result.stdout
 
-        devices = [line.split()[0] for line in devices_output.splitlines() if 'device' in line and 'List' not in line]
+        devices = [
+            line.split()[0]
+            for line in devices_output.splitlines()
+            if "device" in line and "List" not in line
+        ]
 
         for device in devices:
-            result = subprocess.run(['adb', '-s', device, 'emu', 'avd', 'name'], stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                ["adb", "-s", device, "emu", "avd", "name"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
             avd_output = result.stdout.replace("OK", "").strip()
             # print(avd_output.replace("OK", "").strip())
 
@@ -120,10 +135,22 @@ def extract_bounds(node, path=""):
 def execute_adb(adb_command, type="cmd", output=True, port=None):
     if type == "cmd":
         env = os.environ.copy()
-        env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:" + env["PATH"]
-        env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
-        result = subprocess.run(adb_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                executable='/bin/zsh', env=env)
+        env["PATH"] = (
+            f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:"
+            + env["PATH"]
+        )
+        env["PATH"] = (
+            f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
+        )
+        result = subprocess.run(
+            adb_command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            executable="/bin/zsh",
+            env=env,
+        )
         if result.returncode == 0:
             return result.stdout.strip()
         if output:
@@ -163,7 +190,7 @@ def get_adb_device_name(avd_name=None):
 def find_free_ports(start_port=6060):
     def is_port_free(port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('localhost', port)) != 0
+            return s.connect_ex(("localhost", port)) != 0
 
     port = start_port
     while True:
@@ -186,10 +213,10 @@ def clone_avd(src_avd_name, tar_avd_name, android_avd_home):
     """
 
     # Paths for source and target AVD directories and .ini files
-    src_avd_dir = os.path.join(android_avd_home, src_avd_name + '.avd')
-    tar_avd_dir = os.path.join(android_avd_home, tar_avd_name + '.avd')
-    src_ini_file = os.path.join(android_avd_home, src_avd_name + '.ini')
-    tar_ini_file = os.path.join(android_avd_home, tar_avd_name + '.ini')
+    src_avd_dir = os.path.join(android_avd_home, src_avd_name + ".avd")
+    tar_avd_dir = os.path.join(android_avd_home, tar_avd_name + ".avd")
+    src_ini_file = os.path.join(android_avd_home, src_avd_name + ".ini")
+    tar_ini_file = os.path.join(android_avd_home, tar_avd_name + ".ini")
 
     # Copy the AVD folder
     print(f"====Copying the AVD folder from {src_avd_dir} to {tar_avd_dir}====")
@@ -198,28 +225,30 @@ def clone_avd(src_avd_name, tar_avd_name, android_avd_home):
         shutil.copytree(src_avd_dir, tar_avd_dir)
 
     # Copy the .ini file and modify it for the new AVD
-    with open(src_ini_file, 'r') as src_ini, open(tar_ini_file, 'w') as tar_ini:
+    with open(src_ini_file, "r") as src_ini, open(tar_ini_file, "w") as tar_ini:
         for line in src_ini:
             tar_ini.write(line.replace(src_avd_name, tar_avd_name))
 
     # Update paths inside the target AVD's .ini files
-    for ini_name in ['config.ini', 'hardware-qemu.ini']:
+    for ini_name in ["config.ini", "hardware-qemu.ini"]:
         ini_path = os.path.join(tar_avd_dir, ini_name)
         if os.path.exists(ini_path):
-            with open(ini_path, 'r') as file:
+            with open(ini_path, "r") as file:
                 lines = file.readlines()
-            with open(ini_path, 'w') as file:
+            with open(ini_path, "w") as file:
                 for line in lines:
                     # Update paths and AVD name/ID
                     new_line = line.replace(src_avd_name, tar_avd_name)
                     file.write(new_line)
 
     # Update the snapshots' hardware.ini file if it exists
-    snapshots_hw_ini = os.path.join(tar_avd_dir, 'snapshots', 'default_boot', 'hardware.ini')
+    snapshots_hw_ini = os.path.join(
+        tar_avd_dir, "snapshots", "default_boot", "hardware.ini"
+    )
     if os.path.exists(snapshots_hw_ini):
-        with open(snapshots_hw_ini, 'r') as file:
+        with open(snapshots_hw_ini, "r") as file:
             lines = file.readlines()
-        with open(snapshots_hw_ini, 'w') as file:
+        with open(snapshots_hw_ini, "w") as file:
             for line in lines:
                 # Update AVD name/ID
                 new_line = line.replace(src_avd_name, tar_avd_name)

@@ -8,14 +8,19 @@ from evaluation.parallel import parallel_worker
 from generate_result import find_all_task_files
 from evaluation.configs import AppConfig, TaskConfig
 
-if __name__ == '__main__':
-    task_yamls = os.listdir('evaluation/config')
+if __name__ == "__main__":
+    task_yamls = os.listdir("evaluation/config")
     task_yamls = ["evaluation/config/" + i for i in task_yamls if i.endswith(".yaml")]
     # task_yamls = ["evaluation/config/setting.yaml"]
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-n", "--name", default="test", type=str)
     arg_parser.add_argument("-c", "--config", default="config.yaml", type=str)
-    arg_parser.add_argument("--task_config", nargs="+", default=task_yamls, help="All task config(s) to load")
+    arg_parser.add_argument(
+        "--task_config",
+        nargs="+",
+        default=task_yamls,
+        help="All task config(s) to load",
+    )
     arg_parser.add_argument("--task_id", nargs="+", default=None)
     arg_parser.add_argument("--debug", action="store_true", default=False)
     arg_parser.add_argument("--app", nargs="+", default=None)
@@ -29,7 +34,11 @@ if __name__ == '__main__':
     task_config = yaml_data["task"]
     eval_config = yaml_data["eval"]
 
-    autotask_class = task_config["class"] if "class" in task_config else "ScreenshotMobileTask_AutoTest"
+    autotask_class = (
+        task_config["class"]
+        if "class" in task_config
+        else "ScreenshotMobileTask_AutoTest"
+    )
 
     single_config = TaskConfig(**task_config["args"])
     single_config = single_config.add_config(eval_config)
@@ -67,23 +76,30 @@ if __name__ == '__main__':
             command_per_step = app_config.command_per_step.get(task_id, None)
 
             task_instruction = f"You should use {app} to complete the following task: {task_instruction}"
-            all_task_start_info.append({
-                "agent": agent,
-                "task_id": task_id,
-                "task_instruction": task_instruction,
-                "package": package,
-                "command_per_step": command_per_step,
-                "app": app
-            })
+            all_task_start_info.append(
+                {
+                    "agent": agent,
+                    "task_id": task_id,
+                    "task_instruction": task_instruction,
+                    "package": package,
+                    "command_per_step": command_per_step,
+                    "app": app,
+                }
+            )
 
     class_ = globals().get(autotask_class)
     if class_ is None:
-        raise AttributeError(f"Class {autotask_class} not found. Please check the class name in the config file.")
+        raise AttributeError(
+            f"Class {autotask_class} not found. Please check the class name in the config file."
+        )
 
     if args.parallel == 1:
         Auto_Test = class_(single_config.subdir_config(args.name))
         Auto_Test.run_serial(all_task_start_info)
     else:
-        parallel_worker(class_, single_config.subdir_config(args.name), args.parallel, all_task_start_info)
-
-
+        parallel_worker(
+            class_,
+            single_config.subdir_config(args.name),
+            args.parallel,
+            all_task_start_info,
+        )

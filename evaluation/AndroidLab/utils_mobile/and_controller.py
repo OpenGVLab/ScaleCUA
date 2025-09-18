@@ -7,13 +7,11 @@ from typing import Union
 
 from evaluation.docker_utils import execute_adb_command, cp_docker
 from templates.packages import *
+
 # from config import load_config
 from utils_mobile.utils import print_with_color
 from utils_mobile.utils import time_within_ten_secs
 from evaluation.utils import list_all_devices, execute_adb
-
-
-
 
 
 class AndroidController:
@@ -35,7 +33,7 @@ class AndroidController:
         power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
         self.execute_adb(power_cmd, self.type)
         print("Power button pressed to wake up the device")
-        time.sleep(2) 
+        time.sleep(2)
         power_cmd = f"adb -s {self.device} shell input keyevent KEYCODE_POWER"
         self.execute_adb(power_cmd, self.type)
         self.home()
@@ -45,10 +43,22 @@ class AndroidController:
     def execute_adb(self, adb_command, type="cmd", output=True):
         if type == "cmd":
             env = os.environ.copy()
-            env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:" + env["PATH"]
-            env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
-            result = subprocess.run(adb_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                    executable='/bin/zsh', env=env)
+            env["PATH"] = (
+                f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:"
+                + env["PATH"]
+            )
+            env["PATH"] = (
+                f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
+            )
+            result = subprocess.run(
+                adb_command,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                executable="/bin/zsh",
+                env=env,
+            )
             if result.returncode == 0:
                 return result.stdout.strip()
             if output:
@@ -75,14 +85,17 @@ class AndroidController:
                 test_time += 1
                 time.sleep(2)
         assert False, "Error in getting device size"
-        
 
     def get_screenshot(self, prefix, save_dir):
-        cap_command = f"adb -s {self.device} shell screencap -p " \
-                      f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
-        pull_command = f"adb -s {self.device} pull " \
-                       f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')} " \
-                       f"{os.path.join(save_dir, prefix + '.png')}"
+        cap_command = (
+            f"adb -s {self.device} shell screencap -p "
+            f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
+        )
+        pull_command = (
+            f"adb -s {self.device} pull "
+            f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')} "
+            f"{os.path.join(save_dir, prefix + '.png')}"
+        )
         result = self.execute_adb(cap_command, self.type)
         if result != "ERROR":
             result = self.execute_adb(pull_command, self.type)
@@ -92,7 +105,7 @@ class AndroidController:
         return result
 
     def save_screenshot(self, save_path):
-        prefix = os.path.basename(save_path).replace('.png', '')
+        prefix = os.path.basename(save_path).replace(".png", "")
         remote_path = f"{os.path.join(self.screenshot_dir, prefix + '.png').replace(self.backslash, '/')}"
         cap_command = f"adb -s {self.device} shell screencap -p {remote_path}"
         pull_command = f"adb -s {self.device} pull {remote_path} {save_path}"
@@ -100,13 +113,17 @@ class AndroidController:
         result = self.execute_adb(pull_command, self.type)
         if result != "ERROR":
             if self.type == "docker":
-                cp_docker(save_path, save_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    save_path, save_path, self.container_id, local_to_docker=False
+                )
             return save_path
         return result
 
     def get_xml(self, prefix, save_dir):
-        remote_path = os.path.join(self.xml_dir, prefix + '.xml').replace(self.backslash, '/')
-        local_path = os.path.join(save_dir, prefix + '.xml')
+        remote_path = os.path.join(self.xml_dir, prefix + ".xml").replace(
+            self.backslash, "/"
+        )
+        local_path = os.path.join(save_dir, prefix + ".xml")
         dump_command = f"adb -s {self.device} shell uiautomator dump {remote_path}"
         pull_command = f"adb -s {self.device} pull {remote_path} {local_path}"
 
@@ -124,7 +141,9 @@ class AndroidController:
                 time.sleep(2)
                 continue
             if self.type == "docker":
-                cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    local_path, local_path, self.container_id, local_to_docker=False
+                )
             return local_path
 
         # Final attempt after 3 retries
@@ -132,14 +151,18 @@ class AndroidController:
         result = self.execute_adb(pull_command, self.type)
         if result != "ERROR" and not is_file_empty(local_path):
             if self.type == "docker":
-                cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    local_path, local_path, self.container_id, local_to_docker=False
+                )
             return local_path
 
         return result
 
     def get_ac_xml(self, prefix, save_dir):
-        remote_path = f"{os.path.join(self.ac_xml_dir, 'ui.xml').replace(self.backslash, '/')}"
-        local_path = os.path.join(save_dir, prefix + '.xml')
+        remote_path = (
+            f"{os.path.join(self.ac_xml_dir, 'ui.xml').replace(self.backslash, '/')}"
+        )
+        local_path = os.path.join(save_dir, prefix + ".xml")
         pull_command = f"adb -s {self.device} pull {remote_path} {local_path}"
 
         def is_file_empty(file_path):
@@ -149,7 +172,9 @@ class AndroidController:
             result = self.execute_adb(pull_command, self.type)
             if result != "ERROR" and not is_file_empty(local_path):
                 if self.type == "docker":
-                    cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                    cp_docker(
+                        local_path, local_path, self.container_id, local_to_docker=False
+                    )
                 return local_path
             time.sleep(2)
 
@@ -157,7 +182,9 @@ class AndroidController:
         result = self.execute_adb(pull_command, self.type)
         if result != "ERROR" and not is_file_empty(local_path):
             if self.type == "docker":
-                cp_docker(local_path, local_path, self.container_id, local_to_docker=False)
+                cp_docker(
+                    local_path, local_path, self.container_id, local_to_docker=False
+                )
             return local_path
 
         return result
@@ -201,13 +228,15 @@ class AndroidController:
         adb_command = f'adb -s {self.device} shell input keyevent --press $(for i in {{1..100}}; do echo -n "67 "; done)'
         ret = self.execute_adb(adb_command, self.type)
         chars = input_str
-        charsb64 = str(base64.b64encode(chars.encode('utf-8')))[1:]
+        charsb64 = str(base64.b64encode(chars.encode("utf-8")))[1:]
         adb_command = f"adb -s {self.device} shell am broadcast -a ADB_INPUT_B64 --es msg {charsb64}"
         ret = self.execute_adb(adb_command, self.type)
         return ret
 
     def long_press(self, x, y, duration=1000):
-        adb_command = f"adb -s {self.device} shell input swipe {x} {y} {x} {y} {duration}"
+        adb_command = (
+            f"adb -s {self.device} shell input swipe {x} {y} {x} {y} {duration}"
+        )
         ret = self.execute_adb(adb_command, self.type)
         return ret
 
@@ -257,7 +286,7 @@ class AndroidController:
 
     def start_screen_record(self, prefix):
         print("Starting screen record")
-        command = f'adb -s {self.device} shell screenrecord /sdcard/{prefix}.mp4'
+        command = f"adb -s {self.device} shell screenrecord /sdcard/{prefix}.mp4"
         return subprocess.Popen(command, shell=True)
 
     def launch(self, package_name):
@@ -271,15 +300,17 @@ class AndroidController:
     def check_ac_survive(self):
         try:
             time_command = f"adb -s {self.device} shell stat -c %y /sdcard/Android/data/com.example.android.xml_parser/files/ui.xml"
-            time_phone_command = f"adb -s {self.device} shell date +\"%H:%M:%S\""
-            result = time_within_ten_secs(self.execute_adb(time_command, self.type),
-                                          self.execute_adb(time_phone_command, self.type))
+            time_phone_command = f'adb -s {self.device} shell date +"%H:%M:%S"'
+            result = time_within_ten_secs(
+                self.execute_adb(time_command, self.type),
+                self.execute_adb(time_phone_command, self.type),
+            )
         except Exception as e:
             print(e)
             return False
         return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     And = AndroidController("emulator-5554")
     And.text("Beijing")

@@ -24,30 +24,35 @@ logger.setLevel(logging.INFO)
 
 MAX_RETRY_TIMES = 10
 RETRY_INTERVAL = 5
-UBUNTU_ARM_URL = "https://huggingface.co/datasets/xlangai/ubuntu_osworld/resolve/main/Ubuntu-arm.zip"
-UBUNTU_X86_URL = "https://huggingface.co/datasets/xlangai/ubuntu_osworld/resolve/main/Ubuntu-x86.zip"
+UBUNTU_ARM_URL = (
+    "https://huggingface.co/datasets/xlangai/ubuntu_osworld/resolve/main/Ubuntu-arm.zip"
+)
+UBUNTU_X86_URL = (
+    "https://huggingface.co/datasets/xlangai/ubuntu_osworld/resolve/main/Ubuntu-x86.zip"
+)
 WINDOWS_X86_URL = "https://huggingface.co/datasets/xlangai/windows_osworld/resolve/main/Windows-x86.zip"
 
 # Determine the platform and CPU architecture to decide the correct VM image to download
-if platform.system() == 'Darwin':  # macOS
+if platform.system() == "Darwin":  # macOS
     # if os.uname().machine == 'arm64':  # Apple Silicon
     URL = UBUNTU_ARM_URL
 # else:
 #     url = UBUNTU_X86_URL
-elif platform.machine().lower() in ['amd64', 'x86_64']:
+elif platform.machine().lower() in ["amd64", "x86_64"]:
     URL = UBUNTU_X86_URL
 else:
     raise Exception("Unsupported platform or architecture")
 
-DOWNLOADED_FILE_NAME = URL.split('/')[-1]
-REGISTRY_PATH = '.vmware_vms'
-LOCK_FILE_NAME = '.vmware_lck'
+DOWNLOADED_FILE_NAME = URL.split("/")[-1]
+REGISTRY_PATH = ".vmware_vms"
+LOCK_FILE_NAME = ".vmware_lck"
 VMS_DIR = "./vmware_vm_data"
 update_lock = threading.Lock()
 
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     vboxmanage_path = r"C:\Program Files (x86)\VMware\VMware Workstation"
     os.environ["PATH"] += os.pathsep + vboxmanage_path
+
 
 def generate_new_vm_name(vms_dir, os_type):
     registry_idx = 0
@@ -55,7 +60,8 @@ def generate_new_vm_name(vms_dir, os_type):
     while True:
         attempted_new_name = f"{prefix}{registry_idx}"
         if os.path.exists(
-                os.path.join(vms_dir, attempted_new_name, attempted_new_name + ".vmx")):
+            os.path.join(vms_dir, attempted_new_name, attempted_new_name + ".vmx")
+        ):
             registry_idx += 1
         else:
             return attempted_new_name
@@ -68,40 +74,60 @@ def _update_vm(vmx_path, target_vm_name):
 
         def _generate_mac_address():
             # VMware MAC address range starts with 00:0c:29
-            mac = [0x00, 0x0c, 0x29,
-                   random.randint(0x00, 0x7f),
-                   random.randint(0x00, 0xff),
-                   random.randint(0x00, 0xff)]
-            return ':'.join(map(lambda x: "%02x" % x, mac))
+            mac = [
+                0x00,
+                0x0C,
+                0x29,
+                random.randint(0x00, 0x7F),
+                random.randint(0x00, 0xFF),
+                random.randint(0x00, 0xFF),
+            ]
+            return ":".join(map(lambda x: "%02x" % x, mac))
 
         # Backup the original file
-        with open(vmx_path, 'r') as file:
+        with open(vmx_path, "r") as file:
             original_content = file.read()
 
         # Generate new values
         new_uuid_bios = str(uuid.uuid4())
         new_uuid_location = str(uuid.uuid4())
         new_mac_address = _generate_mac_address()
-        new_vmci_id = str(random.randint(-2147483648, 2147483647))  # Random 32-bit integer
+        new_vmci_id = str(
+            random.randint(-2147483648, 2147483647)
+        )  # Random 32-bit integer
 
         # Update the content
-        updated_content = re.sub(r'displayName = ".*?"', f'displayName = "{target_vm_name}"', original_content)
-        updated_content = re.sub(r'uuid.bios = ".*?"', f'uuid.bios = "{new_uuid_bios}"', updated_content)
-        updated_content = re.sub(r'uuid.location = ".*?"', f'uuid.location = "{new_uuid_location}"', updated_content)
-        updated_content = re.sub(r'ethernet0.generatedAddress = ".*?"',
-                                 f'ethernet0.generatedAddress = "{new_mac_address}"',
-                                 updated_content)
-        updated_content = re.sub(r'vmci0.id = ".*?"', f'vmci0.id = "{new_vmci_id}"', updated_content)
+        updated_content = re.sub(
+            r'displayName = ".*?"',
+            f'displayName = "{target_vm_name}"',
+            original_content,
+        )
+        updated_content = re.sub(
+            r'uuid.bios = ".*?"', f'uuid.bios = "{new_uuid_bios}"', updated_content
+        )
+        updated_content = re.sub(
+            r'uuid.location = ".*?"',
+            f'uuid.location = "{new_uuid_location}"',
+            updated_content,
+        )
+        updated_content = re.sub(
+            r'ethernet0.generatedAddress = ".*?"',
+            f'ethernet0.generatedAddress = "{new_mac_address}"',
+            updated_content,
+        )
+        updated_content = re.sub(
+            r'vmci0.id = ".*?"', f'vmci0.id = "{new_vmci_id}"', updated_content
+        )
 
         # Write the updated content back to the file
-        with open(vmx_path, 'w') as file:
+        with open(vmx_path, "w") as file:
             file.write(updated_content)
 
         logger.info(".vmx file updated successfully.")
 
         vmx_file_base_name = os.path.splitext(vmx_file)[0]
 
-        files_to_rename = ['vmx', 'nvram', 'vmsd', 'vmxf']
+        files_to_rename = ["vmx", "nvram", "vmsd", "vmxf"]
 
         for ext in files_to_rename:
             original_file = os.path.join(dir_path, f"{vmx_file_base_name}.{ext}")
@@ -118,7 +144,9 @@ def _update_vm(vmx_path, target_vm_name):
         logger.info("VM files renamed successfully.")
 
 
-def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_name="Ubuntu"):
+def _install_vm(
+    vm_name, vms_dir, downloaded_file_name, os_type, original_vm_name="Ubuntu"
+):
     os.makedirs(vms_dir, exist_ok=True)
 
     def __download_and_unzip_vm():
@@ -127,14 +155,14 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
         downloaded_size = 0
 
         if os_type == "Ubuntu":
-            if platform.system() == 'Darwin':
+            if platform.system() == "Darwin":
                 URL = UBUNTU_ARM_URL
-            elif platform.machine().lower() in ['amd64', 'x86_64']:
+            elif platform.machine().lower() in ["amd64", "x86_64"]:
                 URL = UBUNTU_X86_URL
         elif os_type == "Windows":
-            if platform.machine().lower() in ['amd64', 'x86_64']:
+            if platform.machine().lower() in ["amd64", "x86_64"]:
                 URL = WINDOWS_X86_URL
-        DOWNLOADED_FILE_NAME = URL.split('/')[-1]
+        DOWNLOADED_FILE_NAME = URL.split("/")[-1]
         downloaded_file_name = DOWNLOADED_FILE_NAME
 
         while True:
@@ -151,16 +179,16 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
                     break
 
                 response.raise_for_status()
-                total_size = int(response.headers.get('content-length', 0))
+                total_size = int(response.headers.get("content-length", 0))
 
                 with open(downloaded_file_path, "ab") as file, tqdm(
-                        desc="Progress",
-                        total=total_size,
-                        unit='iB',
-                        unit_scale=True,
-                        unit_divisor=1024,
-                        initial=downloaded_size,
-                        ascii=True
+                    desc="Progress",
+                    total=total_size,
+                    unit="iB",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                    initial=downloaded_size,
+                    ascii=True,
                 ) as progress_bar:
                     try:
                         for data in response.iter_content(chunk_size=1024):
@@ -176,9 +204,12 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
 
         # Unzip the downloaded file
         logger.info("Unzipping the downloaded file...☕️")
-        with zipfile.ZipFile(downloaded_file_path, 'r') as zip_ref:
+        with zipfile.ZipFile(downloaded_file_path, "r") as zip_ref:
             zip_ref.extractall(os.path.join(vms_dir, vm_name))
-        logger.info("Files have been successfully extracted to the directory: " + str(os.path.join(vms_dir, vm_name)))
+        logger.info(
+            "Files have been successfully extracted to the directory: "
+            + str(os.path.join(vms_dir, vm_name))
+        )
 
     vm_path = os.path.join(vms_dir, vm_name, vm_name + ".vmx")
 
@@ -191,10 +222,10 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
 
     # Determine the platform of the host machine and decide the parameter for vmrun
     def get_vmrun_type():
-        if platform.system() == 'Windows' or platform.system() == 'Linux':
-            return '-T ws'
-        elif platform.system() == 'Darwin':  # Darwin is the system name for macOS
-            return '-T fusion'
+        if platform.system() == "Windows" or platform.system() == "Linux":
+            return "-T ws"
+        elif platform.system() == "Darwin":  # Darwin is the system name for macOS
+            return "-T fusion"
         else:
             raise Exception("Unsupported operating system")
 
@@ -202,42 +233,58 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
     def start_vm(vm_path, max_retries=20):
         command = f'vmrun {get_vmrun_type()} start "{vm_path}" nogui'
         for attempt in range(max_retries):
-            result = subprocess.run(command, shell=True, text=True, capture_output=True, encoding="utf-8")
+            result = subprocess.run(
+                command, shell=True, text=True, capture_output=True, encoding="utf-8"
+            )
             if result.returncode == 0:
                 logger.info("Virtual machine started.")
                 return True
             else:
                 if "Error" in result.stderr:
-                    logger.error(f"Attempt {attempt + 1} failed with specific error: {result.stderr}")
+                    logger.error(
+                        f"Attempt {attempt + 1} failed with specific error: {result.stderr}"
+                    )
                 else:
                     logger.error(f"Attempt {attempt + 1} failed: {result.stderr}")
 
                 if attempt == max_retries - 1:
-                    logger.error("Maximum retry attempts reached, failed to start the virtual machine.")
+                    logger.error(
+                        "Maximum retry attempts reached, failed to start the virtual machine."
+                    )
                     return False
 
     if not start_vm(vm_path):
-        raise ValueError("Error encountered during installation, please rerun the code for retrying.")
+        raise ValueError(
+            "Error encountered during installation, please rerun the code for retrying."
+        )
 
     def get_vm_ip(vm_path, max_retries=20):
         command = f'vmrun {get_vmrun_type()} getGuestIPAddress "{vm_path}" -wait'
         for attempt in range(max_retries):
-            result = subprocess.run(command, shell=True, text=True, capture_output=True, encoding="utf-8")
+            result = subprocess.run(
+                command, shell=True, text=True, capture_output=True, encoding="utf-8"
+            )
             if result.returncode == 0:
                 return result.stdout.strip()
             else:
                 if "Error" in result.stderr:
-                    logger.error(f"Attempt {attempt + 1} failed with specific error: {result.stderr}")
+                    logger.error(
+                        f"Attempt {attempt + 1} failed with specific error: {result.stderr}"
+                    )
                 else:
                     logger.error(f"Attempt {attempt + 1} failed: {result.stderr}")
 
                 if attempt == max_retries - 1:
-                    logger.error("Maximum retry attempts reached, failed to get the IP of virtual machine.")
+                    logger.error(
+                        "Maximum retry attempts reached, failed to get the IP of virtual machine."
+                    )
                     return None
 
     vm_ip = get_vm_ip(vm_path)
     if not vm_ip:
-        raise ValueError("Error encountered during installation, please rerun the code for retrying.")
+        raise ValueError(
+            "Error encountered during installation, please rerun the code for retrying."
+        )
 
     # Function used to check whether the virtual machine is ready
     def download_screenshot(ip):
@@ -258,30 +305,40 @@ def _install_vm(vm_name, vms_dir, downloaded_file_name, os_type, original_vm_nam
     while not download_screenshot(vm_ip):
         logger.info("Check whether the virtual machine is ready...")
 
-    logger.info("Virtual machine is ready. Start to make a snapshot on the virtual machine. It would take a while...")
+    logger.info(
+        "Virtual machine is ready. Start to make a snapshot on the virtual machine. It would take a while..."
+    )
 
     def create_vm_snapshot(vm_path, max_retries=20):
         command = f'vmrun {get_vmrun_type()} snapshot "{vm_path}" "init_state"'
         for attempt in range(max_retries):
-            result = subprocess.run(command, shell=True, text=True, capture_output=True, encoding="utf-8")
+            result = subprocess.run(
+                command, shell=True, text=True, capture_output=True, encoding="utf-8"
+            )
             if result.returncode == 0:
                 logger.info("Snapshot created.")
                 return True
             else:
                 if "Error" in result.stderr:
-                    logger.error(f"Attempt {attempt + 1} failed with specific error: {result.stderr}")
+                    logger.error(
+                        f"Attempt {attempt + 1} failed with specific error: {result.stderr}"
+                    )
                 else:
                     logger.error(f"Attempt {attempt + 1} failed: {result.stderr}")
 
                 if attempt == max_retries - 1:
-                    logger.error("Maximum retry attempts reached, failed to create snapshot.")
+                    logger.error(
+                        "Maximum retry attempts reached, failed to create snapshot."
+                    )
                     return False
 
     # Create a snapshot of the virtual machine
     if create_vm_snapshot(vm_path, max_retries=MAX_RETRY_TIMES):
         return vm_path
     else:
-        raise ValueError("Error encountered during installation, please rerun the code for retrying.")
+        raise ValueError(
+            "Error encountered during installation, please rerun the code for retrying."
+        )
 
 
 class VMwareVMManager(VMManager):
@@ -293,8 +350,8 @@ class VMwareVMManager(VMManager):
     def initialize_registry(self):
         with self.lock:  # Locking during initialization
             if not os.path.exists(self.registry_path):
-                with open(self.registry_path, 'w') as file:
-                    file.write('')
+                with open(self.registry_path, "w") as file:
+                    file.write("")
 
     def add_vm(self, vm_path, lock_needed=True):
         if lock_needed:
@@ -304,12 +361,15 @@ class VMwareVMManager(VMManager):
             self._add_vm(vm_path)
 
     def _add_vm(self, vm_path, region=None):
-        assert region in [None, 'local'], "For VMware provider, the region should be neither None or 'local'."
+        assert region in [
+            None,
+            "local",
+        ], "For VMware provider, the region should be neither None or 'local'."
         with self.lock:
-            with open(self.registry_path, 'r') as file:
+            with open(self.registry_path, "r") as file:
                 lines = file.readlines()
-                new_lines = lines + [f'{vm_path}|free\n']
-            with open(self.registry_path, 'w') as file:
+                new_lines = lines + [f"{vm_path}|free\n"]
+            with open(self.registry_path, "w") as file:
                 file.writelines(new_lines)
 
     def occupy_vm(self, vm_path, pid, lock_needed=True):
@@ -320,18 +380,21 @@ class VMwareVMManager(VMManager):
             self._occupy_vm(vm_path, pid)
 
     def _occupy_vm(self, vm_path, pid, region=None):
-        assert region in [None, 'local'], "For VMware provider, the region should be neither None or 'local'."
+        assert region in [
+            None,
+            "local",
+        ], "For VMware provider, the region should be neither None or 'local'."
         with self.lock:
             new_lines = []
-            with open(self.registry_path, 'r') as file:
+            with open(self.registry_path, "r") as file:
                 lines = file.readlines()
                 for line in lines:
-                    registered_vm_path, _ = line.strip().split('|')
+                    registered_vm_path, _ = line.strip().split("|")
                     if registered_vm_path == vm_path:
-                        new_lines.append(f'{registered_vm_path}|{pid}\n')
+                        new_lines.append(f"{registered_vm_path}|{pid}\n")
                     else:
                         new_lines.append(line)
-            with open(self.registry_path, 'w') as file:
+            with open(self.registry_path, "w") as file:
                 file.writelines(new_lines)
 
     def delete_vm(self, vm_path, lock_needed=True):
@@ -358,13 +421,13 @@ class VMwareVMManager(VMManager):
             new_lines = []
             vm_paths = []
 
-            with open(self.registry_path, 'r') as file:
+            with open(self.registry_path, "r") as file:
                 lines = file.readlines()
                 for line in lines:
-                    vm_path, pid_str = line.strip().split('|')
+                    vm_path, pid_str = line.strip().split("|")
                     if not os.path.exists(vm_path):
                         logger.info(f"VM {vm_path} not found, releasing it.")
-                        new_lines.append(f'{vm_path}|free\n')
+                        new_lines.append(f"{vm_path}|free\n")
                         continue
 
                     vm_paths.append(vm_path)
@@ -375,8 +438,8 @@ class VMwareVMManager(VMManager):
                     if int(pid_str) in active_pids:
                         new_lines.append(line)
                     else:
-                        new_lines.append(f'{vm_path}|free\n')
-            with open(self.registry_path, 'w') as file:
+                        new_lines.append(f"{vm_path}|free\n")
+            with open(self.registry_path, "w") as file:
                 file.writelines(new_lines)
 
             # Check and clean on the files inside vms_dir, delete the unregistered ones
@@ -407,10 +470,10 @@ class VMwareVMManager(VMManager):
     def _list_free_vms(self):
         with self.lock:  # Lock when reading the registry
             free_vms = []
-            with open(self.registry_path, 'r') as file:
+            with open(self.registry_path, "r") as file:
                 lines = file.readlines()
                 for line in lines:
-                    vm_path, pid_str = line.strip().split('|')
+                    vm_path, pid_str = line.strip().split("|")
                     if pid_str == "free":
                         free_vms.append((vm_path, pid_str))
             return free_vms
@@ -429,12 +492,14 @@ class VMwareVMManager(VMManager):
                 allocation_needed = True
             else:
                 # Choose the first free virtual machine
-                chosen_vm_path = free_vms_paths[0][0] 
+                chosen_vm_path = free_vms_paths[0][0]
                 self._occupy_vm(chosen_vm_path, os.getpid())
                 return chosen_vm_path
-            
+
         if allocation_needed:
-            logger.info("No free virtual machine available. Generating a new one, which would take a while...☕")
+            logger.info(
+                "No free virtual machine available. Generating a new one, which would take a while...☕"
+            )
             new_vm_name = generate_new_vm_name(vms_dir=VMS_DIR, os_type=os_type)
 
             original_vm_name = None
@@ -443,8 +508,13 @@ class VMwareVMManager(VMManager):
             elif os_type == "Windows":
                 original_vm_name = "Windows 10 x64"
 
-            new_vm_path = _install_vm(new_vm_name, vms_dir=VMS_DIR,
-                                    downloaded_file_name=DOWNLOADED_FILE_NAME, original_vm_name=original_vm_name, os_type=os_type)
+            new_vm_path = _install_vm(
+                new_vm_name,
+                vms_dir=VMS_DIR,
+                downloaded_file_name=DOWNLOADED_FILE_NAME,
+                original_vm_name=original_vm_name,
+                os_type=os_type,
+            )
             with self.lock:
                 self._add_vm(new_vm_path)
                 self._occupy_vm(new_vm_path, os.getpid())

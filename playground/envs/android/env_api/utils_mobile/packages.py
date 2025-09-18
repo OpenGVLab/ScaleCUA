@@ -74,7 +74,7 @@ apps_dict = {
     "instgram": "com.instagram.android",
     "pininterest": "com.pinterest",
     "xiecheng": "ctrip.android.view",
-    "ctrip": "ctrip.android.view", 
+    "ctrip": "ctrip.android.view",
     "capcut": "com.lemon.lvoverseas",
     "onedrive": "com.microsoft.skydrive",
     "wiki": "org.wikipedia",
@@ -106,14 +106,14 @@ from Levenshtein import distance
 
 
 def find_closest(input_str, dict):
-    
+
     if input_str in dict:
         return dict[input_str]
     elif input_str.replace(" ", "").lower() in dict:
         return dict[input_str.replace(" ", "").lower()]
 
     input_str = input_str.replace(" ", "").lower()
-    min_distance = float('inf')
+    min_distance = float("inf")
     closest_key = None
 
     for key in dict:

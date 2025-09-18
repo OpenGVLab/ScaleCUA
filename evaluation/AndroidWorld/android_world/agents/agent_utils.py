@@ -21,32 +21,32 @@ from typing import Any
 
 
 def extract_json(s: str) -> dict[str, Any] | None:
-  """Extracts JSON from string.
+    """Extracts JSON from string.
 
-  Tries conversion with ast and json modules.
+    Tries conversion with ast and json modules.
 
-  Args:
-    s: A string with a JSON in it. E.g., "{'hello': 'world'}" or from CoT:
-      "let's think step-by-step, ..., {'hello': 'world'}".
+    Args:
+      s: A string with a JSON in it. E.g., "{'hello': 'world'}" or from CoT:
+        "let's think step-by-step, ..., {'hello': 'world'}".
 
-  Returns:
-    JSON object.
-  """
-  pattern = r'\{.*?\}'
-  match = re.search(pattern, s)
-  if match:
-    try:
-      return ast.literal_eval(match.group())
-    except (SyntaxError, ValueError) as error:
-      try:
-        # Try conversion with json module.
-        return json.loads(match.group())
-      except (SyntaxError, ValueError) as error2:
-        print(
-            'Cannot extract JSON, skipping due to errors %s and %s',
-            error,
-            error2,
-        )
+    Returns:
+      JSON object.
+    """
+    pattern = r"\{.*?\}"
+    match = re.search(pattern, s)
+    if match:
+        try:
+            return ast.literal_eval(match.group())
+        except (SyntaxError, ValueError) as error:
+            try:
+                # Try conversion with json module.
+                return json.loads(match.group())
+            except (SyntaxError, ValueError) as error2:
+                print(
+                    "Cannot extract JSON, skipping due to errors %s and %s",
+                    error,
+                    error2,
+                )
+                return None
+    else:
         return None
-  else:
-    return None

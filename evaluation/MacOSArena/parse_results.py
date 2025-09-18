@@ -2,18 +2,20 @@ import json
 from pathlib import Path
 import numpy as np
 
+
 def calculate_EQA(success_per_task, step_per_task, predefined_order, max_steps=15):
     assert len(step_per_task) == len(predefined_order)
     assert len(success_per_task) == len(predefined_order)
 
-    
     order = [predefined_order[idx] for idx in sorted(predefined_order)]
 
     try:
         steps = np.array([step_per_task[tid] for tid in order], dtype=float)
         succ = np.array([success_per_task[tid] for tid in order], dtype=float)
     except KeyError as e:
-        raise KeyError(f"Task ID {e.args[0]} missing in success_per_task or step_per_task.")
+        raise KeyError(
+            f"Task ID {e.args[0]} missing in success_per_task or step_per_task."
+        )
 
     S_tot = succ.sum()
     if S_tot == 0:
@@ -84,14 +86,18 @@ def analyze_results(result_root: str):
             success_cases[task_name] = steps
             if steps <= 15:
                 success_15_count += 1
-                
+
     success_rate = success_count / total_tasks if total_tasks else 0
     steps_used_avg = total_steps / total_tasks if total_tasks else 0
     success_15_steps_rate = success_15_count / total_tasks if total_tasks else 0
     steps_used_avg_as_15 = capped_steps_total / total_tasks if total_tasks else 0
 
-    eqa_15 = calculate_EQA(success_per_task_15, step_per_task_15, predefined_order, max_steps=15)
-    eqa_50 = calculate_EQA(success_per_task, step_per_task, predefined_order, max_steps=50)
+    eqa_15 = calculate_EQA(
+        success_per_task_15, step_per_task_15, predefined_order, max_steps=15
+    )
+    eqa_50 = calculate_EQA(
+        success_per_task, step_per_task, predefined_order, max_steps=50
+    )
 
     result_summary = {
         "task num": total_tasks,
@@ -100,7 +106,7 @@ def analyze_results(result_root: str):
         "success_15_steps_rate": round(success_15_steps_rate, 4),
         "steps_used_avg_as_15_steps": round(steps_used_avg_as_15, 2),
         "EQA@15": round(eqa_15, 4),
-        "EQA@50": round(eqa_50, 4)
+        "EQA@50": round(eqa_50, 4),
     }
 
     with open(result_root / "final.txt", "w", encoding="utf-8") as f:
@@ -116,6 +122,7 @@ def analyze_results(result_root: str):
 
     return result_summary
 
+
 if __name__ == "__main__":
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-uground7b/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/uitars72bdpo/single_task")
@@ -126,7 +133,7 @@ if __name__ == "__main__":
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-uground7b/single_task")
     # analyze_results("/nvme/wuzhenyu/results/claude-3-7-sonnet-20250219/single_task")
-    
+
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-uground7b/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-ui_tars_15_7b/multi_task")
@@ -134,7 +141,7 @@ if __name__ == "__main__":
     # analyze_results("/nvme/wuzhenyu/results/Aguvis-72B-720P/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/ui_tars_15_7b/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/claude-3-7-sonnet-20250219/multi_task")
-    
+
     # analyze_results("/nvme/wuzhenyu/results/uitars72bdpo/single_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o/single_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-ui_tars_15_7b/single_task")
@@ -142,7 +149,7 @@ if __name__ == "__main__":
     # analyze_results("/nvme/wuzhenyu/results/Aguvis-72B-720P/single_task")
     # analyze_results("/nvme/wuzhenyu/results/gpt-4o-uground7b/single_task")
     # analyze_results("/nvme/wuzhenyu/results/claude-3-7-sonnet-20250219/single_task")
-    
+
     # analyze_results("/nvme/wuzhenyu/results/gui_v93/multi_task")
     # analyze_results("/nvme/wuzhenyu/results/gui_v93/single_task")
     # analyze_results("/nvme/wuzhenyu/results/gui_v91/multi_task")

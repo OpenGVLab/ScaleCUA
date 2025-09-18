@@ -30,6 +30,7 @@ sys.path.append(str(project_root))
 
 import qwenvl.train.trainer
 from trainer import replace_qwen2_vl_attention_class, get_train_dataloader
+
 # from trainer import CustomTrainer as Trainer
 
 from transformers import (
@@ -110,8 +111,10 @@ def train(attn_implementation="flash_attention_2"):
     local_rank = training_args.local_rank
     os.makedirs(training_args.output_dir, exist_ok=True)
 
-    if "qwen2.5" in model_args.model_name_or_path.lower() \
-        or "qwen2_5" in model_args.model_name_or_path.lower():
+    if (
+        "qwen2.5" in model_args.model_name_or_path.lower()
+        or "qwen2_5" in model_args.model_name_or_path.lower()
+    ):
         model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             model_args.model_name_or_path,
             cache_dir=training_args.cache_dir,
@@ -173,12 +176,9 @@ def train(attn_implementation="flash_attention_2"):
 
     if data_args.group_sampling:
         Trainer.get_train_dataloader = get_train_dataloader
-        
+
     trainer = Trainer(
-        model=model,
-        processing_class=processor,
-        args=training_args,
-        **data_module
+        model=model, processing_class=processor, args=training_args, **data_module
     )
 
     if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):

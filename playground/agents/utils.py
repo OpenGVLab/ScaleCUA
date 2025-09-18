@@ -8,14 +8,18 @@ IMAGE_FACTOR = 28
 MIN_PIXELS = 3136
 MAX_PIXELS = 2109744
 MAX_RATIO = 200
+
+
 def encoded_img_to_pil_img(data_str):
     image = Image.open(io.BytesIO(data_str))
     return image
-    
+
+
 def escape_single_quotes(text):
 
     pattern = r"(?<!\\)'"
     return re.sub(pattern, r"\\'", text)
+
 
 def round_by_factor(number: int, factor: int) -> int:
     """Returns the closest integer to 'number' that is divisible by 'factor'."""
@@ -32,10 +36,12 @@ def floor_by_factor(number: int, factor: int) -> int:
     return math.floor(number / factor) * factor
 
 
-
-
 def smart_resize(
-    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
 ) -> tuple[int, int]:
     """
     Rescales the image so that the following conditions are met:
@@ -62,23 +68,24 @@ def smart_resize(
         w_bar = ceil_by_factor(width * beta, factor)
     return h_bar, w_bar
 
+
 def parse_point_from_string(s):
     # Define patterns for different coordinate formats
     patterns = [
         # Match <box>[[x1,y1,x2,y2]]</box> pattern
-        r'<box>\[\[([^]]+)\]\]</box>',
+        r"<box>\[\[([^]]+)\]\]</box>",
         # Match 'x=x1,y=y1' pattern (with possible quotes and whitespace)
-        r'x\s*=\s*([\d\.\-]+)\s*,\s*y\s*=\s*([\d\.\-]+)',
+        r"x\s*=\s*([\d\.\-]+)\s*,\s*y\s*=\s*([\d\.\-]+)",
         # Match (x1,y1) pattern (with possible quotes)
-        r'\(([\d\.\-]+)\s*,\s*([\d\.\-]+)\)'
+        r"\(([\d\.\-]+)\s*,\s*([\d\.\-]+)\)",
     ]
-    
+
     for pattern in patterns:
         match = re.search(pattern, s)
         if match:
             if pattern == patterns[0]:  # box pattern
                 try:
-                    coords = [float(x.strip()) for x in match.group(1).split(',')]
+                    coords = [float(x.strip()) for x in match.group(1).split(",")]
                     if len(coords) == 4:
                         # Calculate bbox center
                         x_center = (coords[0] + coords[2]) / 2
@@ -93,8 +100,9 @@ def parse_point_from_string(s):
                     return (x, y)
                 except (ValueError, SyntaxError):
                     continue
-    
+
     return None  # No matching pattern found
+
 
 if __name__ == "__main__":
     test_strings = [
@@ -108,5 +116,3 @@ if __name__ == "__main__":
     for test in test_strings:
         result = parse_point_from_string(test)
         print(f"Input: {test}\nOutput: {result}\n")
-
-

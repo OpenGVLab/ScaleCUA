@@ -18,7 +18,12 @@ import backoff
 import openai
 import requests
 from PIL import Image
-from google.api_core.exceptions import InvalidArgument, ResourceExhausted, InternalServerError, BadRequest
+from google.api_core.exceptions import (
+    InvalidArgument,
+    ResourceExhausted,
+    InternalServerError,
+    BadRequest,
+)
 from requests.exceptions import SSLError
 from mm_agents.uitars_agent import smart_resize, pil_to_base64
 from mm_agents.prompts import (
@@ -27,17 +32,17 @@ from mm_agents.prompts import (
     AGUVIS_PLANNING_PROMPT,
     AGUVIS_INNER_MONOLOGUE_APPEND_PROMPT,
     AGUVIS_GROUNDING_PROMPT,
-    AGUVIS_GROUNDING_APPEND_PROMPT
+    AGUVIS_GROUNDING_APPEND_PROMPT,
 )
 
 logger = ProjectLogger().logger
 
-OPEN_API_KEY="YOUR_OPENAI_KEY_HERE"
+OPEN_API_KEY = "YOUR_OPENAI_KEY_HERE"
 
 
 # Function to encode the image
 def encode_image(image_content):
-    return base64.b64encode(image_content).decode('utf-8')
+    return base64.b64encode(image_content).decode("utf-8")
 
 
 def encoded_img_to_pil_img(data_str):
@@ -67,8 +72,10 @@ def parse_code_from_planner_response(input_string: str) -> List[str]:
     """Parse the planner's response containing executable pyautogui code"""
     if input_string is None:
         return [""]
-    input_string = "\n".join([line.strip() for line in input_string.split(';') if line.strip()])
-    if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
+    input_string = "\n".join(
+        [line.strip() for line in input_string.split(";") if line.strip()]
+    )
+    if input_string.strip() in ["WAIT", "DONE", "FAIL"]:
         return [input_string.strip()]
 
     # This regular expression will match both ```code``` and ```python code```
@@ -86,21 +93,23 @@ def parse_code_from_planner_response(input_string: str) -> List[str]:
 
     for match in matches:
         match = match.strip()
-        commands = ['WAIT', 'DONE', 'FAIL']
+        commands = ["WAIT", "DONE", "FAIL"]
 
         if match in commands:
             codes.append(match.strip())
-        elif match.split('\n')[-1] in commands:
-            if len(match.split('\n')) > 1:
-                codes.append("\n".join(match.split('\n')[:-1]))
-            codes.append(match.split('\n')[-1])
+        elif match.split("\n")[-1] in commands:
+            if len(match.split("\n")) > 1:
+                codes.append("\n".join(match.split("\n")[:-1]))
+            codes.append(match.split("\n")[-1])
         else:
             codes.append(match)
 
     return codes
 
 
-def parse_aguvis_response(input_string, screen_logic_size=SCREEN_LOGIC_SIZE) -> Tuple[str, List[str]]:
+def parse_aguvis_response(
+    input_string, screen_logic_size=SCREEN_LOGIC_SIZE
+) -> Tuple[str, List[str]]:
     if input_string.lower().startswith("wait"):
         return "WAIT", "WAIT"
     elif input_string.lower().startswith("done"):
@@ -125,40 +134,47 @@ def parse_aguvis_response(input_string, screen_logic_size=SCREEN_LOGIC_SIZE) -> 
             return None, None
 
         pyautogui_code_relative_coordinates = "\n".join(lines[pyautogui_index:])
-        pyautogui_code_relative_coordinates = pyautogui_code_relative_coordinates.replace("assistantos", "").strip()
-        corrected_code = correct_pyautogui_arguments(pyautogui_code_relative_coordinates)
+        pyautogui_code_relative_coordinates = (
+            pyautogui_code_relative_coordinates.replace("assistantos", "").strip()
+        )
+        corrected_code = correct_pyautogui_arguments(
+            pyautogui_code_relative_coordinates
+        )
 
-        parsed_action = _pyautogui_code_to_absolute_coordinates(corrected_code, screen_logic_size)
+        parsed_action = _pyautogui_code_to_absolute_coordinates(
+            corrected_code, screen_logic_size
+        )
         return low_level_instruction, parsed_action
     except Exception as e:
         print(f"Error: Could not parse response {input_string}")
         return None, None
 
+
 def correct_pyautogui_arguments(code: str) -> str:
     function_corrections = {
-        'write': {
-            'incorrect_args': ['text'],
-            'correct_args': [],
-            'keyword_arg': 'message'
+        "write": {
+            "incorrect_args": ["text"],
+            "correct_args": [],
+            "keyword_arg": "message",
         },
-        'press': {
-            'incorrect_args': ['key', 'button'],
-            'correct_args': [],
-            'keyword_arg': None
+        "press": {
+            "incorrect_args": ["key", "button"],
+            "correct_args": [],
+            "keyword_arg": None,
         },
-        'hotkey': {
-            'incorrect_args': ['key1', 'key2', 'keys'],
-            'correct_args': [],
-            'keyword_arg': None
+        "hotkey": {
+            "incorrect_args": ["key1", "key2", "keys"],
+            "correct_args": [],
+            "keyword_arg": None,
         },
     }
 
-    lines = code.strip().split('\n')
+    lines = code.strip().split("\n")
     corrected_lines = []
 
     for line in lines:
         line = line.strip()
-        match = re.match(r'(pyautogui\.(\w+))\((.*)\)', line)
+        match = re.match(r"(pyautogui\.(\w+))\((.*)\)", line)
         if match:
             full_func_call = match.group(1)
             func_name = match.group(2)
@@ -171,48 +187,51 @@ def correct_pyautogui_arguments(code: str) -> str:
 
                 for arg in args:
                     arg = arg.strip()
-                    kwarg_match = re.match(r'(\w+)\s*=\s*(.*)', arg)
+                    kwarg_match = re.match(r"(\w+)\s*=\s*(.*)", arg)
                     if kwarg_match:
                         arg_name = kwarg_match.group(1)
                         arg_value = kwarg_match.group(2)
 
-                        if arg_name in func_info['incorrect_args']:
-                            if func_info['keyword_arg']:
-                                corrected_args.append(f"{func_info['keyword_arg']}={arg_value}")
+                        if arg_name in func_info["incorrect_args"]:
+                            if func_info["keyword_arg"]:
+                                corrected_args.append(
+                                    f"{func_info['keyword_arg']}={arg_value}"
+                                )
                             else:
                                 corrected_args.append(arg_value)
                         else:
-                            corrected_args.append(f'{arg_name}={arg_value}')
+                            corrected_args.append(f"{arg_name}={arg_value}")
                     else:
                         corrected_args.append(arg)
 
-                corrected_args_str = ', '.join(corrected_args)
-                corrected_line = f'{full_func_call}({corrected_args_str})'
+                corrected_args_str = ", ".join(corrected_args)
+                corrected_line = f"{full_func_call}({corrected_args_str})"
                 corrected_lines.append(corrected_line)
             else:
                 corrected_lines.append(line)
         else:
             corrected_lines.append(line)
 
-    corrected_code = '\n'.join(corrected_lines)
+    corrected_code = "\n".join(corrected_lines)
     return corrected_code
+
 
 def split_args(args_str: str) -> List[str]:
     args = []
-    current_arg = ''
+    current_arg = ""
     within_string = False
-    string_char = ''
-    prev_char = ''
+    string_char = ""
+    prev_char = ""
     for char in args_str:
         if char in ['"', "'"]:
             if not within_string:
                 within_string = True
                 string_char = char
-            elif within_string and prev_char != '\\' and char == string_char:
+            elif within_string and prev_char != "\\" and char == string_char:
                 within_string = False
-        if char == ',' and not within_string:
+        if char == "," and not within_string:
             args.append(current_arg)
-            current_arg = ''
+            current_arg = ""
         else:
             current_arg += char
         prev_char = char
@@ -220,17 +239,24 @@ def split_args(args_str: str) -> List[str]:
         args.append(current_arg)
     return args
 
-def extract_coordinates(text, logical_screen_size=SCREEN_LOGIC_SIZE, model='aguvis',scaling_size = None):
+
+def extract_coordinates(
+    text, logical_screen_size=SCREEN_LOGIC_SIZE, model="aguvis", scaling_size=None
+):
     # Pattern to match (x=0.1, y=0.2) or (0.1, 0.2) format
-    if 'aguvis' in model.lower():
+    if "aguvis" in model.lower():
         text = text.strip()
         logger.info(f"Extracting coordinates from: {text}")
-        pattern = r'\((?:x=)?([-+]?\d*\.\d+|\d+)(?:,\s*(?:y=)?([-+]?\d*\.\d+|\d+))?\)'
+        pattern = r"\((?:x=)?([-+]?\d*\.\d+|\d+)(?:,\s*(?:y=)?([-+]?\d*\.\d+|\d+))?\)"
 
         match = re.search(pattern, text)
         if match:
             x = int(float(match.group(1)) * logical_screen_size[0])
-            y = int(float(match.group(2)) * logical_screen_size[1]) if match.group(2) else None
+            y = (
+                int(float(match.group(2)) * logical_screen_size[1])
+                if match.group(2)
+                else None
+            )
 
             if y is not None:
                 return (x, y)
@@ -239,19 +265,24 @@ def extract_coordinates(text, logical_screen_size=SCREEN_LOGIC_SIZE, model='aguv
         logger.info(f"Extracting coordinates from: {text}")
         try:
             match = re.search(r"\((\d+),\s*(\d+)\)", text)
-            x = int(float(match.group(1))  / scaling_size[1] * logical_screen_size[0])
-            y = int(float(match.group(2)) / scaling_size[0] * logical_screen_size[1]) if match.group(2) else None
+            x = int(float(match.group(1)) / scaling_size[1] * logical_screen_size[0])
+            y = (
+                int(float(match.group(2)) / scaling_size[0] * logical_screen_size[1])
+                if match.group(2)
+                else None
+            )
             if y is not None:
                 return (x, y)
         except:
             logger.error(f"Error: match failed: " + text)
 
-
     logger.info(f"Error: No coordinates found in: {text}")
     return None
 
 
-def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates, logical_screen_size=SCREEN_LOGIC_SIZE):
+def _pyautogui_code_to_absolute_coordinates(
+    pyautogui_code_relative_coordinates, logical_screen_size=SCREEN_LOGIC_SIZE
+):
     """
     Convert the relative coordinates in the pyautogui code to absolute coordinates based on the logical screen size.
     """
@@ -260,14 +291,14 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
 
     width, height = logical_screen_size
 
-    pattern = r'(pyautogui\.\w+\([^\)]*\))'
+    pattern = r"(pyautogui\.\w+\([^\)]*\))"
 
     matches = re.findall(pattern, pyautogui_code_relative_coordinates)
 
     new_code = pyautogui_code_relative_coordinates
 
     for full_call in matches:
-        func_name_pattern = r'(pyautogui\.\w+)\((.*)\)'
+        func_name_pattern = r"(pyautogui\.\w+)\((.*)\)"
         func_match = re.match(func_name_pattern, full_call, re.DOTALL)
         if not func_match:
             continue
@@ -283,15 +314,22 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
             continue
 
         function_parameters = {
-            'click': ['x', 'y', 'clicks', 'interval', 'button', 'duration', 'pause'],
-            'moveTo': ['x', 'y', 'duration', 'tween', 'pause'],
-            'moveRel': ['xOffset', 'yOffset', 'duration', 'tween', 'pause'],
-            'dragTo': ['x', 'y', 'duration', 'button', 'mouseDownUp', 'pause'],
-            'dragRel': ['xOffset', 'yOffset', 'duration', 'button', 'mouseDownUp', 'pause'],
-            'doubleClick': ['x', 'y', 'interval', 'button', 'duration', 'pause'],
+            "click": ["x", "y", "clicks", "interval", "button", "duration", "pause"],
+            "moveTo": ["x", "y", "duration", "tween", "pause"],
+            "moveRel": ["xOffset", "yOffset", "duration", "tween", "pause"],
+            "dragTo": ["x", "y", "duration", "button", "mouseDownUp", "pause"],
+            "dragRel": [
+                "xOffset",
+                "yOffset",
+                "duration",
+                "button",
+                "mouseDownUp",
+                "pause",
+            ],
+            "doubleClick": ["x", "y", "interval", "button", "duration", "pause"],
         }
 
-        func_base_name = func_name.split('.')[-1]
+        func_base_name = func_name.split(".")[-1]
 
         param_names = function_parameters.get(func_base_name, [])
 
@@ -308,35 +346,35 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
             args[param_name] = arg_value
 
         updated = False
-        if 'x' in args:
+        if "x" in args:
             try:
-                x_rel = float(args['x'])
+                x_rel = float(args["x"])
                 x_abs = int(round(x_rel * width))
-                args['x'] = x_abs
+                args["x"] = x_abs
                 updated = True
             except ValueError:
                 pass
-        if 'y' in args:
+        if "y" in args:
             try:
-                y_rel = float(args['y'])
+                y_rel = float(args["y"])
                 y_abs = int(round(y_rel * height))
-                args['y'] = y_abs
+                args["y"] = y_abs
                 updated = True
             except ValueError:
                 pass
-        if 'xOffset' in args:
+        if "xOffset" in args:
             try:
-                x_rel = float(args['xOffset'])
+                x_rel = float(args["xOffset"])
                 x_abs = int(round(x_rel * width))
-                args['xOffset'] = x_abs
+                args["xOffset"] = x_abs
                 updated = True
             except ValueError:
                 pass
-        if 'yOffset' in args:
+        if "yOffset" in args:
             try:
-                y_rel = float(args['yOffset'])
+                y_rel = float(args["yOffset"])
                 y_abs = int(round(y_rel * height))
-                args['yOffset'] = y_abs
+                args["yOffset"] = y_abs
                 updated = True
             except ValueError:
                 pass
@@ -354,7 +392,7 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
                 else:
                     break
 
-            used_params = set(param_names[:len(reconstructed_args)])
+            used_params = set(param_names[: len(reconstructed_args)])
             for kw in parsed_keywords:
                 if kw.arg not in used_params:
                     arg_value = args[kw.arg]
@@ -364,7 +402,7 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
                         arg_repr = f"{kw.arg}={arg_value}"
                     reconstructed_args.append(arg_repr)
 
-            new_args_str = ', '.join(reconstructed_args)
+            new_args_str = ", ".join(reconstructed_args)
             new_full_call = f"{func_name}({new_args_str})"
             new_code = new_code.replace(full_call, new_full_call)
 
@@ -373,16 +411,16 @@ def _pyautogui_code_to_absolute_coordinates(pyautogui_code_relative_coordinates,
 
 class AguvisAgent:
     def __init__(
-            self,
-            platform="ubuntu",
-            planner_model="gpt-4o",
-            executor_model="qwen-aguvis-7b",
-            url=None,
-            max_tokens=1500,
-            top_p=0.9,
-            temperature=0.5,
-            action_space="pyautogui",
-            observation_type="screenshot",
+        self,
+        platform="ubuntu",
+        planner_model="gpt-4o",
+        executor_model="qwen-aguvis-7b",
+        url=None,
+        max_tokens=1500,
+        top_p=0.9,
+        temperature=0.5,
+        action_space="pyautogui",
+        observation_type="screenshot",
     ):
         self.platform = platform
         self.planner_model = planner_model
@@ -404,45 +442,64 @@ class AguvisAgent:
         """
         Predict the next action(s) based on the current observation.
         """
-        previous_actions = "\n".join([f"Step {i+1}: {action}" for i, action in enumerate(self.actions)]) if self.actions else "None"
+        previous_actions = (
+            "\n".join(
+                [f"Step {i+1}: {action}" for i, action in enumerate(self.actions)]
+            )
+            if self.actions
+            else "None"
+        )
 
         if self.planner_model is None:
             aguvis_messages = []
-            aguvis_messages.append({
-                "role": "system",
-                "content": [{"type": "text", "text": AGUVIS_SYS_PROMPT}]
-            })
-            aguvis_messages.append({
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": AGUVIS_PLANNING_PROMPT.format(
-                            instruction=instruction,
-                            previous_actions=previous_actions,
-                        )
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{encode_image(obs['screenshot'])}"}
-                    }
-                ],
-            })
-            aguvis_messages.append({
-                "role": "assistant",
-                "content": [
-                    {"type": "text", "text": AGUVIS_INNER_MONOLOGUE_APPEND_PROMPT}
-                ]
-            })
-            aguvis_response = self.call_llm({
-                "model": self.executor_model,
-                "messages": aguvis_messages,
-                "max_tokens": self.max_tokens,
-                "top_p": self.top_p,
-                "temperature": self.temperature
-            }, self.executor_model)
+            aguvis_messages.append(
+                {
+                    "role": "system",
+                    "content": [{"type": "text", "text": AGUVIS_SYS_PROMPT}],
+                }
+            )
+            aguvis_messages.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": AGUVIS_PLANNING_PROMPT.format(
+                                instruction=instruction,
+                                previous_actions=previous_actions,
+                            ),
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encode_image(obs['screenshot'])}"
+                            },
+                        },
+                    ],
+                }
+            )
+            aguvis_messages.append(
+                {
+                    "role": "assistant",
+                    "content": [
+                        {"type": "text", "text": AGUVIS_INNER_MONOLOGUE_APPEND_PROMPT}
+                    ],
+                }
+            )
+            aguvis_response = self.call_llm(
+                {
+                    "model": self.executor_model,
+                    "messages": aguvis_messages,
+                    "max_tokens": self.max_tokens,
+                    "top_p": self.top_p,
+                    "temperature": self.temperature,
+                },
+                self.executor_model,
+            )
             logger.info(f"Aguvis Output: {aguvis_response}")
-            low_level_instruction, pyautogui_actions = parse_aguvis_response(aguvis_response)
+            low_level_instruction, pyautogui_actions = parse_aguvis_response(
+                aguvis_response
+            )
 
             self.actions.append(low_level_instruction)
             return aguvis_response, [pyautogui_actions]
@@ -454,35 +511,40 @@ class AguvisAgent:
 
             planner_messages = []
             planner_system_message = AGUVIS_PLANNER_SYS_PROMPT
-            planner_messages.append({
-                "role": "system",
-                "content": [{"type": "text", "text": planner_system_message}]
-            })
+            planner_messages.append(
+                {
+                    "role": "system",
+                    "content": [{"type": "text", "text": planner_system_message}],
+                }
+            )
             planner_messages.append(
                 {
                     "role": "user",
                     "content": [
                         {
                             "type": "text",
-                            "text": f"You are asked to complete the following task: {instruction}"
+                            "text": f"You are asked to complete the following task: {instruction}",
                         },
                         {
                             "type": "image_url",
                             "image_url": {
                                 "url": f"data:image/png;base64,{encode_image(obs['screenshot'])}",
-                                "detail": "high"
-                            }
-                        }
-                    ]
+                                "detail": "high",
+                            },
+                        },
+                    ],
                 }
             )
-            planner_response = self.call_llm({
-                "model": self.planner_model,
-                "messages": planner_messages,
-                "max_tokens": self.max_tokens,
-                "top_p": self.top_p,
-                "temperature": self.temperature
-            }, self.planner_model)
+            planner_response = self.call_llm(
+                {
+                    "model": self.planner_model,
+                    "messages": planner_messages,
+                    "max_tokens": self.max_tokens,
+                    "top_p": self.top_p,
+                    "temperature": self.temperature,
+                },
+                self.planner_model,
+            )
             logger.info(f"Planner output: {planner_response}")
             code = parse_code_from_planner_response(planner_response)
             pyautogui_actions = []
@@ -499,10 +561,10 @@ class AguvisAgent:
     def convert_action_to_grounding_model_instruction(
         self, line: str, obs: Dict, instruction: str
     ) -> str:
-        if 'aguvis' in self.executor_model.lower():
-            pattern = r'(#.*?)\n(pyautogui\.(moveTo|click|rightClick)\((?:x=)?(\d+)(?:,\s*|\s*,\s*y=)(\d+)(?:,\s*duration=[\d.]+)?\))'
+        if "aguvis" in self.executor_model.lower():
+            pattern = r"(#.*?)\n(pyautogui\.(moveTo|click|rightClick)\((?:x=)?(\d+)(?:,\s*|\s*,\s*y=)(\d+)(?:,\s*duration=[\d.]+)?\))"
         else:
-            pattern = r'(#.*?)\n(pyautogui\.(moveTo|click|rightClick|doubleClick)\((?:x=)?(\d+)(?:,\s*|\s*,\s*y=)(\d+)(?:,\s*duration=[\d.]+)?\))'
+            pattern = r"(#.*?)\n(pyautogui\.(moveTo|click|rightClick|doubleClick)\((?:x=)?(\d+)(?:,\s*|\s*,\s*y=)(\d+)(?:,\s*duration=[\d.]+)?\))"
         matches = re.findall(pattern, line, re.DOTALL)
         if not matches:
             return line
@@ -514,14 +576,16 @@ class AguvisAgent:
 
             if "click()" in original_action.lower():
                 continue  # Skip click() without coordinates
-            
+
             grounder_messages = []
 
-            if 'aguvis' in self.executor_model:
-                grounder_messages.append({
-                    "role": "system",
-                    "content": [{"type": "text", "text": AGUVIS_SYS_PROMPT}]
-                })
+            if "aguvis" in self.executor_model:
+                grounder_messages.append(
+                    {
+                        "role": "system",
+                        "content": [{"type": "text", "text": AGUVIS_SYS_PROMPT}],
+                    }
+                )
                 grounder_messages.append(
                     {
                         "role": "user",
@@ -535,7 +599,7 @@ class AguvisAgent:
                             },
                             {
                                 "type": "text",
-                                "text": '\n' + comment,
+                                "text": "\n" + comment,
                             },
                         ],
                     }
@@ -544,33 +608,50 @@ class AguvisAgent:
                     {
                         "role": "assistant",
                         "content": [
-                            {"type": "text", "text": AGUVIS_GROUNDING_APPEND_PROMPT.format(function_name=func_name)}
+                            {
+                                "type": "text",
+                                "text": AGUVIS_GROUNDING_APPEND_PROMPT.format(
+                                    function_name=func_name
+                                ),
+                            }
                         ],
                     }
                 )
                 logic_size = None
-            elif 'tars' in self.executor_model.lower():
-                min_pixels=100*28*28
-                max_pixels=16384*28*28
+            elif "tars" in self.executor_model.lower():
+                min_pixels = 100 * 28 * 28
+                max_pixels = 16384 * 28 * 28
                 try:
-                    image_grounder = Image.open(BytesIO(obs['screenshot']))
+                    image_grounder = Image.open(BytesIO(obs["screenshot"]))
                 except Exception as e:
                     raise RuntimeError(f"Error opening image: {e}")
 
                 if image_grounder.width * image_grounder.height > max_pixels:
-                    resize_factor = math.sqrt(max_pixels / (image_grounder.width * image_grounder.height))
-                    width, height = int(image_grounder.width * resize_factor), int(image_grounder.height * resize_factor)
-                    image_grounder = image_grounder.resize((width, height))
-                
-                if image_grounder.width * image_grounder.height < min_pixels:
-                    resize_factor = math.sqrt(min_pixels / (image_grounder.width * image_grounder.height))
-                    width, height = math.ceil(image_grounder.width * resize_factor), math.ceil(image_grounder.height * resize_factor)
+                    resize_factor = math.sqrt(
+                        max_pixels / (image_grounder.width * image_grounder.height)
+                    )
+                    width, height = int(image_grounder.width * resize_factor), int(
+                        image_grounder.height * resize_factor
+                    )
                     image_grounder = image_grounder.resize((width, height))
 
-                grounder_messages.append({
-                    "role": "system",
-                    "content": [{"type": "text", "text": "You are a helpful assistant"}]
-                })
+                if image_grounder.width * image_grounder.height < min_pixels:
+                    resize_factor = math.sqrt(
+                        min_pixels / (image_grounder.width * image_grounder.height)
+                    )
+                    width, height = math.ceil(
+                        image_grounder.width * resize_factor
+                    ), math.ceil(image_grounder.height * resize_factor)
+                    image_grounder = image_grounder.resize((width, height))
+
+                grounder_messages.append(
+                    {
+                        "role": "system",
+                        "content": [
+                            {"type": "text", "text": "You are a helpful assistant"}
+                        ],
+                    }
+                )
                 grounder_messages.append(
                     {
                         "role": "user",
@@ -584,20 +665,29 @@ class AguvisAgent:
                             },
                             {
                                 "type": "text",
-                                "text": "Output only the coordinate of one point in your response. What element matches the following task: " + comment,
+                                "text": "Output only the coordinate of one point in your response. What element matches the following task: "
+                                + comment,
                             },
                         ],
                     }
                 )
-                logic_size = smart_resize(height = image_grounder.height, width=image_grounder.width,factor=28,min_pixels=100*28*28,max_pixels=16384*28*28)
-            elif 'uground' in self.executor_model.lower():
+                logic_size = smart_resize(
+                    height=image_grounder.height,
+                    width=image_grounder.width,
+                    factor=28,
+                    min_pixels=100 * 28 * 28,
+                    max_pixels=16384 * 28 * 28,
+                )
+            elif "uground" in self.executor_model.lower():
                 grounder_messages = [
                     {
                         "role": "user",
                         "content": [
                             {
                                 "type": "image_url",
-                                "image_url": {"url": f"data:image/jpeg;base64,{encode_image(obs['screenshot'])}"},
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{encode_image(obs['screenshot'])}"
+                                },
                             },
                             {
                                 "type": "text",
@@ -610,38 +700,46 @@ class AguvisAgent:
 
             Description: {comment}
 
-            Answer:"""
+            Answer:""",
                             },
                         ],
                     },
                 ]
-                logic_size = [1000,1000]
-            
-            grounding_response = self.call_llm({
-                "model": self.executor_model,
-                "messages": grounder_messages,
-                "max_tokens": self.max_tokens,
-                "top_p": self.top_p,
-                "temperature": self.temperature
-            }, self.executor_model)
+                logic_size = [1000, 1000]
+
+            grounding_response = self.call_llm(
+                {
+                    "model": self.executor_model,
+                    "messages": grounder_messages,
+                    "max_tokens": self.max_tokens,
+                    "top_p": self.top_p,
+                    "temperature": self.temperature,
+                },
+                self.executor_model,
+            )
             logger.info("grounding_response:" + grounding_response)
             if grounding_response == "There are none.":
                 return new_instruction
-            coordinates = extract_coordinates(grounding_response, SCREEN_LOGIC_SIZE, self.executor_model, scaling_size = logic_size)
+            coordinates = extract_coordinates(
+                grounding_response,
+                SCREEN_LOGIC_SIZE,
+                self.executor_model,
+                scaling_size=logic_size,
+            )
             # FIXME [junli]: Use ast to reconstruct the action with coordinates
-            action_parts = original_action.split('(')
+            action_parts = original_action.split("(")
             new_action = f"{action_parts[0]}({coordinates[0]}, {coordinates[1]}"
-            if len(action_parts) > 1 and 'duration' in action_parts[1]:
-                duration_part = action_parts[1].split(',')[-1]
+            if len(action_parts) > 1 and "duration" in action_parts[1]:
+                duration_part = action_parts[1].split(",")[-1]
                 new_action += f", {duration_part}"
-            elif len(action_parts) > 1 and 'button' in action_parts[1]:
-                button_part = action_parts[1].split(',')[-1]
+            elif len(action_parts) > 1 and "button" in action_parts[1]:
+                button_part = action_parts[1].split(",")[-1]
                 new_action += f", {button_part}"
             else:
                 new_action += ")"
             logger.info("new action:" + new_action)
             new_instruction = new_instruction.replace(original_action, new_action)
-            
+
         return new_instruction
 
     @backoff.on_exception(
@@ -651,38 +749,35 @@ class AguvisAgent:
         # because we want to catch this kind of Exception in the outside to ensure
         # each example won't exceed the time limit
         (
-                # General exceptions
-                SSLError,
-
-                # OpenAI exceptions
-                openai.RateLimitError,
-                openai.BadRequestError,
-                openai.InternalServerError,
-
-                # Google exceptions
-                InvalidArgument,
-                ResourceExhausted,
-                InternalServerError,
-                BadRequest,
-
-                # Groq exceptions
-                # todo: check
+            # General exceptions
+            SSLError,
+            # OpenAI exceptions
+            openai.RateLimitError,
+            openai.BadRequestError,
+            openai.InternalServerError,
+            # Google exceptions
+            InvalidArgument,
+            ResourceExhausted,
+            InternalServerError,
+            BadRequest,
+            # Groq exceptions
+            # todo: check
         ),
         interval=30,
-        max_tries=10
+        max_tries=10,
     )
     def call_llm(self, payload, model):
         if model.startswith("gpt"):
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {OPEN_API_KEY}"
+                "Authorization": f"Bearer {OPEN_API_KEY}",
                 # "Authorization": f"Bearer {os.environ['MIT_SPIDER_TOKEN']}"
             }
             logger.info("Generating content with GPT model: %s", model)
             response = requests.post(
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
-                json=payload
+                json=payload,
             )
 
             if response.status_code != 200:
@@ -690,24 +785,31 @@ class AguvisAgent:
                 time.sleep(5)
                 return ""
             else:
-                return response.json()['choices'][0]['message']['content']
+                return response.json()["choices"][0]["message"]["content"]
         elif "aguvis" in model or "Aguvis" in model:
             headers = {
                 "Content-Type": "application/json",
                 # "Authorization": f"Bearer empty"
             }
             import httpx
+
             logger.info("Generating content with Aguvis model: %s", model)
             client = OpenAI(
-                base_url="http://10.140.52.49:10004/v1" if self.url is None else self.url,
+                base_url=(
+                    "http://10.140.52.49:10004/v1" if self.url is None else self.url
+                ),
                 api_key="empty",
             )
 
             if "7b" in model or "7B" in model:
                 response = requests.post(
-                    "http://101.132.136.195:7908/v1/chat/completions" if self.url is None else self.url,
+                    (
+                        "http://101.132.136.195:7908/v1/chat/completions"
+                        if self.url is None
+                        else self.url
+                    ),
                     headers=headers,
-                    json=payload
+                    json=payload,
                 )
             elif "72b" in model or "72B" in model:
                 # client = OpenAI(
@@ -716,38 +818,40 @@ class AguvisAgent:
                 # )
                 response = client.chat.completions.create(
                     model=model,
-                    messages=payload['messages'],
-                    max_tokens=payload['max_tokens'],
-                    temperature=payload['temperature'],
-                    top_p = payload['top_p']
+                    messages=payload["messages"],
+                    max_tokens=payload["max_tokens"],
+                    temperature=payload["temperature"],
+                    top_p=payload["top_p"],
                 )
             else:
                 raise Exception("Unsupported Aguvis model version")
             logger.info(response.choices[0].message.content)
             return response.choices[0].message.content
-        elif 'tars' in model.lower():
+        elif "tars" in model.lower():
             client = OpenAI(
-                base_url="http://10.140.66.134:8000/v1" if self.url is None else self.url,
+                base_url=(
+                    "http://10.140.66.134:8000/v1" if self.url is None else self.url
+                ),
                 api_key="empty",
             )
             response = client.chat.completions.create(
                 model=model,
-                messages=payload['messages'],
-                max_tokens=payload['max_tokens'],
+                messages=payload["messages"],
+                max_tokens=payload["max_tokens"],
                 temperature=0,
-                top_p = payload['top_p']
+                top_p=payload["top_p"],
             )
 
             return response.choices[0].message.content
-        elif 'uground' in model.lower():
+        elif "uground" in model.lower():
             client = OpenAI(
                 base_url="http://10.140.60.1:8005/v1" if self.url is None else self.url,
                 api_key="empty",
             )
             response = client.chat.completions.create(
                 model=model,
-                messages=payload['messages'],
-                max_tokens=payload['max_tokens'],
+                messages=payload["messages"],
+                max_tokens=payload["max_tokens"],
                 temperature=0,
             )
 
@@ -760,7 +864,11 @@ class AguvisAgent:
 
     def reset(self, _logger=None):
         global logger
-        logger = _logger if _logger is not None else logging.getLogger("desktopenv.aguvis_agent")
+        logger = (
+            _logger
+            if _logger is not None
+            else logging.getLogger("desktopenv.aguvis_agent")
+        )
 
         self.thoughts = []
         self.action_descriptions = []

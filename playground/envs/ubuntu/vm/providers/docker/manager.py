@@ -1,5 +1,7 @@
-""" Script to download original file .
-Utils and basic architecture credit to https://github.com/xlang-ai/OSWorld/blob/main/desktop_env/providers/docker/manager.py """
+"""Script to download original file .
+Utils and basic architecture credit to https://github.com/xlang-ai/OSWorld/blob/main/desktop_env/providers/docker/manager.py
+"""
+
 import os
 import platform
 import zipfile
@@ -23,11 +25,12 @@ WINDOWS_X86_URL = "https://huggingface.co/datasets/xlangai/windows_osworld/resol
 VMS_DIR = "./docker_vm_data"
 
 URL = UBUNTU_X86_URL
-DOWNLOADED_FILE_NAME = URL.split('/')[-1]
+DOWNLOADED_FILE_NAME = URL.split("/")[-1]
 
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     docker_path = r"C:\Program Files\Docker\Docker"
     os.environ["PATH"] += os.pathsep + docker_path
+
 
 def _download_vm(vms_dir: str):
     global URL, DOWNLOADED_FILE_NAME
@@ -53,16 +56,16 @@ def _download_vm(vms_dir: str):
                 break
 
             response.raise_for_status()
-            total_size = int(response.headers.get('content-length', 0))
+            total_size = int(response.headers.get("content-length", 0))
 
             with open(downloaded_file_path, "ab") as file, tqdm(
-                    desc="Progress",
-                    total=total_size,
-                    unit='iB',
-                    unit_scale=True,
-                    unit_divisor=1024,
-                    initial=downloaded_size,
-                    ascii=True
+                desc="Progress",
+                total=total_size,
+                unit="iB",
+                unit_scale=True,
+                unit_divisor=1024,
+                initial=downloaded_size,
+                ascii=True,
             ) as progress_bar:
                 try:
                     for data in response.iter_content(chunk_size=1024):
@@ -79,9 +82,11 @@ def _download_vm(vms_dir: str):
     if downloaded_file_name.endswith(".zip"):
         # Unzip the downloaded file
         logger.info("Unzipping the downloaded file...☕️")
-        with zipfile.ZipFile(downloaded_file_path, 'r') as zip_ref:
+        with zipfile.ZipFile(downloaded_file_path, "r") as zip_ref:
             zip_ref.extractall(vms_dir)
-        logger.info("Files have been successfully extracted to the directory: " + str(vms_dir))
+        logger.info(
+            "Files have been successfully extracted to the directory: " + str(vms_dir)
+        )
 
 
 class DockerVMManager(VMManager):
@@ -112,7 +117,7 @@ class DockerVMManager(VMManager):
             URL = UBUNTU_X86_URL
         elif os_type == "Windows":
             URL = WINDOWS_X86_URL
-        DOWNLOADED_FILE_NAME = URL.split('/')[-1]
+        DOWNLOADED_FILE_NAME = URL.split("/")[-1]
 
         if DOWNLOADED_FILE_NAME.endswith(".zip"):
             vm_name = DOWNLOADED_FILE_NAME[:-4]

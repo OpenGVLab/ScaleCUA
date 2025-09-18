@@ -83,165 +83,161 @@ def generate_seeact_prompts(
     ui_element_choices: list[Any] | None = None,
     additional_guidelines: list[str] | None = None,
 ) -> tuple[str, str, str]:
-  """Generates prompts for the SeeAct setup.
+    """Generates prompts for the SeeAct setup.
 
-  Args:
-      task: Description of the task to be performed.
-      previous_actions: A list of actions previously taken.
-      ui_element_choices: A list of choices available for the next action,
-        derived from the accessibility tree.
-      additional_guidelines: Task specific guidelines.
+    Args:
+        task: Description of the task to be performed.
+        previous_actions: A list of actions previously taken.
+        ui_element_choices: A list of choices available for the next action,
+          derived from the accessibility tree.
+        additional_guidelines: Task specific guidelines.
 
-  Returns:
-      A list of strings forming the complete prompt for the SeeAct task.
-  """
-  system_prompt_input = SEEACT_CHOICE_PROMPT_DICT["system_prompt"]
-  question_description_input = SEEACT_CHOICE_PROMPT_DICT["question_description"]
-  referring_input = SEEACT_CHOICE_PROMPT_DICT["referring_description"]
-  element_format_input = SEEACT_CHOICE_PROMPT_DICT["element_format"]
+    Returns:
+        A list of strings forming the complete prompt for the SeeAct task.
+    """
+    system_prompt_input = SEEACT_CHOICE_PROMPT_DICT["system_prompt"]
+    question_description_input = SEEACT_CHOICE_PROMPT_DICT["question_description"]
+    referring_input = SEEACT_CHOICE_PROMPT_DICT["referring_description"]
+    element_format_input = SEEACT_CHOICE_PROMPT_DICT["element_format"]
 
-  if additional_guidelines is not None:
-    for guideline in additional_guidelines:
-      system_prompt_input += f" {guideline}"
+    if additional_guidelines is not None:
+        for guideline in additional_guidelines:
+            system_prompt_input += f" {guideline}"
 
-  return (
-      system_prompt_input,
-      seeact_utils.generate_action_generation_prompt(
-          task,
-          question_description_input,
-          previous_actions=previous_actions,
-      ),
-      seeact_utils.generate_grounding_prompt(
-          referring_description=referring_input,
-          element_format=element_format_input,
-          ui_element_choices=ui_element_choices,
-      ),
-  )
+    return (
+        system_prompt_input,
+        seeact_utils.generate_action_generation_prompt(
+            task,
+            question_description_input,
+            previous_actions=previous_actions,
+        ),
+        seeact_utils.generate_grounding_prompt(
+            referring_description=referring_input,
+            element_format=element_format_input,
+            ui_element_choices=ui_element_choices,
+        ),
+    )
 
 
 class SeeAct(base_agent.EnvironmentInteractingAgent):
-  """SeeAct agent for Android."""
+    """SeeAct agent for Android."""
 
-  def __init__(self, env: interface.AsyncEnv, name: str = "SeeAct"):
-    super().__init__(env, name)
-    self._actions = []
-    self.additional_guidelines = None
+    def __init__(self, env: interface.AsyncEnv, name: str = "SeeAct"):
+        super().__init__(env, name)
+        self._actions = []
+        self.additional_guidelines = None
 
-  def reset(self, go_home: bool = False) -> None:
-    super().reset(go_home)
-    self.env.hide_automation_ui()
-    self._actions.clear()
+    def reset(self, go_home: bool = False) -> None:
+        super().reset(go_home)
+        self.env.hide_automation_ui()
+        self._actions.clear()
 
-  def set_task_guidelines(self, task_guidelines: list[str]) -> None:
-    self.additional_guidelines = task_guidelines
+    def set_task_guidelines(self, task_guidelines: list[str]) -> None:
+        self.additional_guidelines = task_guidelines
 
-  def step(
-      self, goal: str, verbose: bool = True
-  ) -> base_agent.AgentInteractionResult:
-    result = {
-        "ui_elements": None,
-        "screenshot": None,
-        "actionable_elements": None,
-        "action_gen_payload": None,
-        "action_gen_response": None,
-        "action_ground_payload": None,
-        "action_ground_response": None,
-        "seeact_action": None,
-        "action": None,
-        "action_description": None,
-    }
-    state = self.get_post_transition_state()
-    result["ui_elements"] = state.ui_elements
-    result["screenshot"] = state.pixels
-    actionable_elements = seeact_utils.format_and_filter_elements(
-        state.ui_elements
-    )
-    result["actionable_elements"] = actionable_elements
-    descriptions = [e.description for e in actionable_elements]
-    sys_prompt, action_gen_prompt, action_ground_prompt = (
-        generate_seeact_prompts(
+    def step(
+        self, goal: str, verbose: bool = True
+    ) -> base_agent.AgentInteractionResult:
+        result = {
+            "ui_elements": None,
+            "screenshot": None,
+            "actionable_elements": None,
+            "action_gen_payload": None,
+            "action_gen_response": None,
+            "action_ground_payload": None,
+            "action_ground_response": None,
+            "seeact_action": None,
+            "action": None,
+            "action_description": None,
+        }
+        state = self.get_post_transition_state()
+        result["ui_elements"] = state.ui_elements
+        result["screenshot"] = state.pixels
+        actionable_elements = seeact_utils.format_and_filter_elements(state.ui_elements)
+        result["actionable_elements"] = actionable_elements
+        descriptions = [e.description for e in actionable_elements]
+        sys_prompt, action_gen_prompt, action_ground_prompt = generate_seeact_prompts(
             task=goal,
             previous_actions=self._actions,
             ui_element_choices=descriptions,
             additional_guidelines=self.additional_guidelines,
         )
-    )
 
-    # Action generation.
-    payload = seeact_utils.create_action_generation_messages_payload(
-        sys_prompt, action_gen_prompt, state.pixels
-    )
-    result["action_gen_payload"] = payload
-    response = seeact_utils.execute_openai_request(payload)
-    action_gen_response = response["choices"][0]["message"]["content"]
-    result["action_gen_response"] = action_gen_response
-    if verbose:
-      (
-          seeact_utils.display_prompt(
-              result["action_gen_payload"],
-              extra_text="\n~~~ANSWER~~~:" + action_gen_response,
-          )
-      )
+        # Action generation.
+        payload = seeact_utils.create_action_generation_messages_payload(
+            sys_prompt, action_gen_prompt, state.pixels
+        )
+        result["action_gen_payload"] = payload
+        response = seeact_utils.execute_openai_request(payload)
+        action_gen_response = response["choices"][0]["message"]["content"]
+        result["action_gen_response"] = action_gen_response
+        if verbose:
+            (
+                seeact_utils.display_prompt(
+                    result["action_gen_payload"],
+                    extra_text="\n~~~ANSWER~~~:" + action_gen_response,
+                )
+            )
 
-    # Grounding.
-    payload = seeact_utils.create_grounding_messages_payload(
-        sys_prompt,
-        action_gen_prompt,
-        state.pixels,
-        action_gen_response,
-        action_ground_prompt,
-    )
-    result["action_ground_payload"] = payload
-    response = seeact_utils.execute_openai_request(payload)
-    action_ground_response = response["choices"][0]["message"]["content"]
-    result["action_ground_response"] = action_ground_response
+        # Grounding.
+        payload = seeact_utils.create_grounding_messages_payload(
+            sys_prompt,
+            action_gen_prompt,
+            state.pixels,
+            action_gen_response,
+            action_ground_prompt,
+        )
+        result["action_ground_payload"] = payload
+        response = seeact_utils.execute_openai_request(payload)
+        action_ground_response = response["choices"][0]["message"]["content"]
+        result["action_ground_response"] = action_ground_response
 
-    # Parse action and convert to JSONAction.
-    try:
-      action_ground_response = result["action_ground_response"]
-      seeact_action = seeact_utils.extract_element_action_value(
-          action_ground_response.split("\n")
-      )
-      action = seeact_utils.convert_seeact_action_to_json_action(
-          seeact_action, actionable_elements
-      )
-      result["seeact_action"] = seeact_action
-      result["action"] = action
-    except seeact_utils.ParseActionError as e:
-      action_description = f"No Operation with error: {e}"
-      action = json_action.JSONAction(action_type=json_action.UNKNOWN)
-      result["seeact_action"] = None
-      result["action"] = action
-    else:
-      target_element = seeact_utils.get_referred_element(
-          seeact_action, actionable_elements
-      )
-      action_description = seeact_utils.generate_action_description(
-          seeact_action, target_element
-      )
-      actuation.execute_adb_action(
-          action,
-          [e.ui_element for e in actionable_elements],
-          self.env.logical_screen_size,
-          self.env.controller,
-      )
+        # Parse action and convert to JSONAction.
+        try:
+            action_ground_response = result["action_ground_response"]
+            seeact_action = seeact_utils.extract_element_action_value(
+                action_ground_response.split("\n")
+            )
+            action = seeact_utils.convert_seeact_action_to_json_action(
+                seeact_action, actionable_elements
+            )
+            result["seeact_action"] = seeact_action
+            result["action"] = action
+        except seeact_utils.ParseActionError as e:
+            action_description = f"No Operation with error: {e}"
+            action = json_action.JSONAction(action_type=json_action.UNKNOWN)
+            result["seeact_action"] = None
+            result["action"] = action
+        else:
+            target_element = seeact_utils.get_referred_element(
+                seeact_action, actionable_elements
+            )
+            action_description = seeact_utils.generate_action_description(
+                seeact_action, target_element
+            )
+            actuation.execute_adb_action(
+                action,
+                [e.ui_element for e in actionable_elements],
+                self.env.logical_screen_size,
+                self.env.controller,
+            )
 
-    result["action_description"] = action_description
-    self._actions.append(action_description)
+        result["action_description"] = action_description
+        self._actions.append(action_description)
 
-    if verbose:
-      print("=" * 80)
-      (
-          seeact_utils.display_prompt(
-              result["action_ground_payload"],
-              extra_text="\n\n~~~~~~~~~ANSWER~~~~~~~~~:"
-              + action_description
-              + "\n\n",
-          )
-      )
-      print("=" * 80)
+        if verbose:
+            print("=" * 80)
+            (
+                seeact_utils.display_prompt(
+                    result["action_ground_payload"],
+                    extra_text="\n\n~~~~~~~~~ANSWER~~~~~~~~~:"
+                    + action_description
+                    + "\n\n",
+                )
+            )
+            print("=" * 80)
 
-    return base_agent.AgentInteractionResult(
-        done=action.action_type == json_action.STATUS,
-        data=result,
-    )
+        return base_agent.AgentInteractionResult(
+            done=action.action_type == json_action.STATUS,
+            data=result,
+        )

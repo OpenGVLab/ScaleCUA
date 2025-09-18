@@ -13,12 +13,9 @@ from evaluation.utils import *
 from utils_mobile.utils import get_compressed_xml
 
 
-T_INPUT = TypeVar('T_INPUT')
-T_OUTPUT = TypeVar('T_OUTPUT')
-T_TARGET = TypeVar('T_TARGET')
-
-
-
+T_INPUT = TypeVar("T_INPUT")
+T_OUTPUT = TypeVar("T_OUTPUT")
+T_TARGET = TypeVar("T_TARGET")
 
 
 def dump_xml(xml_path):
@@ -57,11 +54,15 @@ def compute_image_similarity(image_paths):
 
     for i in range(len(image_list) - 1):
         try:
-            either_not_255 = np.logical_or(np.not_equal(image_list[i], 255), np.not_equal(image_list[i + 1], 255))
+            either_not_255 = np.logical_or(
+                np.not_equal(image_list[i], 255), np.not_equal(image_list[i + 1], 255)
+            )
             values_match = np.equal(image_list[i], image_list[i + 1])
             match_in_either_not_255 = np.logical_and(values_match, either_not_255)
 
-            similarity = np.sum(match_in_either_not_255.astype(np.float32)) / np.sum(either_not_255.astype(np.float32))
+            similarity = np.sum(match_in_either_not_255.astype(np.float32)) / np.sum(
+                either_not_255.astype(np.float32)
+            )
             simi.append(float(similarity))
 
             if similarity > 0.999:
@@ -83,22 +84,27 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
         self.traces = traces
         self.all_result = []
         self.show_detail_metrics = detail
-        self.total_tasks_num = 138  # TODO: change this number if the number of all tasks changes
+        self.total_tasks_num = (
+            138  # TODO: change this number if the number of all tasks changes
+        )
         if self.show_detail_metrics:
             self.additional_metrics = defaultdict(dict)
-            with open("evaluation/tasks/human_ground_turth/ground_truth_length.json") as f:
+            with open(
+                "evaluation/tasks/human_ground_turth/ground_truth_length.json"
+            ) as f:
                 self.length_gt = json.load(f)
 
     def evaluate(self, max_workers: int = 4) -> Dict[str, Any]:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_task = {
-                executor.submit(self._evaluate_single_task, task): task for task in self.task_list
+                executor.submit(self._evaluate_single_task, task): task
+                for task in self.task_list
             }
 
             for future in as_completed(future_to_task):
                 task = future_to_task[future]
                 try:
-                    future.result() 
+                    future.result()
                 except Exception as e:
                     print(f"Error evaluating task {task.get('task_id')}: {e}")
 
@@ -106,12 +112,14 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
 
     def _evaluate_single_task(self, task) -> None:
         try:
-            assert task.get('task_id') in self.metrics, f"No valid function mapped for {task.get('task_id')}"
+            assert (
+                task.get("task_id") in self.metrics
+            ), f"No valid function mapped for {task.get('task_id')}"
         except AssertionError:
             print(f"No valid function mapped for {task.get('task_id')}")
             return
 
-        task_id = task.get('task_id')
+        task_id = task.get("task_id")
         metric = self.metrics[task_id](self.args)
         final_result = {"complete": False}
 
@@ -119,7 +127,7 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
             print(f"Trace for task '{task_id}' not found.")
             return
 
-        if not os.path.exists(self.traces[task_id]['trace_file']):
+        if not os.path.exists(self.traces[task_id]["trace_file"]):
             return
 
         all_operation_trace = []
@@ -129,8 +137,8 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
         num_repeat = 0
         last_action = None
 
-        with jsonlines.open(self.traces[task_id]['trace_file']) as reader:
-            trace_root = self.traces[task_id]['trace_root']
+        with jsonlines.open(self.traces[task_id]["trace_file"]) as reader:
+            trace_root = self.traces[task_id]["trace_root"]
             for line in reader:
                 current_action = json.dumps(line["parsed_action"])
                 if current_action == last_action:
@@ -145,8 +153,10 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                     xml_path = line["xml"]
                 else:
                     xml_path = line["ac_xml"]
-                xml_path = os.path.join(self.traces[task_id]['xml_path'], xml_path.split("/")[-1])
-                metric_type = self.config.metrics_type[task.get('task_id')]
+                xml_path = os.path.join(
+                    self.traces[task_id]["xml_path"], xml_path.split("/")[-1]
+                )
+                metric_type = self.config.metrics_type[task.get("task_id")]
 
                 if not os.path.exists(xml_path):
                     print(f"XML file not found: {xml_path}")
@@ -160,8 +170,10 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                     image_path = line["image"]
                     image_filename = image_path.split("/")[-1]
                     image_path = os.path.join(trace_root, "Screen", image_filename)
-                    if image_path.split('/')[-4] != agent_name:
-                        image_path = image_path.replace(image_path.split('/')[-4], agent_name)
+                    if image_path.split("/")[-4] != agent_name:
+                        image_path = image_path.replace(
+                            image_path.split("/")[-4], agent_name
+                        )
                     all_images.append(image_path)
 
                     if "judge_page" in result.keys() and not result.get("judge_page"):
@@ -171,7 +183,6 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                 except Exception as e:
                     pass
 
-
         if self.show_detail_metrics:
             self.add_metrics(task, all_operation_trace, all_images, final_result)
 
@@ -180,17 +191,19 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
     def evaluate_old(self) -> Dict[str, Any]:
         for task in self.task_list:
             try:
-                assert task.get('task_id') in self.metrics, f"No valid function mapped for {task.get('task_id')}"
+                assert (
+                    task.get("task_id") in self.metrics
+                ), f"No valid function mapped for {task.get('task_id')}"
             except:
                 print(f"No valid function mapped for {task.get('task_id')}")
                 continue
-            task_id = task.get('task_id')
+            task_id = task.get("task_id")
             metric = self.metrics[task_id](self.args)
             final_result = {"complete": False}
             if task_id not in self.traces:
                 print(f"Trace for task '{task_id}' not found.")
                 continue
-            if not os.path.exists(self.traces[task_id]['trace_file']):
+            if not os.path.exists(self.traces[task_id]["trace_file"]):
                 print(f"Trace file not found: {self.traces[task_id]['trace_file']}")
                 continue
             all_operation_trace = []
@@ -200,8 +213,8 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
             num_repeat = 0
             last_action = None
 
-            with jsonlines.open(self.traces[task_id]['trace_file']) as reader:
-                trace_root = self.traces[task_id]['trace_root']
+            with jsonlines.open(self.traces[task_id]["trace_file"]) as reader:
+                trace_root = self.traces[task_id]["trace_root"]
                 for line in reader:
                     current_action = json.dumps(line["parsed_action"])
                     if current_action == last_action:
@@ -216,8 +229,10 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                         xml_path = line["xml"]
                     else:
                         xml_path = line["ac_xml"]
-                    xml_path = os.path.join(self.traces[task_id]['xml_path'], xml_path.split("/")[-1])
-                    metric_type = self.config.metrics_type[task.get('task_id')]
+                    xml_path = os.path.join(
+                        self.traces[task_id]["xml_path"], xml_path.split("/")[-1]
+                    )
+                    metric_type = self.config.metrics_type[task.get("task_id")]
                     if not os.path.exists(xml_path):
                         print(f"XML file not found: {xml_path}")
                         continue
@@ -228,18 +243,22 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                         image_path = line["image"]
                         image_filename = image_path.split("/")[-1]
                         image_path = os.path.join(trace_root, "Screen", image_filename)
-                        if image_path.split('/')[-4] != agent_name:
-                            image_path = image_path.replace(image_path.split('/')[-4], agent_name)
+                        if image_path.split("/")[-4] != agent_name:
+                            image_path = image_path.replace(
+                                image_path.split("/")[-4], agent_name
+                            )
                         all_images.append(image_path)
-                        if "judge_page" in result.keys() and not result.get("judge_page"):
+                        if "judge_page" in result.keys() and not result.get(
+                            "judge_page"
+                        ):
                             continue
                         else:
                             final_result = result
                     except:
                         result = {"complete": False}
-                        #import traceback
-                        #traceback.print_exc()
-                        #print(f"Error in judging {task_id} at line {line}")
+                        # import traceback
+                        # traceback.print_exc()
+                        # print(f"Error in judging {task_id} at line {line}")
 
             if self.show_detail_metrics:
                 self.add_metrics(task, all_operation_trace, all_images, final_result)
@@ -253,7 +272,11 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
         if not final_result.get("complete") or length == 0:
             RRR = None
         else:
-            RRR = self.length_gt[task["task_id"]] / length if task["task_id"] in self.length_gt else None
+            RRR = (
+                self.length_gt[task["task_id"]] / length
+                if task["task_id"] in self.length_gt
+                else None
+            )
         self.additional_metrics["RRR"][task["task_id"]] = RRR
 
         # Final Task Ratio
@@ -267,19 +290,23 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
         if length - 1 == 0:
             self.additional_metrics["reasonable_operation_ratio"][task["task_id"]] = 1
         else:
-            self.additional_metrics["reasonable_operation_ratio"][task["task_id"]] = 1 - (sum_simi / (length - 1))
+            self.additional_metrics["reasonable_operation_ratio"][task["task_id"]] = (
+                1 - (sum_simi / (length - 1))
+            )
 
     def save_single(self, task, result):
         save_dir = self.config.output_dir
-        with jsonlines.open(os.path.join(save_dir, "results.jsonl"), mode='a') as writer:
+        with jsonlines.open(
+            os.path.join(save_dir, "results.jsonl"), mode="a"
+        ) as writer:
             output_dict = {}
-            output_dict["task_id"] = task.get('task_id')
-            output_dict["task"] = self.config.task_name[task.get('task_id')]
-            output_dict["metric_type"] = self.config.metrics_type[task.get('task_id')]
+            output_dict["task_id"] = task.get("task_id")
+            output_dict["task"] = self.config.task_name[task.get("task_id")]
+            output_dict["metric_type"] = self.config.metrics_type[task.get("task_id")]
             output_dict["result"] = result
             if self.show_detail_metrics:
                 for metric, metric_value in self.additional_metrics.items():
-                    output_dict[metric] = metric_value[task.get('task_id')]
+                    output_dict[metric] = metric_value[task.get("task_id")]
             # print(f"Task '{task.get('task_id')}' evaluated.")
             # print(f"Result: {result}")
             writer.write(output_dict)
@@ -298,10 +325,17 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                 complete_metric[app].append(0)
                 partial_metric[app].append(calculate_partial_acc(result["result"]))
         for key, values in complete_metric.items():
-            with jsonlines.open(os.path.join(self.config.output_dir, "total.jsonl"), mode='a') as writer:
-                output_dir = {"App": key, "Acc": sum(values) / len(values), "Total": len(values),
-                              "Complete_Correct": sum(values), "Sum_Partial_Acc": sum(partial_metric[key]),
-                              "Partial_Acc": sum(partial_metric[key]) / len(values)}
+            with jsonlines.open(
+                os.path.join(self.config.output_dir, "total.jsonl"), mode="a"
+            ) as writer:
+                output_dir = {
+                    "App": key,
+                    "Acc": sum(values) / len(values),
+                    "Total": len(values),
+                    "Complete_Correct": sum(values),
+                    "Sum_Partial_Acc": sum(partial_metric[key]),
+                    "Partial_Acc": sum(partial_metric[key]) / len(values),
+                }
                 if self.show_detail_metrics:
                     for metric, metric_value in self.additional_metrics.items():
                         values_set = [i for i in metric_value.values() if i is not None]
@@ -314,14 +348,17 @@ class Evaluation_Task(Generic[T_INPUT, T_OUTPUT, T_TARGET]):
                 writer.write(output_dir)
 
 
-class SingleTask():
+class SingleTask:
     def __init__(self, args):
         self.metric_type = ""
         self.final_ground_truth = None
         self.args = args
 
     def check_answer(self, line):
-        if line["parsed_action"].get("action") != "finish" and line["parsed_action"].get("type") != "finish":
+        if (
+            line["parsed_action"].get("action") != "finish"
+            and line["parsed_action"].get("type") != "finish"
+        ):
             return False
         if self.final_ground_truth is None:
             return False

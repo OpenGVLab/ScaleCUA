@@ -29,4 +29,6 @@ def parallel_worker(class_, config, parallel, tasks):
             auto_class = class_(config_copy)
 
             future = executor.submit(auto_class.run_task, task, instance)
-            future.add_done_callback(lambda fut, di=instance: task_done_callback(fut, di, free_dockers))
+            future.add_done_callback(
+                lambda fut, di=instance: task_done_callback(fut, di, free_dockers)
+            )

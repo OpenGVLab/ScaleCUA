@@ -28,5 +28,5 @@ URL_MAPPINGS = {
     SHOPPING: "http://onestopmarket.com",
     SHOPPING_ADMIN: "http://luma.com/admin",
     GITLAB: "http://gitlab.com",
-    MAP: "http://openstreetmap.org"
+    MAP: "http://openstreetmap.org",
 }

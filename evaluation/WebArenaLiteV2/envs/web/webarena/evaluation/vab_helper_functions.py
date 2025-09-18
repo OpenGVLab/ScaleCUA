@@ -1,4 +1,5 @@
 """Implements helper functions to assist evaluation cases where other evaluators are not suitable."""
+
 import json
 from datetime import datetime, timezone
 import time
@@ -11,13 +12,12 @@ from beartype import beartype
 from beartype.typing import Dict, List
 from playwright.sync_api import Page
 
-from config.env.webarena.init.env_config import (
-    ACCOUNTS,
-    SHOPPING
-)
+from config.env.webarena.init.env_config import ACCOUNTS, SHOPPING
 
 import logging
+
 logger = logging.getLogger("logger")
+
 
 def generate_from_openai_chat_completion(
     messages: list[dict[str, str]],
@@ -28,7 +28,7 @@ def generate_from_openai_chat_completion(
     context_length: int,
     stop_token: str | None = None,
 ) -> str | None:
-    
+
     max_attempt = 5
     cur_attempt = 0
 
@@ -37,7 +37,9 @@ def generate_from_openai_chat_completion(
             "OPENAI_API_KEY environment variable must be set when using OpenAI API."
         )
 
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], base_url=os.environ["OPENAI_BASE_URL"])
+    client = OpenAI(
+        api_key=os.environ["OPENAI_API_KEY"], base_url=os.environ["OPENAI_BASE_URL"]
+    )
     while cur_attempt < max_attempt:
         try:
             response = client.chat.completions.create(
@@ -55,6 +57,7 @@ def generate_from_openai_chat_completion(
             time.sleep(2)  # Optional: wait before retrying
             if cur_attempt >= max_attempt:
                 raise
+
 
 class PseudoPage:
     def __init__(self, original_page: Page, url: str):
@@ -100,9 +103,7 @@ def shopping_get_latest_order_url() -> str:
         "searchCriteria[pageSize]": "1",
     }
 
-    response = requests.get(
-        f"{SHOPPING}/rest/V1/orders", params=params, headers=header
-    )
+    response = requests.get(f"{SHOPPING}/rest/V1/orders", params=params, headers=header)
     assert response.status_code == 200
     response_obj = response.json()["items"][0]
     order_id = int(response_obj["increment_id"])
@@ -190,9 +191,7 @@ def shopping_get_sku_product_page_url(sku: str) -> str:
         "Authorization": f"Bearer {shopping_get_auth_token()}",
         "Content-Type": "application/json",
     }
-    response = requests.get(
-        f"{SHOPPING}/rest/V1/products/{sku}", headers=header
-    )
+    response = requests.get(f"{SHOPPING}/rest/V1/products/{sku}", headers=header)
     assert response.status_code == 200
     response_obj = response.json()
     if len(response_obj) == 0:
@@ -281,9 +280,7 @@ def shopping_get_order_product_name_list(page: Page | PseudoPage) -> str:
 
 
 @beartype
-def shopping_get_order_product_quantity(
-    page: Page | PseudoPage, sku: str
-) -> int:
+def shopping_get_order_product_quantity(page: Page | PseudoPage, sku: str) -> int:
     try:
         if "|OR|" in sku:
             skus = sku.split(" |OR| ")
@@ -316,9 +313,7 @@ def shopping_get_order_product_option(
 
 
 @beartype
-def shopping_get_product_attributes(
-    page: Page | PseudoPage, attribute: str
-) -> str:
+def shopping_get_product_attributes(page: Page | PseudoPage, attribute: str) -> str:
     # Get the values of all cells in the table for the given attribute
     try:
         result = page.evaluate(
@@ -580,9 +575,7 @@ def reddit_get_parent_comment_username_of_latest_comment_by_username(
 
 
 @beartype
-def gitlab_get_project_memeber_role(
-    page: Page | PseudoPage, account_name: str
-) -> str:
+def gitlab_get_project_memeber_role(page: Page | PseudoPage, account_name: str) -> str:
     # get the account index
     try:
         account_idx = page.evaluate(
@@ -617,7 +610,7 @@ def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
     """Check whether the prediction matches the reference with GPT-4-turbo"""
     if pred == "":
         return 0.0
-    
+
     messages: list[dict[str, Any]] = []
     # construct the question to ask
     message = "Help a teacher to grade the answer of a student given a question. Keep in mind that the student may use different phrasing or wording to answer the question. The goal is to evaluate whether the answer is semantically equivalent to the reference answer.\n"
@@ -631,8 +624,8 @@ def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
         {"role": "user", "content": message},
     ]
 
-    logger.info(f'[R] {reference}')
-    logger.info(f'[P] {pred}')
+    logger.info(f"[R] {reference}")
+    logger.info(f"[P] {pred}")
 
     response = generate_from_openai_chat_completion(
         model="gpt-4o-2024-11-20",
@@ -658,7 +651,7 @@ def llm_ua_match(pred: str, reference: str, question: str) -> float:
     """Check whether the prediction matches the reference with GPT-4-turbo"""
     # if pred == "":
     #     return 0.0
-    
+
     messages: list[dict[str, Any]] = []
     # construct the question to ask
     message = ""

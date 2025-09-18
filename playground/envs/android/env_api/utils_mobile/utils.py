@@ -27,15 +27,17 @@ def handle_backoff(details):
 
 def handle_giveup(details):
     print(
-        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}"
-        .format(**details))
+        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}".format(
+            **details
+        )
+    )
 
 
 def time_within_ten_secs(time1, time2):
     def parse_time(t):
         if "+" in t:
             t = t.split()[1]
-            t = t.split('.')[0] + '.' + t.split('.')[1][:6]
+            t = t.split(".")[0] + "." + t.split(".")[1][:6]
             format = "%H:%M:%S.%f"
         else:
             format = "%H:%M:%S"
@@ -73,20 +75,20 @@ def print_with_color(text: str, color=""):
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 import os
 
 
 def write_jsonl(data: List[dict], path: str, append: bool = False):
-    with jsonlines.open(path, mode='a' if append else 'w') as writer:
+    with jsonlines.open(path, mode="a" if append else "w") as writer:
         for item in data:
             writer.write(item)
 
 
 def del_file(path):
-    for elm in Path(path).glob('*'):
+    for elm in Path(path).glob("*"):
         elm.unlink() if elm.is_file() else shutil.rmtree(elm)
     if os.path.exists(path):
         os.rmdir(path)
@@ -105,6 +107,7 @@ def copy_directory(source_dir, target_dir):
         else:
             shutil.copy2(source_item, target_item)
 
+
 def split_chunks(lst, num_chunks):
     avg = len(lst) // num_chunks
     remainder = len(lst) % num_chunks
@@ -112,20 +115,22 @@ def split_chunks(lst, num_chunks):
     i = 0
     for _ in range(num_chunks):
         chunk_size = avg + (1 if remainder > 0 else 0)
-        chunks.append(lst[i:i + chunk_size])
+        chunks.append(lst[i : i + chunk_size])
         i += chunk_size
         remainder -= 1
     return chunks
-def load_json(path, encoding='utf-8'):
+
+
+def load_json(path, encoding="utf-8"):
     return json.load(open(path, encoding=encoding))
 
 
 def save_json(obj, path):
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)
 
 
-def load_jsonl(path, encoding='utf-8'):
+def load_jsonl(path, encoding="utf-8"):
     res = []
     with open(path, encoding=encoding) as f:
         for line in f:
@@ -134,32 +139,47 @@ def load_jsonl(path, encoding='utf-8'):
 
 
 def save_jsonl(obj, path):
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         for item in obj:
-            f.write(json.dumps(item, ensure_ascii=False) + '\n')
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 
 def write_jsonl(data: List[dict], path: str, append: bool = False):
-    with jsonlines.open(path, mode='a' if append else 'w') as writer:
+    with jsonlines.open(path, mode="a" if append else "w") as writer:
         for item in data:
             writer.write(item)
 
 
 def del_file(path):
-    for elm in Path(path).glob('*'):
+    for elm in Path(path).glob("*"):
         elm.unlink() if elm.is_file() else shutil.rmtree(elm)
     if os.path.exists(path):
         os.rmdir(path)
+
+
 def get_avd_serial_number(avd_name):
     try:
-        result = subprocess.run(['adb', 'devices'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            ["adb", "devices"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         devices_output = result.stdout
 
-        devices = [line.split()[0] for line in devices_output.splitlines() if 'device' in line and 'List' not in line]
+        devices = [
+            line.split()[0]
+            for line in devices_output.splitlines()
+            if "device" in line and "List" not in line
+        ]
 
         for device in devices:
-            result = subprocess.run(['adb', '-s', device, 'emu', 'avd', 'name'], stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                ["adb", "-s", device, "emu", "avd", "name"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
             avd_output = result.stdout.replace("OK", "").strip()
             # print(avd_output.replace("OK", "").strip())
 
@@ -172,14 +192,25 @@ def get_avd_serial_number(avd_name):
         return None
 
 
-
 def execute_adb(adb_command, type="cmd", output=True, port=None):
     if type == "cmd":
         env = os.environ.copy()
-        env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:" + env["PATH"]
-        env["PATH"] = f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
-        result = subprocess.run(adb_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                                executable='/bin/zsh', env=env)
+        env["PATH"] = (
+            f"/Users/{getpass.getuser()}/Library/Android/sdk/platform-tools:"
+            + env["PATH"]
+        )
+        env["PATH"] = (
+            f"/Users/{getpass.getuser()}/Library/Android/sdk/tools:" + env["PATH"]
+        )
+        result = subprocess.run(
+            adb_command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            executable="/bin/zsh",
+            env=env,
+        )
         if result.returncode == 0:
             return result.stdout.strip()
         if output:
@@ -219,7 +250,7 @@ def get_adb_device_name(avd_name=None):
 def find_free_ports(start_port=6060):
     def is_port_free(port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('localhost', port)) != 0
+            return s.connect_ex(("localhost", port)) != 0
 
     port = start_port
     while True:
@@ -242,10 +273,10 @@ def clone_avd(src_avd_name, tar_avd_name, android_avd_home):
     """
 
     # Paths for source and target AVD directories and .ini files
-    src_avd_dir = os.path.join(android_avd_home, src_avd_name + '.avd')
-    tar_avd_dir = os.path.join(android_avd_home, tar_avd_name + '.avd')
-    src_ini_file = os.path.join(android_avd_home, src_avd_name + '.ini')
-    tar_ini_file = os.path.join(android_avd_home, tar_avd_name + '.ini')
+    src_avd_dir = os.path.join(android_avd_home, src_avd_name + ".avd")
+    tar_avd_dir = os.path.join(android_avd_home, tar_avd_name + ".avd")
+    src_ini_file = os.path.join(android_avd_home, src_avd_name + ".ini")
+    tar_ini_file = os.path.join(android_avd_home, tar_avd_name + ".ini")
 
     # Copy the AVD folder
     print(f"====Copying the AVD folder from {src_avd_dir} to {tar_avd_dir}====")
@@ -254,28 +285,30 @@ def clone_avd(src_avd_name, tar_avd_name, android_avd_home):
         shutil.copytree(src_avd_dir, tar_avd_dir)
 
     # Copy the .ini file and modify it for the new AVD
-    with open(src_ini_file, 'r') as src_ini, open(tar_ini_file, 'w') as tar_ini:
+    with open(src_ini_file, "r") as src_ini, open(tar_ini_file, "w") as tar_ini:
         for line in src_ini:
             tar_ini.write(line.replace(src_avd_name, tar_avd_name))
 
     # Update paths inside the target AVD's .ini files
-    for ini_name in ['config.ini', 'hardware-qemu.ini']:
+    for ini_name in ["config.ini", "hardware-qemu.ini"]:
         ini_path = os.path.join(tar_avd_dir, ini_name)
         if os.path.exists(ini_path):
-            with open(ini_path, 'r') as file:
+            with open(ini_path, "r") as file:
                 lines = file.readlines()
-            with open(ini_path, 'w') as file:
+            with open(ini_path, "w") as file:
                 for line in lines:
                     # Update paths and AVD name/ID
                     new_line = line.replace(src_avd_name, tar_avd_name)
                     file.write(new_line)
 
     # Update the snapshots' hardware.ini file if it exists
-    snapshots_hw_ini = os.path.join(tar_avd_dir, 'snapshots', 'default_boot', 'hardware.ini')
+    snapshots_hw_ini = os.path.join(
+        tar_avd_dir, "snapshots", "default_boot", "hardware.ini"
+    )
     if os.path.exists(snapshots_hw_ini):
-        with open(snapshots_hw_ini, 'r') as file:
+        with open(snapshots_hw_ini, "r") as file:
             lines = file.readlines()
-        with open(snapshots_hw_ini, 'w') as file:
+        with open(snapshots_hw_ini, "w") as file:
             for line in lines:
                 # Update AVD name/ID
                 new_line = line.replace(src_avd_name, tar_avd_name)

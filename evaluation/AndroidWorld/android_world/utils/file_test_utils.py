@@ -28,18 +28,18 @@ def mock_tmp_directory_from_device(
     env: env_interface.AndroidEnvInterface,
     timeout_sec: float | None,
 ):
-  """Mocks `file_utils.tmp_directory_from_device` for unit testing."""
-  del env, timeout_sec
-  with tempfile.TemporaryDirectory() as tmp_dir:
-    parent_dir = os.path.join(
-        tmp_dir, os.path.split(os.path.split(device_path)[0])[1]
-    )
-    try:
-      shutil.copytree(device_path, parent_dir)
-      yield parent_dir
+    """Mocks `file_utils.tmp_directory_from_device` for unit testing."""
+    del env, timeout_sec
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        parent_dir = os.path.join(
+            tmp_dir, os.path.split(os.path.split(device_path)[0])[1]
+        )
+        try:
+            shutil.copytree(device_path, parent_dir)
+            yield parent_dir
 
-    finally:
-      shutil.rmtree(parent_dir)
+        finally:
+            shutil.rmtree(parent_dir)
 
 
 def mock_copy_data_to_device(
@@ -48,35 +48,35 @@ def mock_copy_data_to_device(
     env: env_interface.AndroidEnvInterface,
     timeout_sec: float | None = None,
 ):
-  """Mocks the behavior of file_utils.copy_data_to_device for testing purposes.
+    """Mocks the behavior of file_utils.copy_data_to_device for testing purposes.
 
-  This mock function will copy the database file from a local directory to
-  the simulated remote directory.
+    This mock function will copy the database file from a local directory to
+    the simulated remote directory.
 
-  Args:
-    local_db_path: The path to the local SQLite database file.
-    remote_db_path: The file path on the simulated remote device.
-    env: The Android environment interface (unused in the mock).
-    timeout_sec: Optional timeout in seconds (unused in the mock).
-  """
-  del env, timeout_sec
-  os.makedirs(os.path.dirname(remote_db_path), exist_ok=True)
-  shutil.copy(local_db_path, remote_db_path)
+    Args:
+      local_db_path: The path to the local SQLite database file.
+      remote_db_path: The file path on the simulated remote device.
+      env: The Android environment interface (unused in the mock).
+      timeout_sec: Optional timeout in seconds (unused in the mock).
+    """
+    del env, timeout_sec
+    os.makedirs(os.path.dirname(remote_db_path), exist_ok=True)
+    shutil.copy(local_db_path, remote_db_path)
 
 
 def mock_remove_files(directory: str, env: env_interface.AndroidEnvInterface):
-  """Mocks the behavior of file_utils.remove_files for testing purposes.
+    """Mocks the behavior of file_utils.remove_files for testing purposes.
 
-  This mock function simulates removing all files in the specified directory.
+    This mock function simulates removing all files in the specified directory.
 
-  Args:
-    directory: The directory path from which to remove files.
-    env: The Android environment interface (unused in the mock).
-  """
-  del env
-  for filename in os.listdir(directory):
-    file_path = os.path.join(directory, filename)
-    if os.path.isfile(file_path) or os.path.islink(file_path):
-      os.unlink(file_path)
-    elif os.path.isdir(file_path):
-      shutil.rmtree(file_path)
+    Args:
+      directory: The directory path from which to remove files.
+      env: The Android environment interface (unused in the mock).
+    """
+    del env
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)

@@ -25,18 +25,18 @@ class DesktopEnv(gym.Env):
     """
 
     def __init__(
-            self,
-            provider_name: str = "docker",
-            region: str = None,
-            path_to_vm: str = None,
-            snapshot_name: str = "init_state",
-            action_space: str = "computer_13",
-            cache_dir: str = "cache",
-            screen_size: Tuple[int] = (1920, 1080),
-            headless: bool = False,
-            require_a11y_tree: bool = True,
-            require_terminal: bool = False,
-            os_type: str = "Ubuntu",
+        self,
+        provider_name: str = "docker",
+        region: str = None,
+        path_to_vm: str = None,
+        snapshot_name: str = "init_state",
+        action_space: str = "computer_13",
+        cache_dir: str = "cache",
+        screen_size: Tuple[int] = (1920, 1080),
+        headless: bool = False,
+        require_a11y_tree: bool = True,
+        require_terminal: bool = False,
+        os_type: str = "Ubuntu",
     ):
         """
         Args:
@@ -60,14 +60,19 @@ class DesktopEnv(gym.Env):
         self.chromium_port = 9222
         self.vnc_port = 5900
         self.vlc_port = 8080
-        self.manager, self.provider = create_vm_manager_and_provider(provider_name, region)
+        self.manager, self.provider = create_vm_manager_and_provider(
+            provider_name, region
+        )
 
         self.os_type = os_type
 
         # Initialize environment variables
         if path_to_vm:
-            self.path_to_vm = os.path.abspath(os.path.expandvars(os.path.expanduser(path_to_vm))) \
-                if provider_name in {"vmware", "virtualbox"} else path_to_vm
+            self.path_to_vm = (
+                os.path.abspath(os.path.expandvars(os.path.expanduser(path_to_vm)))
+                if provider_name in {"vmware", "virtualbox"}
+                else path_to_vm
+            )
         else:
             self.path_to_vm = self.manager.get_vm_path(self.os_type, region)
 
@@ -79,7 +84,9 @@ class DesktopEnv(gym.Env):
         self.require_terminal = require_terminal
 
         # Initialize emulator and controller
-        if provider_name != "docker": # Check if this is applicable to other VM providers
+        if (
+            provider_name != "docker"
+        ):  # Check if this is applicable to other VM providers
             logger.info("Initializing...")
             self._start_emulator()
 
@@ -99,7 +106,7 @@ class DesktopEnv(gym.Env):
         self.provider.start_emulator(self.path_to_vm, self.headless, self.os_type)
 
         # Get the ip from the virtual machine, and setup the controller
-        vm_ip_ports = self.provider.get_ip_address(self.path_to_vm).split(':')
+        vm_ip_ports = self.provider.get_ip_address(self.path_to_vm).split(":")
         self.vm_ip = vm_ip_ports[0]
         if len(vm_ip_ports) > 1:
             self.server_port = int(vm_ip_ports[1])
@@ -108,13 +115,23 @@ class DesktopEnv(gym.Env):
             self.vlc_port = int(vm_ip_ports[4])
         print(self.vlc_port)
         # import ipdb;ipdb.set_trace()
-        self.controller = PythonController(vm_ip=self.vm_ip, server_port=self.server_port)
-        self.setup_controller = SetupController(vm_ip=self.vm_ip, server_port=self.server_port, chromium_port=self.chromium_port, vlc_port=self.vlc_port, cache_dir=self.cache_dir_base)
+        self.controller = PythonController(
+            vm_ip=self.vm_ip, server_port=self.server_port
+        )
+        self.setup_controller = SetupController(
+            vm_ip=self.vm_ip,
+            server_port=self.server_port,
+            chromium_port=self.chromium_port,
+            vlc_port=self.vlc_port,
+            cache_dir=self.cache_dir_base,
+        )
 
     def _revert_to_snapshot(self):
         # Revert to certain snapshot of the virtual machine, and refresh the path to vm and ip of vm
         # due to the fact it could be changed when implemented by cloud services
-        path_to_vm = self.provider.revert_to_snapshot(self.path_to_vm, self.snapshot_name)
+        path_to_vm = self.provider.revert_to_snapshot(
+            self.path_to_vm, self.snapshot_name
+        )
         if path_to_vm and not path_to_vm == self.path_to_vm:
             # path_to_vm has to be a new path
             self.manager.delete_vm(self.path_to_vm, self.region)
@@ -130,7 +147,9 @@ class DesktopEnv(gym.Env):
         # Close (release) the virtual machine
         self.provider.stop_emulator(self.path_to_vm)
 
-    def reset(self, task_config: Optional[Dict[str, Any]] = None, seed=None, options=None) -> Dict[str, Any]:
+    def reset(
+        self, task_config: Optional[Dict[str, Any]] = None, seed=None, options=None
+    ) -> Dict[str, Any]:
         # Reset to certain task in OSWorld
         logger.info("Resetting environment...")
         logger.info("Switching task...")
@@ -144,8 +163,6 @@ class DesktopEnv(gym.Env):
         logger.info("Starting emulator...")
         self._start_emulator()
         logger.info("Emulator started.")
-
-
 
         if task_config is not None:
             self._set_task_info(task_config)
@@ -163,9 +180,15 @@ class DesktopEnv(gym.Env):
         # can be customized and scaled
         return {
             "screenshot": self.controller.get_screenshot(),
-            "accessibility_tree": self.controller.get_accessibility_tree() if self.require_a11y_tree else None,
-            "terminal": self.controller.get_terminal_output() if self.require_terminal else None,
-            "instruction": self.instruction
+            "accessibility_tree": (
+                self.controller.get_accessibility_tree()
+                if self.require_a11y_tree
+                else None
+            ),
+            "terminal": (
+                self.controller.get_terminal_output() if self.require_terminal else None
+            ),
+            "instruction": self.instruction,
         }
 
     @property
@@ -192,41 +215,61 @@ class DesktopEnv(gym.Env):
         # if func is a str list, then result, expected (if exists), options (if exists) should also be lists of the same length
         # even if one of the metrics does not need expected or options field, it should be included in the list with None
         self.evaluator = task_config["evaluator"]
-        self.metric: Metric = [getattr(metrics, func) for func in self.evaluator["func"]] \
-            if isinstance(self.evaluator["func"], list) \
+        self.metric: Metric = (
+            [getattr(metrics, func) for func in self.evaluator["func"]]
+            if isinstance(self.evaluator["func"], list)
             else getattr(metrics, self.evaluator["func"])
-        self.metric_conj: str = self.evaluator.get("conj", "and")  # take conjunction of multiple metrics
+        )
+        self.metric_conj: str = self.evaluator.get(
+            "conj", "and"
+        )  # take conjunction of multiple metrics
         if "result" in self.evaluator and len(self.evaluator["result"]) > 0:
-            self.result_getter: Getter = [getattr(getters, "get_{:}".format(res["type"])) for res in
-                                          self.evaluator["result"]] \
-                if isinstance(self.evaluator["result"], list) \
-                else getattr(getters, "get_{:}".format(self.evaluator["result"]["type"]))
+            self.result_getter: Getter = (
+                [
+                    getattr(getters, "get_{:}".format(res["type"]))
+                    for res in self.evaluator["result"]
+                ]
+                if isinstance(self.evaluator["result"], list)
+                else getattr(
+                    getters, "get_{:}".format(self.evaluator["result"]["type"])
+                )
+            )
         else:
-            self.result_getter = [None] * len(self.metric) \
-                if isinstance(self.metric, list) \
-                else None
+            self.result_getter = (
+                [None] * len(self.metric) if isinstance(self.metric, list) else None
+            )
 
         if "expected" in self.evaluator and len(self.evaluator["expected"]) > 0:
-            self.expected_getter: Getter = [getattr(getters, "get_{:}".format(exp["type"])) if exp else None for exp in
-                                            self.evaluator["expected"]] \
-                if isinstance(self.evaluator["expected"], list) \
-                else getattr(getters, "get_{:}".format(self.evaluator["expected"]["type"]))
+            self.expected_getter: Getter = (
+                [
+                    getattr(getters, "get_{:}".format(exp["type"])) if exp else None
+                    for exp in self.evaluator["expected"]
+                ]
+                if isinstance(self.evaluator["expected"], list)
+                else getattr(
+                    getters, "get_{:}".format(self.evaluator["expected"]["type"])
+                )
+            )
         else:
-            self.expected_getter = [None] * len(self.metric) \
-                if isinstance(self.metric, list) \
-                else None
-        self.metric_options: Union[List[Dict[str, Any]], Dict[str, Any]] = [opt if opt else {} for opt in
-                                                                            self.evaluator["options"]] \
-            if isinstance(self.evaluator.get("options", {}), list) \
-            else self.evaluator["options"] \
-            if "options" in self.evaluator \
-            else [{}] * len(self.metric) \
-            if isinstance(self.metric, list) \
-            else {}
+            self.expected_getter = (
+                [None] * len(self.metric) if isinstance(self.metric, list) else None
+            )
+        self.metric_options: Union[List[Dict[str, Any]], Dict[str, Any]] = (
+            [opt if opt else {} for opt in self.evaluator["options"]]
+            if isinstance(self.evaluator.get("options", {}), list)
+            else (
+                self.evaluator["options"]
+                if "options" in self.evaluator
+                else [{}] * len(self.metric) if isinstance(self.metric, list) else {}
+            )
+        )
 
-        assert (not isinstance(self.evaluator["func"], list)
-                or (len(self.metric) == len(self.result_getter) == len(self.expected_getter) == len(
-                    self.metric_options)))
+        assert not isinstance(self.evaluator["func"], list) or (
+            len(self.metric)
+            == len(self.result_getter)
+            == len(self.expected_getter)
+            == len(self.metric_options)
+        )
 
     def step(self, action, pause=2):
         self._step_no += 1
@@ -237,13 +280,15 @@ class DesktopEnv(gym.Env):
         info = {}
 
         # handle the special actions
-        if action in ['WAIT', 'FAIL', 'DONE'] or (type(action) == dict and action['action_type'] in ['WAIT', 'FAIL', 'DONE']):
-            if action == 'WAIT':
+        if action in ["WAIT", "FAIL", "DONE"] or (
+            type(action) == dict and action["action_type"] in ["WAIT", "FAIL", "DONE"]
+        ):
+            if action == "WAIT":
                 time.sleep(pause)
-            elif action == 'FAIL':
+            elif action == "FAIL":
                 done = True
                 info = {"fail": True}
-            elif action == 'DONE':
+            elif action == "DONE":
                 done = True
                 info = {"done": True}
 
@@ -251,7 +296,7 @@ class DesktopEnv(gym.Env):
             # the set of all possible actions defined in the action representation
             self.controller.execute_action(action)
         elif self.action_space == "pyautogui":
-            if action in ['WAIT', 'FAIL', 'DONE']:
+            if action in ["WAIT", "FAIL", "DONE"]:
                 self.controller.execute_action(action)
             else:
                 # the set of all possible python commands insides `pyautogui`
@@ -269,7 +314,7 @@ class DesktopEnv(gym.Env):
 
         self.setup_controller.setup(self.evaluator.get("postconfig", []))
 
-        if self.evaluator['func'] == "infeasible":
+        if self.evaluator["func"] == "infeasible":
             if len(self.action_history) > 0 and self.action_history[-1] == "FAIL":
                 return 1
             else:
@@ -281,32 +326,48 @@ class DesktopEnv(gym.Env):
         if type(self.metric) == list:
             # Multiple metrics to evaluate whether the task is successfully completed
             results = []
-            assert len(self.metric) == len(self.result_getter), "The number of metrics and result getters must be the same"
+            assert len(self.metric) == len(
+                self.result_getter
+            ), "The number of metrics and result getters must be the same"
             if "expected" in self.evaluator:
-                assert len(self.metric) == len(self.expected_getter), "The number of metrics and expected getters must be the same"
+                assert len(self.metric) == len(
+                    self.expected_getter
+                ), "The number of metrics and expected getters must be the same"
             for idx, metric in enumerate(self.metric):
                 try:
                     config = self.evaluator["result"][idx]
                     result_state = self.result_getter[idx](self, config)
                 except FileNotFoundError:
                     logger.error("File not found!")
-                    if self.metric_conj == 'and':
+                    if self.metric_conj == "and":
                         return 0
 
-                if "expected" in self.evaluator and self.expected_getter and self.evaluator["expected"]:
-                    expected_state = self.expected_getter[idx](self, self.evaluator["expected"][idx])
-                    metric: int = metric(result_state, expected_state, **self.metric_options[idx])
+                if (
+                    "expected" in self.evaluator
+                    and self.expected_getter
+                    and self.evaluator["expected"]
+                ):
+                    expected_state = self.expected_getter[idx](
+                        self, self.evaluator["expected"][idx]
+                    )
+                    metric: int = metric(
+                        result_state, expected_state, **self.metric_options[idx]
+                    )
                 else:
                     metric: int = metric(result_state, **self.metric_options[idx])
 
-                if self.metric_conj == 'and' and float(metric) == 0.0:
+                if self.metric_conj == "and" and float(metric) == 0.0:
                     return 0
-                elif self.metric_conj == 'or' and float(metric) == 1.0:
+                elif self.metric_conj == "or" and float(metric) == 1.0:
                     return 1
                 else:
                     results.append(metric)
 
-            return sum(results) / len(results) if self.metric_conj == 'and' else max(results)
+            return (
+                sum(results) / len(results)
+                if self.metric_conj == "and"
+                else max(results)
+            )
         else:
             # Single metric to evaluate whether the task is successfully completed
             try:
@@ -315,16 +376,22 @@ class DesktopEnv(gym.Env):
                 logger.error("File not found!")
                 return 0
 
-            if "expected" in self.evaluator and self.expected_getter and self.evaluator["expected"]:
+            if (
+                "expected" in self.evaluator
+                and self.expected_getter
+                and self.evaluator["expected"]
+            ):
                 expected_state = self.expected_getter(self, self.evaluator["expected"])
-                metric: float = self.metric(result_state, expected_state, **self.metric_options)
+                metric: float = self.metric(
+                    result_state, expected_state, **self.metric_options
+                )
             else:
                 metric: float = self.metric(result_state, **self.metric_options)
 
         return metric
 
-    def render(self, mode='rgb_array'):
-        if mode == 'rgb_array':
+    def render(self, mode="rgb_array"):
+        if mode == "rgb_array":
             return self.controller.get_screenshot()
         else:
-            raise ValueError('Unsupported render mode: {}'.format(mode))
+            raise ValueError("Unsupported render mode: {}".format(mode))

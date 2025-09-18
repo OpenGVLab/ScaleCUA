@@ -28,19 +28,25 @@ from typing import Any, Dict, List, Optional, Tuple
 import backoff
 import openai
 import requests
-from google.api_core.exceptions import (BadRequest, InternalServerError,
-                                        InvalidArgument, ResourceExhausted)
+from google.api_core.exceptions import (
+    BadRequest,
+    InternalServerError,
+    InvalidArgument,
+    ResourceExhausted,
+)
 from openai import OpenAI
 from PIL import Image
 from requests.exceptions import SSLError
 
 # --- Local Application Imports ---
 # Note: These are assumed to be part of the project structure.
-from mm_agents.navi.prompts import (AGUVIS_PLANNER_SYS_PROMPT,
-                                    SCALECUA_GROUNDING_SYSTEM_PROMPT,
-                                    SCALECUA_NAVIGATION_SYSTEM_PROMPT,
-                                    SCALECUA_SYSTEM_PROMPT,
-                                    SCALECUA_USER_PROMPT)
+from mm_agents.navi.prompts import (
+    AGUVIS_PLANNER_SYS_PROMPT,
+    SCALECUA_GROUNDING_SYSTEM_PROMPT,
+    SCALECUA_NAVIGATION_SYSTEM_PROMPT,
+    SCALECUA_SYSTEM_PROMPT,
+    SCALECUA_USER_PROMPT,
+)
 
 # --- Constants ---
 # Image resizing parameters
@@ -57,15 +63,16 @@ SCREEN_LOGIC_SIZE = (1280, 800)
 logger: Optional[logging.Logger] = None
 
 # set your proxy
-os.environ['http_proxy'] = 'http://your_proxy:port'
-os.environ['https_proxy'] = 'http://your_proxy:port'
+os.environ["http_proxy"] = "http://your_proxy:port"
+os.environ["https_proxy"] = "http://your_proxy:port"
 
 # set openai key
-os.environ['OPENAI_KEY'] = 'your_openai_key'
+os.environ["OPENAI_KEY"] = "your_openai_key"
 
 # ==============================================================================
 # Utility Functions
 # ==============================================================================
+
 
 def smart_resize(height: int, width: int) -> tuple[int, int]:
     """
@@ -119,7 +126,9 @@ def smart_resize(height: int, width: int) -> tuple[int, int]:
     return h_bar, w_bar
 
 
-def extract_coordinates(text: str, screen_height: int, screen_width: int) -> Optional[Tuple[str, str]]:
+def extract_coordinates(
+    text: str, screen_height: int, screen_width: int
+) -> Optional[Tuple[str, str]]:
     """
     Extracts (x, y) coordinates from a string and scales them to the screen size.
 
@@ -132,7 +141,7 @@ def extract_coordinates(text: str, screen_height: int, screen_width: int) -> Opt
         A tuple of (x, y) coordinates as formatted strings, or None if not found.
     """
     # This pattern matches coordinates like (123, 456) or (x=123, y=456)
-    pattern = r'\((?:x=)?([-+]?\d*\.\d+|\d+),\s*(?:y=)?([-+]?\d*\.\d+|\d+)\)'
+    pattern = r"\((?:x=)?([-+]?\d*\.\d+|\d+),\s*(?:y=)?([-+]?\d*\.\d+|\d+)\)"
     match = re.search(pattern, text)
 
     if match:
@@ -173,7 +182,7 @@ def encode_image(image_content: bytes) -> str:
     Returns:
         The Base64 encoded string.
     """
-    return base64.b64encode(image_content).decode('utf-8')
+    return base64.b64encode(image_content).decode("utf-8")
 
 
 def encoded_img_to_pil_img(data_str: str) -> Image.Image:
@@ -187,7 +196,7 @@ def encoded_img_to_pil_img(data_str: str) -> Image.Image:
         The decoded PIL Image object.
     """
     # Remove the "data:image/png;base64," prefix if it exists
-    base64_str = re.sub(r'^data:image/png;base64,', '', data_str)
+    base64_str = re.sub(r"^data:image/png;base64,", "", data_str)
     image_data = base64.b64decode(base64_str)
     return Image.open(BytesIO(image_data))
 
@@ -221,9 +230,11 @@ def parse_code_from_planner_response(input_string: str) -> List[str]:
         A list of cleaned code snippets or commands ('WAIT', 'DONE', 'FAIL').
     """
     # Clean up input by removing empty lines and extra whitespace
-    input_string = "\n".join([line.strip() for line in input_string.split(';') if line.strip()])
+    input_string = "\n".join(
+        [line.strip() for line in input_string.split(";") if line.strip()]
+    )
 
-    if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
+    if input_string.strip() in ["WAIT", "DONE", "FAIL"]:
         return [input_string.strip()]
 
     # Regex to find code within ```python ... ``` or ``` ... ``` blocks
@@ -233,16 +244,16 @@ def parse_code_from_planner_response(input_string: str) -> List[str]:
     codes = []
     for match in matches:
         match = match.strip()
-        commands = ['WAIT', 'DONE', 'FAIL']
+        commands = ["WAIT", "DONE", "FAIL"]
 
         # Handle standalone commands or commands appearing at the end of a code block
         if match in commands:
             codes.append(match)
-        elif match.split('\n')[-1] in commands:
-            code_block = "\n".join(match.split('\n')[:-1])
+        elif match.split("\n")[-1] in commands:
+            code_block = "\n".join(match.split("\n")[:-1])
             if code_block:
                 codes.append(code_block)
-            codes.append(match.split('\n')[-1])
+            codes.append(match.split("\n")[-1])
         else:
             codes.append(match)
 
@@ -260,21 +271,21 @@ def split_args(args_str: str) -> List[str]:
         A list of argument strings.
     """
     args = []
-    current_arg = ''
+    current_arg = ""
     in_string = False
-    string_char = ''
-    prev_char = ''
+    string_char = ""
+    prev_char = ""
 
     for char in args_str:
         if char in ['"', "'"] and not in_string:
             in_string = True
             string_char = char
-        elif in_string and prev_char != '\\' and char == string_char:
+        elif in_string and prev_char != "\\" and char == string_char:
             in_string = False
 
-        if char == ',' and not in_string:
+        if char == "," and not in_string:
             args.append(current_arg.strip())
-            current_arg = ''
+            current_arg = ""
         else:
             current_arg += char
         prev_char = char
@@ -298,15 +309,27 @@ def correct_pyautogui_arguments(code: str) -> str:
     """
     # Mappings of incorrect to correct argument names for specific functions
     function_corrections = {
-        'write': {'incorrect_args': ['text'], 'correct_args': [], 'keyword_arg': 'message'},
-        'press': {'incorrect_args': ['key', 'button'], 'correct_args': [], 'keyword_arg': None},
-        'hotkey': {'incorrect_args': ['key1', 'key2', 'keys'], 'correct_args': [], 'keyword_arg': None},
+        "write": {
+            "incorrect_args": ["text"],
+            "correct_args": [],
+            "keyword_arg": "message",
+        },
+        "press": {
+            "incorrect_args": ["key", "button"],
+            "correct_args": [],
+            "keyword_arg": None,
+        },
+        "hotkey": {
+            "incorrect_args": ["key1", "key2", "keys"],
+            "correct_args": [],
+            "keyword_arg": None,
+        },
     }
 
     corrected_lines = []
-    for line in code.strip().split('\n'):
+    for line in code.strip().split("\n"):
         line = line.strip()
-        match = re.match(r'(pyautogui\.(\w+))\((.*)\)', line)
+        match = re.match(r"(pyautogui\.(\w+))\((.*)\)", line)
 
         if match:
             full_func_call, func_name, args_str = match.groups()
@@ -316,39 +339,45 @@ def correct_pyautogui_arguments(code: str) -> str:
                 corrected_args = []
 
                 for arg in args:
-                    kwarg_match = re.match(r'(\w+)\s*=\s*(.*)', arg)
+                    kwarg_match = re.match(r"(\w+)\s*=\s*(.*)", arg)
                     if kwarg_match:
                         arg_name, arg_value = kwarg_match.groups()
                         # If the argument name is in the list of incorrect ones, replace it
-                        if arg_name in func_info['incorrect_args']:
-                            if func_info['keyword_arg']:
-                                corrected_args.append(f"{func_info['keyword_arg']}={arg_value}")
+                        if arg_name in func_info["incorrect_args"]:
+                            if func_info["keyword_arg"]:
+                                corrected_args.append(
+                                    f"{func_info['keyword_arg']}={arg_value}"
+                                )
                             else:
-                                corrected_args.append(arg_value) # Use as positional arg
+                                corrected_args.append(
+                                    arg_value
+                                )  # Use as positional arg
                         else:
-                            corrected_args.append(arg) # Keep original
+                            corrected_args.append(arg)  # Keep original
                     else:
-                        corrected_args.append(arg) # Positional arg
+                        corrected_args.append(arg)  # Positional arg
 
-                corrected_args_str = ', '.join(corrected_args)
-                corrected_lines.append(f'{full_func_call}({corrected_args_str})')
+                corrected_args_str = ", ".join(corrected_args)
+                corrected_lines.append(f"{full_func_call}({corrected_args_str})")
             else:
-                corrected_lines.append(line) # No correction needed for this function
+                corrected_lines.append(line)  # No correction needed for this function
         else:
-            corrected_lines.append(line) # Not a function call
+            corrected_lines.append(line)  # Not a function call
 
-    return '\n'.join(corrected_lines)
+    return "\n".join(corrected_lines)
 
 
 # ==============================================================================
 # ScaleCUAAgent Class
 # ==============================================================================
 
+
 class ScaleCUAAgent:
     """
     An agent that interprets natural language instructions and screenshots to
     generate and execute GUI automation commands.
     """
+
     def __init__(
         self,
         platform: str = "windows",
@@ -393,10 +422,16 @@ class ScaleCUAAgent:
             _logger: An optional logger instance. If not provided, a new one is created.
         """
         global logger
-        logger = _logger if _logger is not None else logging.getLogger("desktopenv.scalecua_agent")
+        logger = (
+            _logger
+            if _logger is not None
+            else logging.getLogger("desktopenv.scalecua_agent")
+        )
         self.history = []
 
-    def predict(self, instruction: str, obs: Dict) -> Tuple[str, List[str], Dict[str, Any], Optional[Any]]:
+    def predict(
+        self, instruction: str, obs: Dict
+    ) -> Tuple[str, List[str], Dict[str, Any], Optional[Any]]:
         """
         Predicts the next action(s) based on the instruction and observation.
 
@@ -412,9 +447,9 @@ class ScaleCUAAgent:
             - None (placeholder for compatibility).
         """
         logs: Dict[str, Any] = {
-            'instruction': instruction,
-            'raw_obs_keys': list(obs.keys()),
-            'previous_actions_in_episode_count': len(self.history),
+            "instruction": instruction,
+            "raw_obs_keys": list(obs.keys()),
+            "previous_actions_in_episode_count": len(self.history),
         }
 
         current_screenshot_bytes = obs.get("screenshot")
@@ -422,36 +457,44 @@ class ScaleCUAAgent:
             try:
                 # Ensure screenshot is in bytes format
                 if isinstance(current_screenshot_bytes, str):
-                    if current_screenshot_bytes.startswith('data:image'):
-                        current_screenshot_bytes = base64.b64decode(current_screenshot_bytes.split(',')[1])
+                    if current_screenshot_bytes.startswith("data:image"):
+                        current_screenshot_bytes = base64.b64decode(
+                            current_screenshot_bytes.split(",")[1]
+                        )
                     else:
-                        current_screenshot_bytes = base64.b64decode(current_screenshot_bytes)
-                
+                        current_screenshot_bytes = base64.b64decode(
+                            current_screenshot_bytes
+                        )
+
                 pil_image = Image.open(BytesIO(current_screenshot_bytes))
-                logs['current_screenshot_pil_original_size'] = pil_image.size
-                logs['foreground_window_pil_preview'] = pil_image.copy()
+                logs["current_screenshot_pil_original_size"] = pil_image.size
+                logs["foreground_window_pil_preview"] = pil_image.copy()
             except Exception as e:
                 logger.error(f"Failed to process screenshot: {e}")
-                logs['current_screenshot_pil_error'] = str(e)
+                logs["current_screenshot_pil_error"] = str(e)
         else:
-            logs['current_screenshot_pil_original_size'] = "N/A"
-            logs['foreground_window_pil_preview'] = "N/A"
+            logs["current_screenshot_pil_original_size"] = "N/A"
+            logs["foreground_window_pil_preview"] = "N/A"
 
         history_str = self.format_history(self.history)
-        logs['previous_actions_formatted_str'] = history_str
+        logs["previous_actions_formatted_str"] = history_str
 
         # --- Path 1: Single Model generates actions directly ---
         if self.planner_model is None:
-            raw_model_response, pyautogui_actions, agent_logs = self._run_single_model_flow(
-                instruction, history_str, current_screenshot_bytes
+            raw_model_response, pyautogui_actions, agent_logs = (
+                self._run_single_model_flow(
+                    instruction, history_str, current_screenshot_bytes
+                )
             )
             logs.update(agent_logs)
             return raw_model_response, pyautogui_actions, logs, None
 
         # --- Path 2: Planner-Executor Model Flow ---
         else:
-            raw_model_response, pyautogui_actions, planner_logs = self._run_planner_executor_flow(
-                instruction, obs, current_screenshot_bytes
+            raw_model_response, pyautogui_actions, planner_logs = (
+                self._run_planner_executor_flow(
+                    instruction, obs, current_screenshot_bytes
+                )
             )
             logs.update(planner_logs)
             return raw_model_response, pyautogui_actions, logs, None
@@ -460,22 +503,18 @@ class ScaleCUAAgent:
         """Handles the logic for the single-model approach."""
         logs = {}
         # Determine the system prompt based on whether 'thinking' is enabled
-        system_prompt = SCALECUA_SYSTEM_PROMPT if self.enable_thinking else SCALECUA_NAVIGATION_SYSTEM_PROMPT
-        
+        system_prompt = (
+            SCALECUA_SYSTEM_PROMPT
+            if self.enable_thinking
+            else SCALECUA_NAVIGATION_SYSTEM_PROMPT
+        )
+
         user_prompt = SCALECUA_USER_PROMPT.format(
             instruction=instruction, previous_actions=history_str
         )
 
         messages = [
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": system_prompt
-                    }
-                ]
-            },
+            {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
             {
                 "role": "user",
                 "content": [
@@ -483,70 +522,69 @@ class ScaleCUAAgent:
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/png;base64,{encode_image(screenshot_bytes)}"
-                        }
+                        },
                     },
-                    {
-                        "type": "text",
-                        "text": user_prompt
-                    }
-                ]
-            }
+                    {"type": "text", "text": user_prompt},
+                ],
+            },
         ]
-        
+
         if screenshot_bytes:
             messages[1]["content"].append()
 
-        logs['agent_input_messages_summary'] = [(m['role'], [c['type'] for c in m['content']]) for m in messages]
+        logs["agent_input_messages_summary"] = [
+            (m["role"], [c["type"] for c in m["content"]]) for m in messages
+        ]
 
         # Call the language model
-        agent_response = self.call_llm({
-            "model": self.executor_model,
-            "messages": messages,
-            "max_tokens": self.max_tokens,
-            "top_p": self.top_p,
-            "top_k": self.top_k,
-            "temperature": self.temperature
-        }, self.executor_model)
-        
+        agent_response = self.call_llm(
+            {
+                "model": self.executor_model,
+                "messages": messages,
+                "max_tokens": self.max_tokens,
+                "top_p": self.top_p,
+                "top_k": self.top_k,
+                "temperature": self.temperature,
+            },
+            self.executor_model,
+        )
+
         logger.info(f"Agent Output: {agent_response}")
-        logs['agent_raw_response'] = agent_response
+        logs["agent_raw_response"] = agent_response
 
         # Parse the response
         try:
             think, operation, actions = self.parse_response(agent_response)
             pyautogui_actions = self.parse_action(actions or [])
-            logs.update({
-                'agent_parsed_think': think,
-                'agent_parsed_low_level_instruction': operation,
-                'agent_parsed_pyautogui_actions': pyautogui_actions
-            })
+            logs.update(
+                {
+                    "agent_parsed_think": think,
+                    "agent_parsed_low_level_instruction": operation,
+                    "agent_parsed_pyautogui_actions": pyautogui_actions,
+                }
+            )
         except Exception as e:
             logger.error(f"Error parsing Agent response: {e}")
-            logs['agent_parsing_error'] = str(e)
+            logs["agent_parsing_error"] = str(e)
             operation = f"# Error parsing: {agent_response}"
             pyautogui_actions = ["# PARSE_ERROR"]
-        
+
         # Update history with the operation for the next step
         if operation:
             self.history.append(operation)
-            
-        logs['final_pyautogui_actions_generated'] = pyautogui_actions
+
+        logs["final_pyautogui_actions_generated"] = pyautogui_actions
         return agent_response, pyautogui_actions, logs
 
     def _run_planner_executor_flow(self, instruction, obs, screenshot_bytes):
         """Handles the logic for the planner-executor approach."""
         logs = {}
-        
+
         # --- Step 1: Call Planner ---
         planner_messages = [
             {
                 "role": "system",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": AGUVIS_PLANNER_SYS_PROMPT
-                    }
-                ]
+                "content": [{"type": "text", "text": AGUVIS_PLANNER_SYS_PROMPT}],
             },
             {
                 "role": "user",
@@ -555,36 +593,41 @@ class ScaleCUAAgent:
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/png;base64,{encode_image(screenshot_bytes)}",
-                            "detail": "high"
-                        }
+                            "detail": "high",
+                        },
                     },
                     {
                         "type": "text",
-                        "text": f"You are asked to complete the following task: {instruction}"
-                    }
-                ]
-            }
+                        "text": f"You are asked to complete the following task: {instruction}",
+                    },
+                ],
+            },
         ]
-        
-        logs['planner_input_messages_summary'] = [(m['role'], [c['type'] for c in m['content']]) for m in planner_messages]
 
-        planner_response = self.call_llm({
-            "model": self.planner_model,
-            "messages": planner_messages,
-            "max_tokens": self.max_tokens,
-            "top_p": self.top_p,
-            "temperature": self.temperature
-        }, self.planner_model)
-        
+        logs["planner_input_messages_summary"] = [
+            (m["role"], [c["type"] for c in m["content"]]) for m in planner_messages
+        ]
+
+        planner_response = self.call_llm(
+            {
+                "model": self.planner_model,
+                "messages": planner_messages,
+                "max_tokens": self.max_tokens,
+                "top_p": self.top_p,
+                "temperature": self.temperature,
+            },
+            self.planner_model,
+        )
+
         logger.info(f"Planner Output: {planner_response}")
-        logs['planner_raw_response'] = planner_response
+        logs["planner_raw_response"] = planner_response
 
         try:
             code_lines = parse_code_from_planner_response(planner_response)
-            logs['planner_parsed_code_lines'] = code_lines
+            logs["planner_parsed_code_lines"] = code_lines
         except Exception as e:
             logger.error(f"Error parsing planner response: {e}")
-            logs['planner_parsing_error'] = str(e)
+            logs["planner_parsing_error"] = str(e)
             code_lines = [f"# Error parsing planner response: {planner_response}"]
 
         # --- Step 2: Convert planned actions using Grounding Model ---
@@ -593,23 +636,35 @@ class ScaleCUAAgent:
         for line in code_lines:
             try:
                 # This function will call the grounding model if needed
-                converted_code = self.convert_action_to_grounding_model_instruction(line, obs)
+                converted_code = self.convert_action_to_grounding_model_instruction(
+                    line, obs
+                )
                 pyautogui_actions.append(converted_code)
-                conversion_logs.append({"line": line, "converted_code": converted_code, "status": "success"})
+                conversion_logs.append(
+                    {
+                        "line": line,
+                        "converted_code": converted_code,
+                        "status": "success",
+                    }
+                )
             except Exception as e:
                 logger.error(f"Error converting planner action line '{line}': {e}")
                 pyautogui_actions.append(f"# Error converting: {line}")
-                conversion_logs.append({"line": line, "error": str(e), "status": "error"})
-        
-        logs['planner_action_conversion_details'] = conversion_logs
-        logs['final_pyautogui_actions_generated'] = pyautogui_actions
+                conversion_logs.append(
+                    {"line": line, "error": str(e), "status": "error"}
+                )
+
+        logs["planner_action_conversion_details"] = conversion_logs
+        logs["final_pyautogui_actions_generated"] = pyautogui_actions
         return planner_response, pyautogui_actions, logs
 
-    def convert_action_to_grounding_model_instruction(self, line: str, obs: Dict) -> str:
+    def convert_action_to_grounding_model_instruction(
+        self, line: str, obs: Dict
+    ) -> str:
         """
         Refines a planned action by using a grounding model to get precise coordinates.
         It looks for a comment above a pyautogui action and uses it as a prompt.
-        
+
         Example Input Line:
         # Click on the File menu
         pyautogui.moveTo(x=50, y=25)
@@ -622,9 +677,9 @@ class ScaleCUAAgent:
             The action with updated coordinates from the grounding model, or the original line.
         """
         # Pattern to find a comment followed by a pyautogui action with coordinates
-        pattern = r'(#.*?)\n(pyautogui\.(?:moveTo|click|rightClick|doubleClick)\((?:x=)?\d+,\s*(?:y=)?\d+.*?\))'
+        pattern = r"(#.*?)\n(pyautogui\.(?:moveTo|click|rightClick|doubleClick)\((?:x=)?\d+,\s*(?:y=)?\d+.*?\))"
         matches = re.findall(pattern, line, re.DOTALL)
-        
+
         if not matches:
             return line
 
@@ -633,55 +688,88 @@ class ScaleCUAAgent:
             comment, original_action = match[0], match[1]
             instruction_from_comment = comment.replace("#", "").strip()
 
-            if not obs.get('screenshot'):
-                logger.warning("No screenshot available for grounding model, skipping conversion.")
+            if not obs.get("screenshot"):
+                logger.warning(
+                    "No screenshot available for grounding model, skipping conversion."
+                )
                 continue
 
             # Prepare messages for the grounding model
             grounder_messages = [
-                {"role": "system", "content": [{"type": "text", "text": SCALECUA_GROUNDING_SYSTEM_PROMPT}]},
-                {"role": "user", "content": [
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{encode_image(obs['screenshot'])}", "detail": "high"}},
-                    {"type": "text", "text": f"\n{instruction_from_comment}"}
-                ]}
+                {
+                    "role": "system",
+                    "content": [
+                        {"type": "text", "text": SCALECUA_GROUNDING_SYSTEM_PROMPT}
+                    ],
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{encode_image(obs['screenshot'])}",
+                                "detail": "high",
+                            },
+                        },
+                        {"type": "text", "text": f"\n{instruction_from_comment}"},
+                    ],
+                },
             ]
 
-            grounding_response = self.call_llm({
-                "model": self.executor_model,
-                "messages": grounder_messages,
-                "max_tokens": self.max_tokens,
-                "top_p": self.top_p,
-                "temperature": self.temperature
-            }, self.executor_model)
+            grounding_response = self.call_llm(
+                {
+                    "model": self.executor_model,
+                    "messages": grounder_messages,
+                    "max_tokens": self.max_tokens,
+                    "top_p": self.top_p,
+                    "temperature": self.temperature,
+                },
+                self.executor_model,
+            )
 
-            coordinates = extract_coordinates(grounding_response, self.screen_height, self.screen_width)
+            coordinates = extract_coordinates(
+                grounding_response, self.screen_height, self.screen_width
+            )
             if coordinates:
                 # Reconstruct the action with the new coordinates
-                action_parts = original_action.split('(')
+                action_parts = original_action.split("(")
                 new_action = f"{action_parts[0]}(x={coordinates[0]}, y={coordinates[1]}"
-                
+
                 # Preserve other arguments like duration or button
-                if 'duration' in original_action:
-                    duration_part = re.search(r'duration=[\d.]+', original_action).group(0)
+                if "duration" in original_action:
+                    duration_part = re.search(
+                        r"duration=[\d.]+", original_action
+                    ).group(0)
                     new_action += f", {duration_part}"
-                if 'button' in original_action:
-                     button_part = re.search(r'button=.*?\)', original_action).group(0)
-                     new_action += f", {button_part[:-1]}" # remove closing parenthesis
-                
+                if "button" in original_action:
+                    button_part = re.search(r"button=.*?\)", original_action).group(0)
+                    new_action += f", {button_part[:-1]}"  # remove closing parenthesis
+
                 new_action += ")"
                 logger.info(f"Replacing '{original_action}' with '{new_action}'")
                 new_instruction = new_instruction.replace(original_action, new_action)
             else:
-                 logger.warning(f"Could not extract coordinates from grounding response: {grounding_response}")
+                logger.warning(
+                    f"Could not extract coordinates from grounding response: {grounding_response}"
+                )
 
         return new_instruction
 
     @backoff.on_exception(
         backoff.constant,
-        (SSLError, openai.RateLimitError, openai.BadRequestError, openai.InternalServerError,
-         InvalidArgument, ResourceExhausted, InternalServerError, BadRequest),
+        (
+            SSLError,
+            openai.RateLimitError,
+            openai.BadRequestError,
+            openai.InternalServerError,
+            InvalidArgument,
+            ResourceExhausted,
+            InternalServerError,
+            BadRequest,
+        ),
         interval=30,
-        max_tries=10
+        max_tries=10,
     )
     def call_llm(self, payload: Dict, model: str) -> str:
         """
@@ -697,46 +785,49 @@ class ScaleCUAAgent:
         if model.startswith("gpt"):
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {os.environ.get('OPENAI_KEY', 'your_default_token')}"
+                "Authorization": f"Bearer {os.environ.get('OPENAI_KEY', 'your_default_token')}",
             }
             # Proxies should also be configured externally
             proxies = {
-                "http": os.environ.get('http_proxy', 'your_proxy'),
-                "https": os.environ.get('https_proxy', 'your_proxy')
+                "http": os.environ.get("http_proxy", "your_proxy"),
+                "https": os.environ.get("https_proxy", "your_proxy"),
             }
             logger.info("Generating content with GPT model: %s", model)
             response = requests.post(
                 "https://api.openai.com/v1/chat/completions",
-                headers=headers, json=payload, proxies=proxies
+                headers=headers,
+                json=payload,
+                proxies=proxies,
             )
-            response.raise_for_status() # Will raise an HTTPError for bad responses
-            return response.json()['choices'][0]['message']['content']
+            response.raise_for_status()  # Will raise an HTTPError for bad responses
+            return response.json()["choices"][0]["message"]["content"]
 
-        elif 'scalecua' in model.lower():
+        elif "scalecua" in model.lower():
             client = OpenAI(
-                base_url=self.api_url, # This should be configurable
-                api_key="empty"
+                base_url=self.api_url, api_key="empty"  # This should be configurable
             )
             response = client.chat.completions.create(
                 model=client.models.list().data[0].id,
-                messages=payload['messages'],
-                max_tokens=payload['max_tokens'],
-                temperature=payload.get('temperature', 1.0),
-                top_p=payload.get('top_p', 1.0),
+                messages=payload["messages"],
+                max_tokens=payload["max_tokens"],
+                temperature=payload.get("temperature", 1.0),
+                top_p=payload.get("top_p", 1.0),
                 frequency_penalty=1,
                 stream=False,
                 extra_body={
                     "skip_special_tokens": False,
                     "spaces_between_special_tokens": False,
-                    "top_k": payload.get('top_k', 1),
+                    "top_k": payload.get("top_k", 1),
                 },
             )
             return response.choices[0].message.content
-        
+
         else:
             raise ValueError(f"Unknown model type for call_llm: {model}")
 
-    def parse_response(self, response: str) -> Tuple[Optional[str], Optional[str], Optional[List[str]]]:
+    def parse_response(
+        self, response: str
+    ) -> Tuple[Optional[str], Optional[str], Optional[List[str]]]:
         """
         Parses the XML-like response from the agent model.
 
@@ -747,20 +838,24 @@ class ScaleCUAAgent:
             A tuple containing the content of <think>, <operation>, and <action> tags.
         """
         # Extract content from <think> tag
-        think_match = re.search(r'<think>\s*(.*?)\s*</think>', response, re.DOTALL)
+        think_match = re.search(r"<think>\s*(.*?)\s*</think>", response, re.DOTALL)
         think = think_match.group(1).strip() if think_match else None
 
         # Extract content from <operation> tag
-        operation_match = re.search(r'<operation>\s*(.*?)\s*</operation>', response, re.DOTALL)
+        operation_match = re.search(
+            r"<operation>\s*(.*?)\s*</operation>", response, re.DOTALL
+        )
         operation = operation_match.group(1).strip() if operation_match else None
-        
+
         # Extract content from all <action> tags
-        action_matches = re.findall(r'<action>\s*(.*?)\s*</action>', response, re.DOTALL)
+        action_matches = re.findall(
+            r"<action>\s*(.*?)\s*</action>", response, re.DOTALL
+        )
         actions = []
         if action_matches:
             for match in action_matches:
                 # Split each match by newline and add non-empty lines
-                lines = [line.strip() for line in match.split('\n') if line.strip()]
+                lines = [line.strip() for line in match.split("\n") if line.strip()]
                 actions.extend(lines)
 
         return think, operation, actions if actions else None
@@ -777,8 +872,10 @@ class ScaleCUAAgent:
         """
         if not history:
             return "None."
-        
-        return "\n".join([f"Step {i+1}: {low_level}" for i, low_level in enumerate(history)])
+
+        return "\n".join(
+            [f"Step {i+1}: {low_level}" for i, low_level in enumerate(history)]
+        )
 
     def parse_action(self, actions: List[str]) -> List[str]:
         """
@@ -799,7 +896,7 @@ class ScaleCUAAgent:
                 continue
 
             func_name, args_str = match.groups()
-            
+
             # This is a simplified parser. For robustness, a more advanced
             # parsing strategy might be needed, but this handles common cases.
             try:
@@ -810,10 +907,10 @@ class ScaleCUAAgent:
                 # Fallback for non-dict formats like hotkey('ctrl', 'c')
                 # It creates a special 'args' key for positional arguments
                 args_list = [arg.strip() for arg in split_args(args_str)]
-                parsed_args = {'args': args_list}
+                parsed_args = {"args": args_list}
 
-            parsed_actions.append({'name': func_name, 'parameters': parsed_args})
-        
+            parsed_actions.append({"name": func_name, "parameters": parsed_args})
+
         # Transform the structured actions into pyautogui strings
         pyautogui_actions = [self.transform_action(pa) for pa in parsed_actions]
         return pyautogui_actions
@@ -845,12 +942,12 @@ class ScaleCUAAgent:
             y = kwargs.get("y")
             if x is None or y is None:
                 return f"# Error: Missing coordinates for {func}"
-            
+
             # Scale coordinates from relative (0-1) to absolute screen pixels
             resize_h, resize_w = smart_resize(self.screen_height, self.screen_width)
             abs_x = f"{float(x) / resize_w * self.screen_width:.4f}"
             abs_y = f"{float(y) / resize_h * self.screen_height:.4f}"
-            
+
             clicks = 2 if func == "doubleClick" else kwargs.get("clicks", 1)
             button = "right" if func == "rightClick" else kwargs.get("button", "left")
             return f'pyautogui.click(x={abs_x}, y={abs_y}, clicks={clicks}, button="{button}")'
@@ -861,14 +958,14 @@ class ScaleCUAAgent:
             clicks = kwargs.get("clicks", 0)
             x = kwargs.get("x")
             y = kwargs.get("y")
-            
+
             # If both x and y coordinates are provided, scroll at the specified position.
             if x is not None and y is not None:
                 return f"pyautogui.scroll(clicks={clicks}, x={x}, y={y})"
             # Otherwise, scroll at the current mouse position.
             else:
                 return f"pyautogui.scroll(clicks={clicks})"
-             
+
         # --- Mouse Movement ---
         if func == "moveTo" or func == "dragTo":
             x = kwargs.get("x")
@@ -883,17 +980,20 @@ class ScaleCUAAgent:
 
             if func == "moveTo":
                 return f"pyautogui.moveTo({abs_x}, {abs_y})"
-            else: # dragTo
+            else:  # dragTo
                 button = kwargs.get("button", "left")
                 return f'pyautogui.dragTo({abs_x}, {abs_y}, button="{button}")'
-        
+
         # --- Keyboard Actions ---
         if func == "press":
             keys = kwargs.get("keys", [])
             presses = int(kwargs.get("presses", 1))
-            if isinstance(keys, str): keys = [keys] # Ensure keys is a list
-            
-            commands = [f"pyautogui.press('{key}')" for key in keys for _ in range(presses)]
+            if isinstance(keys, str):
+                keys = [keys]  # Ensure keys is a list
+
+            commands = [
+                f"pyautogui.press('{key}')" for key in keys for _ in range(presses)
+            ]
             return "; ".join(commands)
 
         if func == "hotkey":
@@ -919,6 +1019,6 @@ class ScaleCUAAgent:
 
         if func == "terminate":
             return "DONE"
-        
+
         # --- Fallback for unhandled actions ---
         return f"# Unhandled action: {func}({kwargs})"

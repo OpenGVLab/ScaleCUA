@@ -22,24 +22,24 @@ from android_world.env import json_action
 
 
 class HumanAgent(base_agent.EnvironmentInteractingAgent):
-  """Human agent; wait for user to indicate they are done."""
+    """Human agent; wait for user to indicate they are done."""
 
-  def step(self, goal: str) -> base_agent.AgentInteractionResult:
-    del goal
-    response = input(
-        'Human playing! Hit enter when you are ready for evaluation (or q to'
-        ' quit).'
-    )
-    if response == 'q':
-      sys.exit()
-    action_details = {'action_type': 'answer', 'text': response}
-    self.env.execute_action(json_action.JSONAction(**action_details))
+    def step(self, goal: str) -> base_agent.AgentInteractionResult:
+        del goal
+        response = input(
+            "Human playing! Hit enter when you are ready for evaluation (or q to"
+            " quit)."
+        )
+        if response == "q":
+            sys.exit()
+        action_details = {"action_type": "answer", "text": response}
+        self.env.execute_action(json_action.JSONAction(**action_details))
 
-    state = self.get_post_transition_state()
-    result = {}
-    result['elements'] = state.ui_elements
-    result['pixels'] = state.pixels
-    return base_agent.AgentInteractionResult(True, result)
+        state = self.get_post_transition_state()
+        result = {}
+        result["elements"] = state.ui_elements
+        result["pixels"] = state.pixels
+        return base_agent.AgentInteractionResult(True, result)
 
-  def get_post_transition_state(self) -> interface.State:
-    return self.env.get_state()
+    def get_post_transition_state(self) -> interface.State:
+        return self.env.get_state()

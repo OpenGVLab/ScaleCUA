@@ -3,14 +3,24 @@ import os
 import backoff
 import numpy as np
 from anthropic import Anthropic
-from openai import APIConnectionError, APIError, AzureOpenAI, OpenAI, RateLimitError, DefaultHttpxClient
+from openai import (
+    APIConnectionError,
+    APIError,
+    AzureOpenAI,
+    OpenAI,
+    RateLimitError,
+    DefaultHttpxClient,
+)
+
 
 class LMMEngine:
     pass
 
 
 class LMMEngineOpenAI(LMMEngine):
-    def __init__(self, base_url = None, api_key=None, model=None, rate_limit=-1, **kwargs):
+    def __init__(
+        self, base_url=None, api_key=None, model=None, rate_limit=-1, **kwargs
+    ):
         assert model is not None, "model must be provided"
         self.model = model
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
@@ -24,23 +34,20 @@ class LMMEngineOpenAI(LMMEngine):
         self.request_interval = 0 if rate_limit == -1 else 60.0 / rate_limit
 
         self.llm_client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+
     @backoff.on_exception(
         backoff.expo, (APIConnectionError, APIError, RateLimitError), max_time=60
     )
     def generate(self, messages, temperature=0.0, max_new_tokens=None, **kwargs):
         """Generate the next message based on previous messages"""
         result = self.llm_client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=max_new_tokens if max_new_tokens else 8192,
-                temperature=temperature,
-                **kwargs,
-            )
-        return (
-            result
-            .choices[0]
-            .message.content
+            model=self.model,
+            messages=messages,
+            max_tokens=max_new_tokens if max_new_tokens else 8192,
+            temperature=temperature,
+            **kwargs,
         )
+        return result.choices[0].message.content
 
 
 class LMMEngineAnthropic(LMMEngine):
@@ -66,7 +73,7 @@ class LMMEngineAnthropic(LMMEngine):
 
         return (
             self.llm_client.messages.create(
-                system=messages[0]["content"][0]['text'],
+                system=messages[0]["content"][0]["text"],
                 model=self.model,
                 messages=messages[1:],
                 max_tokens=max_new_tokens if max_new_tokens else 4096,

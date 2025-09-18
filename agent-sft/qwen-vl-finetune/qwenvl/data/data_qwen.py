@@ -202,7 +202,7 @@ def find_point(ref_matches, message, image_size):
 
         if len(points[0]) != 2:
             return None
-        
+
         new_points = []
         for point in points:
             point = [
@@ -212,7 +212,7 @@ def find_point(ref_matches, message, image_size):
             new_points.append(point)
             item_str = json.dumps({"point_2d": point, "label": ref}, ensure_ascii=False)
             formatted_values.append(item_str)
-        
+
     if len(formatted_values) > 0:
         return (
             "```json\n" + "[\n    " + ",\n    ".join(formatted_values) + "\n]" + "\n```"
@@ -275,6 +275,7 @@ def format_grounding_internvl2qwenvl(
         else:
             box_pattern = r"\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]"
             point_pattern = r"\[(\d+),\s*(\d+)\]"
+
             def replace_match2(match):
                 bbox_or_point = list(map(int, match.groups()))
                 if len(bbox_or_point) == 4:
@@ -601,7 +602,9 @@ class LazySupervisedDataset(Dataset):
         self.data_args.image_processor.min_pixels = data_args.min_pixels
         self.data_args.image_processor.size["longest_edge"] = data_args.max_pixels
         self.data_args.image_processor.size["shortest_edge"] = data_args.min_pixels
-        rank0_print(f"Resize images between {data_args.min_pixels} to {data_args.max_pixels}")
+        rank0_print(
+            f"Resize images between {data_args.min_pixels} to {data_args.max_pixels}"
+        )
 
         self.mm_samples = [
             i for i in range(len(self.list_data_root)) if self.check_mm_input(i)

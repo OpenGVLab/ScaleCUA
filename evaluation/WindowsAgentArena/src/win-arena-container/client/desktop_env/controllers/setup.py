@@ -56,33 +56,35 @@ class SetupController:
             # Assumes all the setup the functions should follow this name
             # protocol
             setup_function: str = "_{:}_setup".format(config_type)
-            assert hasattr(self, setup_function), f'Setup controller cannot find init function {setup_function}'
+            assert hasattr(
+                self, setup_function
+            ), f"Setup controller cannot find init function {setup_function}"
             getattr(self, setup_function)(**parameters)
 
             logger.info("SETUP: %s(%s)", setup_function, str(parameters))
-    
+
     def _set_default_browser_setup(self, browser: str):
         # Comment: this function doesn't work. It does set the registry key correctly, but looks like there's some security mechanism that prevents the key by itself from setting the default browser
-        key_path = r"HKCU:Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"  
-        setting_path = r"ProgId"  
-        
-        browser_prog_ids = {  
-            "chrome": "ChromeHTML",  
-            "edge": "MSEdgeHTM",  
-        }  
-    
-        try:  
-            browser_prog_id = browser_prog_ids[browser.lower()]  
-        except KeyError:  
-            return f"Invalid browser: {browser}. Choose from 'chrome', 'edge', 'firefox', 'ie'."  
-    
-        try:  
+        key_path = r"HKCU:Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice"
+        setting_path = r"ProgId"
+
+        browser_prog_ids = {
+            "chrome": "ChromeHTML",
+            "edge": "MSEdgeHTM",
+        }
+
+        try:
+            browser_prog_id = browser_prog_ids[browser.lower()]
+        except KeyError:
+            return f"Invalid browser: {browser}. Choose from 'chrome', 'edge', 'firefox', 'ie'."
+
+        try:
             controller = PythonController(self.vm_ip)
-            controller.set_registry_key(key_path, setting_path, browser_prog_id)  
-        except Exception as e:  
-            return str(e)  
-    
-        return f"Default browser set to {browser}" 
+            controller.set_registry_key(key_path, setting_path, browser_prog_id)
+        except Exception as e:
+            return str(e)
+
+        return f"Default browser set to {browser}"
 
     def _download_setup(self, files: List[Dict[str, str]]):
         """
@@ -102,11 +104,16 @@ class SetupController:
         for f in files:
             url: str = f["url"]
             path: str = f["path"]
-            cache_path: str = os.path.join(self.cache_dir, "{:}_{:}".format(
-                uuid.uuid5(uuid.NAMESPACE_URL, url),
-                os.path.basename(path)))
+            cache_path: str = os.path.join(
+                self.cache_dir,
+                "{:}_{:}".format(
+                    uuid.uuid5(uuid.NAMESPACE_URL, url), os.path.basename(path)
+                ),
+            )
             if not url or not path:
-                raise Exception(f"Setup Download - Invalid URL ({url}) or path ({path}).")
+                raise Exception(
+                    f"Setup Download - Invalid URL ({url}) or path ({path})."
+                )
 
             if not os.path.exists(cache_path):
                 max_retries = 3
@@ -117,7 +124,7 @@ class SetupController:
                         response = requests.get(url, stream=True)
                         response.raise_for_status()
 
-                        with open(cache_path, 'wb') as f:
+                        with open(cache_path, "wb") as f:
                             for chunk in response.iter_content(chunk_size=8192):
                                 if chunk:
                                     f.write(chunk)
@@ -127,27 +134,40 @@ class SetupController:
 
                     except requests.RequestException as e:
                         logger.error(
-                            f"Failed to download {url} caused by {e}. Retrying... ({max_retries - i - 1} attempts left)")
+                            f"Failed to download {url} caused by {e}. Retrying... ({max_retries - i - 1} attempts left)"
+                        )
                 if not downloaded:
-                    raise requests.RequestException(f"Failed to download {url}. No retries left. Error: {e}")
+                    raise requests.RequestException(
+                        f"Failed to download {url}. No retries left. Error: {e}"
+                    )
 
-            form = MultipartEncoder({
-                "file_path": path,
-                "file_data": (os.path.basename(path), open(cache_path, "rb"))
-            })
+            form = MultipartEncoder(
+                {
+                    "file_path": path,
+                    "file_data": (os.path.basename(path), open(cache_path, "rb")),
+                }
+            )
             headers = {"Content-Type": form.content_type}
             logger.debug(form.content_type)
 
             # send request to server to upload file
             try:
-                logger.debug("REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload")
-                response = requests.post(self.http_server + "/setup" + "/upload", headers=headers, data=form)
+                logger.debug(
+                    "REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload"
+                )
+                response = requests.post(
+                    self.http_server + "/setup" + "/upload", headers=headers, data=form
+                )
                 if response.status_code == 200:
                     logger.info("Command executed successfully: %s", response.text)
                 else:
-                    logger.error("Failed to upload file. Status code: %s", response.text)
+                    logger.error(
+                        "Failed to upload file. Status code: %s", response.text
+                    )
             except requests.exceptions.RequestException as e:
-                logger.error("An error occurred while trying to send the request: %s", e)
+                logger.error(
+                    "An error occurred while trying to send the request: %s", e
+                )
 
     def _upload_file_setup(self, files: List[Dict[str, str]]):
         """
@@ -166,23 +186,33 @@ class SetupController:
                 logger.error(f"Setup Upload - Invalid local path ({local_path}).")
                 return
 
-            form = MultipartEncoder({
-                "file_path": path,
-                "file_data": (os.path.basename(path), open(local_path, "rb"))
-            })
+            form = MultipartEncoder(
+                {
+                    "file_path": path,
+                    "file_data": (os.path.basename(path), open(local_path, "rb")),
+                }
+            )
             headers = {"Content-Type": form.content_type}
             logger.debug(form.content_type)
 
             # send request to server to upload file
             try:
-                logger.debug("REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload")
-                response = requests.post(self.http_server + "/setup" + "/upload", headers=headers, data=form)
+                logger.debug(
+                    "REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload"
+                )
+                response = requests.post(
+                    self.http_server + "/setup" + "/upload", headers=headers, data=form
+                )
                 if response.status_code == 200:
                     logger.info("Command executed successfully: %s", response.text)
                 else:
-                    logger.error("Failed to upload file. Status code: %s", response.text)
+                    logger.error(
+                        "Failed to upload file. Status code: %s", response.text
+                    )
             except requests.exceptions.RequestException as e:
-                logger.error("An error occurred while trying to send the request: %s", e)
+                logger.error(
+                    "An error occurred while trying to send the request: %s", e
+                )
 
     def _change_wallpaper_setup(self, path: str):
         # if not config:
@@ -195,17 +225,21 @@ class SetupController:
             raise Exception(f"Setup Wallpaper - Invalid path ({path}).")
 
         payload = json.dumps({"path": path})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to change wallpaper
         try:
-            response = requests.post(self.http_server + "/setup" + "/change_wallpaper", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/change_wallpaper",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error("Failed to change wallpaper. Status code: %s", response.text)
+                logger.error(
+                    "Failed to change wallpaper. Status code: %s", response.text
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
@@ -222,13 +256,15 @@ class SetupController:
             raise Exception(f"Setup Open - Invalid path ({path}).")
 
         payload = json.dumps({"path": path})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to open file
         try:
-            response = requests.post(self.http_server + "/setup" + "/open_file", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/open_file",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
                 time.sleep(2)
@@ -242,30 +278,36 @@ class SetupController:
             raise Exception("Empty command to launch.")
 
         if not shell and isinstance(command, str) and len(command.split()) > 1:
-            logger.warning("Command should be a list of strings. Now it is a string. Will split it by space.")
+            logger.warning(
+                "Command should be a list of strings. Now it is a string. Will split it by space."
+            )
             command = command.split()
 
         payload = json.dumps({"command": command, "shell": shell})
         headers = {"Content-Type": "application/json"}
 
         try:
-            response = requests.post(self.http_server + "/setup" + "/launch", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/launch", headers=headers, data=payload
+            )
             logger.info(f"launch_setup(), response: {payload}")
             logger.info(f"launch_setup(), response: {response}")
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error("Failed to launch application. Status code: %s", response.text)
+                logger.error(
+                    "Failed to launch application. Status code: %s", response.text
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
     def _execute_setup(
-            self,
-            command: List[str],
-            stdout: str = "",
-            stderr: str = "",
-            shell: bool = False,
-            until: Optional[Dict[str, Any]] = None
+        self,
+        command: List[str],
+        stdout: str = "",
+        stderr: str = "",
+        shell: bool = False,
+        until: Optional[Dict[str, Any]] = None,
     ):
         if not command:
             raise Exception("Empty command to launch.")
@@ -279,7 +321,11 @@ class SetupController:
 
         while not terminates:
             try:
-                response = requests.post(self.http_server + "/setup" + "/execute", headers=headers, data=payload)
+                response = requests.post(
+                    self.http_server + "/setup" + "/execute",
+                    headers=headers,
+                    data=payload,
+                )
                 if response.status_code == 200:
                     results: Dict[str, str] = response.json()
                     if stdout:
@@ -288,16 +334,21 @@ class SetupController:
                     if stderr:
                         with open(os.path.join(self.cache_dir, stderr), "w") as f:
                             f.write(results["error"])
-                    logger.info("Command executed successfully: %s -> %s"
-                                , " ".join(command) if isinstance(command, list) else command
-                                , response.text
-                                )
+                    logger.info(
+                        "Command executed successfully: %s -> %s",
+                        " ".join(command) if isinstance(command, list) else command,
+                        response.text,
+                    )
                 else:
-                    logger.error("Failed to launch application. Status code: %s", response.text)
+                    logger.error(
+                        "Failed to launch application. Status code: %s", response.text
+                    )
                     results = None
                     nb_failings += 1
             except requests.exceptions.RequestException as e:
-                logger.error("An error occurred while trying to send the request: %s", e)
+                logger.error(
+                    "An error occurred while trying to send the request: %s", e
+                )
                 traceback.print_exc()
 
                 results = None
@@ -306,9 +357,14 @@ class SetupController:
             if len(until) == 0:
                 terminates = True
             elif results is not None:
-                terminates = "returncode" in until and results["returncode"] == until["returncode"] \
-                             or "stdout" in until and until["stdout"] in results["output"] \
-                             or "stderr" in until and until["stderr"] in results["error"]
+                terminates = (
+                    "returncode" in until
+                    and results["returncode"] == until["returncode"]
+                    or "stdout" in until
+                    and until["stdout"] in results["output"]
+                    or "stderr" in until
+                    and until["stderr"] in results["error"]
+                )
             terminates = terminates or nb_failings >= 5
             if not terminates:
                 time.sleep(0.3)
@@ -332,75 +388,100 @@ class SetupController:
         # TODO
         raise NotImplementedError()
 
-    def _activate_window_setup(self, window_name: str, strict: bool = False, by_class: bool = False):
+    def _activate_window_setup(
+        self, window_name: str, strict: bool = False, by_class: bool = False
+    ):
         if not window_name:
             raise Exception(f"Setup Open - Invalid path ({window_name}).")
 
-        payload = json.dumps({"window_name": window_name, "strict": strict, "by_class": by_class})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        payload = json.dumps(
+            {"window_name": window_name, "strict": strict, "by_class": by_class}
+        )
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to open file
         try:
-            response = requests.post(self.http_server + "/setup" + "/activate_window", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/activate_window",
+                headers=headers,
+                data=payload,
+            )
             logger.info(f"activate window setup RESPONSE: {response}, {response.text}")
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error(f"Failed to activate window {window_name}. Status code: %s", response.text)
+                logger.error(
+                    f"Failed to activate window {window_name}. Status code: %s",
+                    response.text,
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
     def _close_all_setup(self):
         payload = json.dumps({})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to open file
         try:
-            response = requests.post(self.http_server + "/setup" + "/close_all", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/close_all",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error(f"Failed to close all windows. Status code: %s", response.text)
+                logger.error(
+                    f"Failed to close all windows. Status code: %s", response.text
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
     def _clean_up_files(self):
         payload = json.dumps({})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to open file
         try:
-            response = requests.post(self.http_server + "/setup" + "/clear_task_files", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/clear_task_files",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error(f"Failed to clear task files. Status code: %s", response.text)
+                logger.error(
+                    f"Failed to clear task files. Status code: %s", response.text
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
-
-    def _close_window_setup(self, window_name: str, strict: bool = False, by_class: bool = False):
+    def _close_window_setup(
+        self, window_name: str, strict: bool = False, by_class: bool = False
+    ):
         if not window_name:
             raise Exception(f"Setup Open - Invalid path ({window_name}).")
 
-        payload = json.dumps({"window_name": window_name, "strict": strict, "by_class": by_class})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        payload = json.dumps(
+            {"window_name": window_name, "strict": strict, "by_class": by_class}
+        )
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to open file
         try:
-            response = requests.post(self.http_server + "/setup" + "/close_window", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/close_window",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
-                logger.error(f"Failed to close window {window_name}. Status code: %s", response.text)
+                logger.error(
+                    f"Failed to close window {window_name}. Status code: %s",
+                    response.text,
+                )
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
@@ -410,13 +491,15 @@ class SetupController:
             raise Exception(f"Setup Create Folder - Invalid path ({path}).")
 
         payload = json.dumps({"path": path})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to create folder
         try:
-            response = requests.post(self.http_server + "/setup" + "/create_folder", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/create_folder",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
@@ -429,13 +512,15 @@ class SetupController:
             raise Exception(f"Setup Create File - Invalid path ({path}).")
 
         payload = json.dumps({"path": path, "content": content})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
         # send request to server to create text file
         try:
-            response = requests.post(self.http_server + "/setup" + "/create_file", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/create_file",
+                headers=headers,
+                data=payload,
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
@@ -443,17 +528,16 @@ class SetupController:
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
-
     def _recycle_file_setup(self, path: str):
         if not path:
             raise Exception(f"Setup recycle file - Invalid path ({path}).")
 
         payload = json.dumps({"path": path})
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
         try:
-            response = requests.post(self.http_server + "/setup" + "/recycle", headers=headers, data=payload)
+            response = requests.post(
+                self.http_server + "/setup" + "/recycle", headers=headers, data=payload
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
@@ -465,7 +549,9 @@ class SetupController:
     def _chrome_open_tabs_setup(self, urls_to_open: List[str]):
 
         host = self.vm_ip
-        port = 9222  # fixme: this port is hard-coded, need to be changed from config file
+        port = (
+            9222  # fixme: this port is hard-coded, need to be changed from config file
+        )
 
         remote_debugging_url = f"http://{host}:{port}"
         logger.info("Connect to Chrome @: %s", remote_debugging_url)
@@ -481,7 +567,9 @@ class SetupController:
                     # break
                 except Exception as e:
                     if attempt < 14:
-                        logger.error(f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}")
+                        logger.error(
+                            f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}"
+                        )
                         # time.sleep(10)
                         continue
                     else:
@@ -497,11 +585,15 @@ class SetupController:
                     if i == 0:
                         context = browser.contexts[0]
 
-                    page = context.new_page()  # Create a new page (tab) within the existing context
+                    page = (
+                        context.new_page()
+                    )  # Create a new page (tab) within the existing context
                     try:
                         page.goto(url, timeout=60000)
                     except:
-                        logger.warning("Opening %s exceeds time limit", url)  # only for human test
+                        logger.warning(
+                            "Opening %s exceeds time limit", url
+                        )  # only for human test
                     logger.info(f"Opened tab {i + 1}: {url}")
 
                     if i == 0:
@@ -511,11 +603,13 @@ class SetupController:
 
                 # Do not close the context or browser; they will remain open after script ends
                 return browser, context
-            
+
     def _edge_open_tabs_setup(self, urls_to_open: List[str]):
 
         host = self.vm_ip
-        port = 9222  # fixme: this port is hard-coded, need to be changed from config file
+        port = (
+            9222  # fixme: this port is hard-coded, need to be changed from config file
+        )
 
         remote_debugging_url = f"http://{host}:{port}"
         logger.info("Connect to Microsoft Edge @: %s", remote_debugging_url)
@@ -531,7 +625,9 @@ class SetupController:
                     # break
                 except Exception as e:
                     if attempt < 14:
-                        logger.error(f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}")
+                        logger.error(
+                            f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}"
+                        )
                         continue
                     else:
                         logger.error(f"Failed to connect after multiple attempts: {e}")
@@ -546,11 +642,15 @@ class SetupController:
                     if i == 0:
                         context = browser.contexts[0]
 
-                    page = context.new_page()  # Create a new page (tab) within the existing context
+                    page = (
+                        context.new_page()
+                    )  # Create a new page (tab) within the existing context
                     try:
                         page.goto(url, timeout=60000)
                     except:
-                        logger.warning("Opening %s exceeds time limit", url)  # only for human test
+                        logger.warning(
+                            "Opening %s exceeds time limit", url
+                        )  # only for human test
                     logger.info(f"Opened tab {i + 1}: {url}")
 
                     if i == 0:
@@ -565,7 +665,9 @@ class SetupController:
         time.sleep(5)  # Wait for Chrome to finish launching
 
         host = self.vm_ip
-        port = 9222  # fixme: this port is hard-coded, need to be changed from config file
+        port = (
+            9222  # fixme: this port is hard-coded, need to be changed from config file
+        )
 
         remote_debugging_url = f"http://{host}:{port}"
         with sync_playwright() as p:
@@ -576,7 +678,9 @@ class SetupController:
                     break
                 except Exception as e:
                     if attempt < 14:
-                        logger.error(f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}")
+                        logger.error(
+                            f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}"
+                        )
                         time.sleep(5)
                     else:
                         logger.error(f"Failed to connect after multiple attempts: {e}")
@@ -604,7 +708,7 @@ class SetupController:
 
     # google drive setup
     def _googledrive_setup(self, **config):
-        """ Clean google drive space (eliminate the impact of previous experiments to reset the environment)
+        """Clean google drive space (eliminate the impact of previous experiments to reset the environment)
         @args:
             config(Dict[str, Any]): contain keys
                 settings_file(str): path to google drive settings file, which will be loaded by pydrive.auth.GoogleAuth()
@@ -621,35 +725,55 @@ class SetupController:
                     path(str): remote url to download file
                     dest(List[str]): the path in the google drive to store the downloaded file
         """
-        settings_file = config.get('settings_file', 'evaluation_examples/settings/googledrive/settings.yml')
+        settings_file = config.get(
+            "settings_file", "evaluation_examples/settings/googledrive/settings.yml"
+        )
         gauth = GoogleAuth(settings_file=settings_file)
         drive = GoogleDrive(gauth)
 
         def mkdir_in_googledrive(paths: List[str]):
             paths = [paths] if type(paths) != list else paths
-            parent_id = 'root'
+            parent_id = "root"
             for p in paths:
                 q = f'"{parent_id}" in parents and title = "{p}" and mimeType = "application/vnd.google-apps.folder" and trashed = false'
-                folder = drive.ListFile({'q': q}).GetList()
+                folder = drive.ListFile({"q": q}).GetList()
                 if len(folder) == 0:  # not exists, create it
-                    parents = {} if parent_id == 'root' else {'parents': [{'id': parent_id}]}
-                    file = drive.CreateFile({'title': p, 'mimeType': 'application/vnd.google-apps.folder', **parents})
+                    parents = (
+                        {} if parent_id == "root" else {"parents": [{"id": parent_id}]}
+                    )
+                    file = drive.CreateFile(
+                        {
+                            "title": p,
+                            "mimeType": "application/vnd.google-apps.folder",
+                            **parents,
+                        }
+                    )
                     file.Upload()
-                    parent_id = file['id']
+                    parent_id = file["id"]
                 else:
-                    parent_id = folder[0]['id']
+                    parent_id = folder[0]["id"]
             return parent_id
 
-        for oid, operation in enumerate(config['operation']):
-            if operation == 'delete':  # delete a specific file
+        for oid, operation in enumerate(config["operation"]):
+            if operation == "delete":  # delete a specific file
                 # query pattern string, by default, remove all files/folders not in the trash to the trash
-                params = config['args'][oid]
-                q = params.get('query', '')
-                trash = params.get('trash', False)
-                q_file = f"( {q} ) and mimeType != 'application/vnd.google-apps.folder'" if q.strip() else "mimeType != 'application/vnd.google-apps.folder'"
-                filelist: GoogleDriveFileList = drive.ListFile({'q': q_file}).GetList()
-                q_folder = f"( {q} ) and mimeType = 'application/vnd.google-apps.folder'" if q.strip() else "mimeType = 'application/vnd.google-apps.folder'"
-                folderlist: GoogleDriveFileList = drive.ListFile({'q': q_folder}).GetList()
+                params = config["args"][oid]
+                q = params.get("query", "")
+                trash = params.get("trash", False)
+                q_file = (
+                    f"( {q} ) and mimeType != 'application/vnd.google-apps.folder'"
+                    if q.strip()
+                    else "mimeType != 'application/vnd.google-apps.folder'"
+                )
+                filelist: GoogleDriveFileList = drive.ListFile({"q": q_file}).GetList()
+                q_folder = (
+                    f"( {q} ) and mimeType = 'application/vnd.google-apps.folder'"
+                    if q.strip()
+                    else "mimeType = 'application/vnd.google-apps.folder'"
+                )
+                folderlist: GoogleDriveFileList = drive.ListFile(
+                    {"q": q_folder}
+                ).GetList()
                 for file in filelist:  # first delete file, then folder
                     file: GoogleDriveFile
                     if trash:
@@ -663,31 +787,35 @@ class SetupController:
                         folder.Trash()
                     else:
                         folder.Delete()
-            elif operation == 'mkdirs':
-                params = config['args'][oid]
-                mkdir_in_googledrive(params['path'])
-            elif operation == 'upload':
-                params = config['args'][oid]
-                url = params['url']
-                with tempfile.NamedTemporaryFile(mode='wb', delete=False) as tmpf:
+            elif operation == "mkdirs":
+                params = config["args"][oid]
+                mkdir_in_googledrive(params["path"])
+            elif operation == "upload":
+                params = config["args"][oid]
+                url = params["url"]
+                with tempfile.NamedTemporaryFile(mode="wb", delete=False) as tmpf:
                     response = requests.get(url, stream=True)
                     response.raise_for_status()
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             tmpf.write(chunk)
                     tmpf.close()
-                    paths = [params['path']] if params['path'] != list else params['path']
+                    paths = (
+                        [params["path"]] if params["path"] != list else params["path"]
+                    )
                     parent_id = mkdir_in_googledrive(paths[:-1])
-                    parents = {} if parent_id == 'root' else {'parents': [{'id': parent_id}]}
-                    file = drive.CreateFile({'title': paths[-1], **parents})
+                    parents = (
+                        {} if parent_id == "root" else {"parents": [{"id": parent_id}]}
+                    )
+                    file = drive.CreateFile({"title": paths[-1], **parents})
                     file.SetContentFile(tmpf.name)
                     file.Upload()
                 return
             else:
-                raise ValueError('[ERROR]: not implemented clean type!')
+                raise ValueError("[ERROR]: not implemented clean type!")
 
     def _login_setup(self, **config):
-        """ Login to a website with account and password information.
+        """Login to a website with account and password information.
         @args:
             config(Dict[str, Any]): contain keys
                 settings_file(str): path to the settings file
@@ -696,7 +824,9 @@ class SetupController:
 
         """
         host = self.vm_ip
-        port = 9222  # fixme: this port is hard-coded, need to be changed from config file
+        port = (
+            9222  # fixme: this port is hard-coded, need to be changed from config file
+        )
 
         remote_debugging_url = f"http://{host}:{port}"
         with sync_playwright() as p:
@@ -707,7 +837,9 @@ class SetupController:
                     break
                 except Exception as e:
                     if attempt < 14:
-                        logger.error(f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}")
+                        logger.error(
+                            f"Attempt {attempt + 1}: Failed to connect, retrying. Error: {e}"
+                        )
                         time.sleep(5)
                     else:
                         logger.error(f"Failed to connect after multiple attempts: {e}")
@@ -716,36 +848,46 @@ class SetupController:
                 return
 
             context = browser.contexts[0]
-            platform = config['platform']
+            platform = config["platform"]
 
-            if platform == 'googledrive':
-                url = 'https://drive.google.com/drive/my-drive'
-                page = context.new_page()  # Create a new page (tab) within the existing context
+            if platform == "googledrive":
+                url = "https://drive.google.com/drive/my-drive"
+                page = (
+                    context.new_page()
+                )  # Create a new page (tab) within the existing context
                 try:
                     page.goto(url, timeout=60000)
                 except:
-                    logger.warning("Opening %s exceeds time limit", url)  # only for human test
+                    logger.warning(
+                        "Opening %s exceeds time limit", url
+                    )  # only for human test
                 logger.info(f"Opened new page: {url}")
-                settings = json.load(open(config['settings_file']))
-                email, password = settings['email'], settings['password']
+                settings = json.load(open(config["settings_file"]))
+                email, password = settings["email"], settings["password"]
 
                 try:
-                    page.wait_for_selector('input[type="email"]', state="visible", timeout=3000)
+                    page.wait_for_selector(
+                        'input[type="email"]', state="visible", timeout=3000
+                    )
                     page.fill('input[type="email"]', email)
-                    page.click('#identifierNext > div > button')
-                    page.wait_for_selector('input[type="password"]', state="visible", timeout=5000)
+                    page.click("#identifierNext > div > button")
+                    page.wait_for_selector(
+                        'input[type="password"]', state="visible", timeout=5000
+                    )
                     page.fill('input[type="password"]', password)
-                    page.click('#passwordNext > div > button')
-                    page.wait_for_load_state('load', timeout=5000)
+                    page.click("#passwordNext > div > button")
+                    page.wait_for_load_state("load", timeout=5000)
                 except TimeoutError:
-                    logger.info('[ERROR]: timeout when waiting for google drive login page to load!')
+                    logger.info(
+                        "[ERROR]: timeout when waiting for google drive login page to load!"
+                    )
                     return
 
             else:
                 raise NotImplementedError
 
             return browser, context
-            
+
     def _update_browse_history_edge_setup(self, **config):
         db_path = os.path.join("desktop_env", "assets", "history_empty.sqlite")
 
@@ -754,75 +896,92 @@ class SetupController:
         shutil.copyfile(db_path, cache_path)
         db_path = cache_path
 
-        history = config['history']
+        history = config["history"]
 
         for history_item in history:
-            url = history_item['url']
-            title = history_item['title']
-            visit_time = datetime.now() - timedelta(seconds=history_item['visit_time_from_now_in_seconds'])
+            url = history_item["url"]
+            title = history_item["title"]
+            visit_time = datetime.now() - timedelta(
+                seconds=history_item["visit_time_from_now_in_seconds"]
+            )
 
             # Chrome use ms from 1601-01-01 as timestamp
             epoch_start = datetime(1601, 1, 1)
-            edge_timestamp  = int((visit_time - epoch_start).total_seconds() * 1000000)
+            edge_timestamp = int((visit_time - epoch_start).total_seconds() * 1000000)
 
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
-            cursor.execute('''
+            cursor.execute(
+                """
                    INSERT INTO urls (url, title, visit_count, typed_count, last_visit_time, hidden)
                    VALUES (?, ?, ?, ?, ?, ?)
-               ''', (url, title, 1, 0, edge_timestamp , 0))
+               """,
+                (url, title, 1, 0, edge_timestamp, 0),
+            )
 
             url_id = cursor.lastrowid
 
-            cursor.execute('''
+            cursor.execute(
+                """
                    INSERT INTO visits (url, visit_time, from_visit, transition, segment_id, visit_duration)
                    VALUES (?, ?, ?, ?, ?, ?)
-               ''', (url_id, edge_timestamp , 0, 805306368, 0, 0))
+               """,
+                (url_id, edge_timestamp, 0, 805306368, 0, 0),
+            )
 
             conn.commit()
             conn.close()
 
-        logger.info('Fake browsing history added successfully.')
+        logger.info("Fake browsing history added successfully.")
 
         controller = PythonController(self.vm_ip)
 
         # get the path of the history file according to the platform
         os_type = controller.get_vm_platform()
 
-        if os_type == 'Windows':
+        if os_type == "Windows":
             edge_history_path = controller.execute_python_command(
-                """import os; print(os.path.join(os.getenv('USERPROFILE'), "AppData", "Local", "Microsoft", "Edge", "User Data", "Default", "History"))""")[
-                'output'].strip()
-        elif os_type == 'Darwin':
+                """import os; print(os.path.join(os.getenv('USERPROFILE'), "AppData", "Local", "Microsoft", "Edge", "User Data", "Default", "History"))"""
+            )["output"].strip()
+        elif os_type == "Darwin":
             edge_history_path = controller.execute_python_command(
-                """import os; print(os.path.join(os.getenv('HOME'), "Library", "Application Support", "Microsoft", "Edge", "Default", "History"))""")[
-                'output'].strip()
-        elif os_type == 'Linux':
+                """import os; print(os.path.join(os.getenv('HOME'), "Library", "Application Support", "Microsoft", "Edge", "Default", "History"))"""
+            )["output"].strip()
+        elif os_type == "Linux":
             edge_history_path = controller.execute_python_command(
-                "import os; print(os.path.join(os.getenv('HOME'), '.config', 'microsoft-edge', 'Default', 'History'))")[
-                'output'].strip()
+                "import os; print(os.path.join(os.getenv('HOME'), '.config', 'microsoft-edge', 'Default', 'History'))"
+            )["output"].strip()
         else:
-            raise Exception('Unsupported operating system')
+            raise Exception("Unsupported operating system")
 
-        form = MultipartEncoder({
-            "file_path": edge_history_path,
-            "file_data": (os.path.basename(edge_history_path), open(db_path, "rb"))
-        })
+        form = MultipartEncoder(
+            {
+                "file_path": edge_history_path,
+                "file_data": (os.path.basename(edge_history_path), open(db_path, "rb")),
+            }
+        )
         headers = {"Content-Type": form.content_type}
         logger.debug(form.content_type)
 
         # send request to server to upload file
         try:
             logger.debug("REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload")
-            response = requests.post(self.http_server + "/setup" + "/upload", headers=headers, data=form)
+            response = requests.post(
+                self.http_server + "/setup" + "/upload", headers=headers, data=form
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
                 logger.error("Failed to upload file. Status code: %s", response.text)
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
-        self._execute_setup(["sudo chown -R user:user /home/user/.config/microsoft-edge/Default/History"], shell=True)
+        self._execute_setup(
+            [
+                "sudo chown -R user:user /home/user/.config/microsoft-edge/Default/History"
+            ],
+            shell=True,
+        )
 
     def _update_browse_history_setup(self, **config):
         db_path = os.path.join("desktop_env", "assets", "history_empty.sqlite")
@@ -832,12 +991,14 @@ class SetupController:
         shutil.copyfile(db_path, cache_path)
         db_path = cache_path
 
-        history = config['history']
+        history = config["history"]
 
         for history_item in history:
-            url = history_item['url']
-            title = history_item['title']
-            visit_time = datetime.now() - timedelta(seconds=history_item['visit_time_from_now_in_seconds'])
+            url = history_item["url"]
+            title = history_item["title"]
+            visit_time = datetime.now() - timedelta(
+                seconds=history_item["visit_time_from_now_in_seconds"]
+            )
 
             # Chrome use ms from 1601-01-01 as timestamp
             epoch_start = datetime(1601, 1, 1)
@@ -846,54 +1007,67 @@ class SetupController:
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
-            cursor.execute('''
+            cursor.execute(
+                """
                    INSERT INTO urls (url, title, visit_count, typed_count, last_visit_time, hidden)
                    VALUES (?, ?, ?, ?, ?, ?)
-               ''', (url, title, 1, 0, chrome_timestamp, 0))
+               """,
+                (url, title, 1, 0, chrome_timestamp, 0),
+            )
 
             url_id = cursor.lastrowid
 
-            cursor.execute('''
+            cursor.execute(
+                """
                    INSERT INTO visits (url, visit_time, from_visit, transition, segment_id, visit_duration)
                    VALUES (?, ?, ?, ?, ?, ?)
-               ''', (url_id, chrome_timestamp, 0, 805306368, 0, 0))
+               """,
+                (url_id, chrome_timestamp, 0, 805306368, 0, 0),
+            )
 
             conn.commit()
             conn.close()
 
-        logger.info('Fake browsing history added successfully.')
+        logger.info("Fake browsing history added successfully.")
 
         controller = PythonController(self.vm_ip)
 
         # get the path of the history file according to the platform
         os_type = controller.get_vm_platform()
 
-        if os_type == 'Windows':
+        if os_type == "Windows":
             chrome_history_path = controller.execute_python_command(
-                """import os; print(os.path.join(os.getenv('USERPROFILE'), "AppData", "Local", "Google", "Chrome", "User Data", "Default", "History"))""")[
-                'output'].strip()
-        elif os_type == 'Darwin':
+                """import os; print(os.path.join(os.getenv('USERPROFILE'), "AppData", "Local", "Google", "Chrome", "User Data", "Default", "History"))"""
+            )["output"].strip()
+        elif os_type == "Darwin":
             chrome_history_path = controller.execute_python_command(
-                """import os; print(os.path.join(os.getenv('HOME'), "Library", "Application Support", "Google", "Chrome", "Default", "History"))""")[
-                'output'].strip()
-        elif os_type == 'Linux':
+                """import os; print(os.path.join(os.getenv('HOME'), "Library", "Application Support", "Google", "Chrome", "Default", "History"))"""
+            )["output"].strip()
+        elif os_type == "Linux":
             chrome_history_path = controller.execute_python_command(
-                "import os; print(os.path.join(os.getenv('HOME'), '.config', 'google-chrome', 'Default', 'History'))")[
-                'output'].strip()
+                "import os; print(os.path.join(os.getenv('HOME'), '.config', 'google-chrome', 'Default', 'History'))"
+            )["output"].strip()
         else:
-            raise Exception('Unsupported operating system')
+            raise Exception("Unsupported operating system")
 
-        form = MultipartEncoder({
-            "file_path": chrome_history_path,
-            "file_data": (os.path.basename(chrome_history_path), open(db_path, "rb"))
-        })
+        form = MultipartEncoder(
+            {
+                "file_path": chrome_history_path,
+                "file_data": (
+                    os.path.basename(chrome_history_path),
+                    open(db_path, "rb"),
+                ),
+            }
+        )
         headers = {"Content-Type": form.content_type}
         logger.debug(form.content_type)
 
         # send request to server to upload file
         try:
             logger.debug("REQUEST ADDRESS: %s", self.http_server + "/setup" + "/upload")
-            response = requests.post(self.http_server + "/setup" + "/upload", headers=headers, data=form)
+            response = requests.post(
+                self.http_server + "/setup" + "/upload", headers=headers, data=form
+            )
             if response.status_code == 200:
                 logger.info("Command executed successfully: %s", response.text)
             else:
@@ -901,5 +1075,9 @@ class SetupController:
         except requests.exceptions.RequestException as e:
             logger.error("An error occurred while trying to send the request: %s", e)
 
-        self._execute_setup(["sudo chown -R user:user /home/user/.config/google-chrome/Default/History"], shell=True)
-
+        self._execute_setup(
+            [
+                "sudo chown -R user:user /home/user/.config/google-chrome/Default/History"
+            ],
+            shell=True,
+        )

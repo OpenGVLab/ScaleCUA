@@ -150,11 +150,7 @@ class SingleTask_cantook_6(SingleTask):
         if "Alice's Adventures in Wonderland" in book_info:
             judge_book = True
 
-        return {
-            "judge_page": True,
-            "1": judge_book,
-            "complete": judge_book
-        }
+        return {"judge_page": True, "1": judge_book, "complete": judge_book}
 
 
 class SingleTask_cantook_7(SingleTask):
@@ -178,11 +174,7 @@ class SingleTask_cantook_7(SingleTask):
         if "Don Quixote" not in book_info:
             judge_book = True
 
-        return {
-            "judge_page": True,
-            "1": judge_book,
-            "complete": judge_book
-        }
+        return {"judge_page": True, "1": judge_book, "complete": judge_book}
 
 
 class SingleTask_cantook_8(SingleTask):
@@ -212,7 +204,7 @@ class SingleTask_cantook_8(SingleTask):
             "judge_page": True,
             "1": judge_book,
             "2": judge_read,
-            "complete": judge_book & judge_read
+            "complete": judge_book & judge_read,
         }
 
 
@@ -243,7 +235,7 @@ class SingleTask_cantook_9(SingleTask):
             "judge_page": True,
             "1": judge_book,
             "2": judge_read,
-            "complete": judge_book & judge_read
+            "complete": judge_book & judge_read,
         }
 
 
@@ -267,11 +259,7 @@ class SingleTask_cantook_10(SingleTask):
         if "Mer. Thou desir'st me to stop in my tale against the haire" in book_info:
             judge_book = True
 
-        return {
-            "judge_page": True,
-            "1": judge_book,
-            "complete": judge_book
-        }
+        return {"judge_page": True, "1": judge_book, "complete": judge_book}
 
 
 class SingleTask_cantook_11(SingleTask):
@@ -306,7 +294,7 @@ class SingleTask_cantook_11(SingleTask):
             "1": self.judge_cate,
             "2": judge_trag,
             "3": judge_book,
-            "complete": self.judge_cate & judge_trag & judge_book
+            "complete": self.judge_cate & judge_trag & judge_book,
         }
 
 
@@ -333,5 +321,5 @@ class SingleTask_cantook_12(SingleTask):
             "judge_page": True,
             "1": judge_coll,
             "2": judge_favo,
-            "complete": judge_coll & judge_favo
+            "complete": judge_coll & judge_favo,
         }

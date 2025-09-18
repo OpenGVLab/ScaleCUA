@@ -26,55 +26,53 @@ from android_world.utils import file_utils
 
 
 class SaveCopyOfReceiptTaskEval(task_eval.TaskEval):
-  """Task using SimpleGalleryPro to save a copy of a receipt."""
+    """Task using SimpleGalleryPro to save a copy of a receipt."""
 
-  app_names = ("simple gallery pro",)
+    app_names = ("simple gallery pro",)
 
-  complexity = 1.6
+    complexity = 1.6
 
-  template = (
-      "In Simple Gallery Pro, copy {file_name} in DCIM and save a copy with the"
-      " same name in Download"
-  )
-
-  schema = schema.no_params()
-
-  def initialize_task(self, env: interface.AsyncEnv) -> None:
-    super().initialize_task(env)
-    user_data_generation.clear_device_storage(env)
-    receipt_image = self.params["receipt_image"]
-    temp_storage_location = os.path.join("/tmp/", self.params["file_name"])
-    receipt_image.save(temp_storage_location)
-    file_utils.copy_data_to_device(
-        temp_storage_location,
-        device_constants.GALLERY_DATA,
-        env.controller,
+    template = (
+        "In Simple Gallery Pro, copy {file_name} in DCIM and save a copy with the"
+        " same name in Download"
     )
 
-  def tear_down(self, env: interface.AsyncEnv):
-    super().tear_down(env)
-    user_data_generation.clear_device_storage(env)
+    schema = schema.no_params()
 
-  def is_successful(self, env: interface.AsyncEnv) -> float:
-    super().is_successful(env)
+    def initialize_task(self, env: interface.AsyncEnv) -> None:
+        super().initialize_task(env)
+        user_data_generation.clear_device_storage(env)
+        receipt_image = self.params["receipt_image"]
+        temp_storage_location = os.path.join("/tmp/", self.params["file_name"])
+        receipt_image.save(temp_storage_location)
+        file_utils.copy_data_to_device(
+            temp_storage_location,
+            device_constants.GALLERY_DATA,
+            env.controller,
+        )
 
-    if file_utils.check_file_or_folder_exists(
-        target=self.params["file_name"],
-        base_path=device_constants.DOWNLOAD_DATA,
-        env=env.controller,
-    ):
-      return 1.0
+    def tear_down(self, env: interface.AsyncEnv):
+        super().tear_down(env)
+        user_data_generation.clear_device_storage(env)
 
-    return 0.0
+    def is_successful(self, env: interface.AsyncEnv) -> float:
+        super().is_successful(env)
 
-  @classmethod
-  def generate_random_params(cls) -> dict[str, Any]:
-    receipt_image, _ = receipt_generator.create_receipt()
-    return {
-        "receipt_image": receipt_image,
-        "file_name": (
-            "receipt_"
-            + user_data_generation.generate_random_file_name()
-            + ".jpg"
-        ),
-    }
+        if file_utils.check_file_or_folder_exists(
+            target=self.params["file_name"],
+            base_path=device_constants.DOWNLOAD_DATA,
+            env=env.controller,
+        ):
+            return 1.0
+
+        return 0.0
+
+    @classmethod
+    def generate_random_params(cls) -> dict[str, Any]:
+        receipt_image, _ = receipt_generator.create_receipt()
+        return {
+            "receipt_image": receipt_image,
+            "file_name": (
+                "receipt_" + user_data_generation.generate_random_file_name() + ".jpg"
+            ),
+        }

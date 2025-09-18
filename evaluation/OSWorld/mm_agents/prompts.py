@@ -1,4 +1,4 @@
-CUA_SYSTEM_PROMPT_THOUGHT='''You are an autonomous GUI agent operating on the **Linux (Ubuntu)** platform. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
+CUA_SYSTEM_PROMPT_THOUGHT = '''You are an autonomous GUI agent operating on the **Linux (Ubuntu)** platform. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
 
 ## Action Space
 def click(
@@ -108,7 +108,7 @@ def terminate(status: str = "success", info: str | None = None) -> None:
 - The generated action(s) must exist within the defined action space.
 - The reasoning process, operation and action(s) in your response should be enclosed within <think></think>, <operation></operation> and <action></action> tags, respectively.
 '''
-CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT='''You are an autonomous GUI agent operating on the **Linux (Ubuntu)** platform(s). Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
+CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT = '''You are an autonomous GUI agent operating on the **Linux (Ubuntu)** platform(s). Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
 
 ## Action Space
 def click(
@@ -214,12 +214,11 @@ def terminate(status: str = "success", info: str | None = None) -> None:
 - The generated operation and action(s) should be enclosed within <operation></operation> and <action></action> tags, respectively.'''
 
 
-
-CUA_USER_PROMPT='''Please generate the next move according to the UI screenshot, the task and previous operations.
+CUA_USER_PROMPT = """Please generate the next move according to the UI screenshot, the task and previous operations.
 
 Task:
 {instruction}
 
 Previous operations:
 {history}
-'''
+"""

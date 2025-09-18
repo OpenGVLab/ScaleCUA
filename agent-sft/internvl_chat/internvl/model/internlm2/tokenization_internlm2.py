@@ -25,7 +25,7 @@ from transformers.utils import logging
 
 logger = logging.get_logger(__name__)
 
-VOCAB_FILES_NAMES = {'vocab_file': './tokenizer.model'}
+VOCAB_FILES_NAMES = {"vocab_file": "./tokenizer.model"}
 
 PRETRAINED_VOCAB_FILES_MAP = {}
 
@@ -42,16 +42,16 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
 
     vocab_files_names = VOCAB_FILES_NAMES
     pretrained_vocab_files_map = PRETRAINED_VOCAB_FILES_MAP
-    model_input_names = ['input_ids', 'attention_mask']
-    _auto_class = 'AutoTokenizer'
+    model_input_names = ["input_ids", "attention_mask"]
+    _auto_class = "AutoTokenizer"
 
     def __init__(
         self,
         vocab_file,
-        unk_token='<unk>',
-        bos_token='<s>',
-        eos_token='</s>',
-        pad_token='</s>',
+        unk_token="<unk>",
+        bos_token="<s>",
+        eos_token="</s>",
+        pad_token="</s>",
         sp_model_kwargs: Optional[Dict[str, Any]] = None,
         add_bos_token=True,
         add_eos_token=False,
@@ -80,7 +80,9 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
     def no_prefix_space_tokens(self):
         if self._no_prefix_space_tokens is None:
             vocab = self.convert_ids_to_tokens(list(range(self.vocab_size)))
-            self._no_prefix_space_tokens = {i for i, tok in enumerate(vocab) if not tok.startswith('▁')}
+            self._no_prefix_space_tokens = {
+                i for i, tok in enumerate(vocab) if not tok.startswith("▁")
+            }
         return self._no_prefix_space_tokens
 
     @property
@@ -117,20 +119,20 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
 
     def _maybe_add_prefix_space(self, tokens, decoded):
         if tokens and tokens[0] not in self.no_prefix_space_tokens:
-            return ' ' + decoded
+            return " " + decoded
         else:
             return decoded
 
     def convert_tokens_to_string(self, tokens):
         """Converts a sequence of tokens (string) in a single string."""
         current_sub_tokens = []
-        out_string = ''
+        out_string = ""
         prev_is_special = False
         for token in tokens:
             # make sure that special tokens are not decoded using sentencepiece model
             if token in self.all_special_tokens:
                 if not prev_is_special:
-                    out_string += ' '
+                    out_string += " "
                 out_string += self.sp_model.decode(current_sub_tokens) + token
                 prev_is_special = True
                 current_sub_tokens = []
@@ -142,7 +144,9 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
         out_string = self._maybe_add_prefix_space(tokens=tokens, decoded=out_string)
         return out_string[1:]
 
-    def save_vocabulary(self, save_directory, filename_prefix: Optional[str] = None) -> Tuple[str]:
+    def save_vocabulary(
+        self, save_directory, filename_prefix: Optional[str] = None
+    ) -> Tuple[str]:
         """
         Save the vocabulary and special tokens file to a directory.
 
@@ -154,16 +158,20 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
             `Tuple(str)`: Paths to the files saved.
         """
         if not os.path.isdir(save_directory):
-            logger.error(f'Vocabulary path ({save_directory}) should be a directory')
+            logger.error(f"Vocabulary path ({save_directory}) should be a directory")
             return
         out_vocab_file = os.path.join(
-            save_directory, (filename_prefix + '-' if filename_prefix else '') + VOCAB_FILES_NAMES['vocab_file']
+            save_directory,
+            (filename_prefix + "-" if filename_prefix else "")
+            + VOCAB_FILES_NAMES["vocab_file"],
         )
 
-        if os.path.abspath(self.vocab_file) != os.path.abspath(out_vocab_file) and os.path.isfile(self.vocab_file):
+        if os.path.abspath(self.vocab_file) != os.path.abspath(
+            out_vocab_file
+        ) and os.path.isfile(self.vocab_file):
             copyfile(self.vocab_file, out_vocab_file)
         elif not os.path.isfile(self.vocab_file):
-            with open(out_vocab_file, 'wb') as fi:
+            with open(out_vocab_file, "wb") as fi:
                 content_spiece_model = self.sp_model.serialized_model_proto()
                 fi.write(content_spiece_model)
 
@@ -186,7 +194,10 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
         return output
 
     def get_special_tokens_mask(
-        self, token_ids_0: List[int], token_ids_1: Optional[List[int]] = None, already_has_special_tokens: bool = False
+        self,
+        token_ids_0: List[int],
+        token_ids_1: Optional[List[int]] = None,
+        already_has_special_tokens: bool = False,
     ) -> List[int]:
         """
         Retrieve sequence ids from a token list that has no special tokens added. This method is called when adding
@@ -205,7 +216,9 @@ class InternLM2Tokenizer(PreTrainedTokenizer):
         """
         if already_has_special_tokens:
             return super().get_special_tokens_mask(
-                token_ids_0=token_ids_0, token_ids_1=token_ids_1, already_has_special_tokens=True
+                token_ids_0=token_ids_0,
+                token_ids_1=token_ids_1,
+                already_has_special_tokens=True,
             )
 
         if token_ids_1 is None:

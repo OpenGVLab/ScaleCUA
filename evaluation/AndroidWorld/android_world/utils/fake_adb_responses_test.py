@@ -22,68 +22,68 @@ from android_world.utils import file_utils
 
 class FakeAdbResponsesTest(absltest.TestCase):
 
-  def test_create_check_directory_exists_true_response(self):
-    env = mock.create_autospec(env_interface.AndroidEnvInterface)
+    def test_create_check_directory_exists_true_response(self):
+        env = mock.create_autospec(env_interface.AndroidEnvInterface)
 
-    env.execute_adb_call.return_value = (
-        fake_adb_responses.create_check_directory_exists_response(exists=True)
-    )
-
-    self.assertTrue(file_utils.check_directory_exists("path", env))
-
-  def test_create_check_directory_exists_false_response(self):
-    env = mock.create_autospec(env_interface.AndroidEnvInterface)
-
-    env.execute_adb_call.return_value = (
-        fake_adb_responses.create_check_directory_exists_response(exists=False)
-    )
-
-    self.assertFalse(file_utils.check_directory_exists("path", env))
-
-  def test_create_check_file_or_folder_exists_responses_exists(self):
-    base_path = "/sdcard/FunStuff"
-    file_name = "jokes.txt"
-    env = mock.create_autospec(env_interface.AndroidEnvInterface)
-
-    env.execute_adb_call.side_effect = (
-        fake_adb_responses.create_check_file_or_folder_exists_responses(
-            file_name=file_name, base_path=base_path, exists=True
+        env.execute_adb_call.return_value = (
+            fake_adb_responses.create_check_directory_exists_response(exists=True)
         )
-    )
 
-    self.assertTrue(
-        file_utils.check_file_or_folder_exists(file_name, base_path, env)
-    )
+        self.assertTrue(file_utils.check_directory_exists("path", env))
 
-  def test_create_check_file_or_folder_exists_responses_not_exists(self):
-    base_path = "/sdcard/FunStuff"
-    file_name = "jokes.txt"
-    env = mock.create_autospec(env_interface.AndroidEnvInterface)
+    def test_create_check_directory_exists_false_response(self):
+        env = mock.create_autospec(env_interface.AndroidEnvInterface)
 
-    env.execute_adb_call.side_effect = (
-        fake_adb_responses.create_check_file_or_folder_exists_responses(
-            file_name=file_name, base_path=base_path, exists=False
+        env.execute_adb_call.return_value = (
+            fake_adb_responses.create_check_directory_exists_response(exists=False)
         )
-    )
 
-    self.assertFalse(
-        file_utils.check_file_or_folder_exists(file_name, base_path, env)
-    )
+        self.assertFalse(file_utils.check_directory_exists("path", env))
 
-  def test_create_check_file_or_folder_exists_responses_different_file(self):
-    base_path = "/sdcard/FunStuff"
-    env = mock.create_autospec(env_interface.AndroidEnvInterface)
+    def test_create_check_file_or_folder_exists_responses_exists(self):
+        base_path = "/sdcard/FunStuff"
+        file_name = "jokes.txt"
+        env = mock.create_autospec(env_interface.AndroidEnvInterface)
 
-    env.execute_adb_call.side_effect = (
-        fake_adb_responses.create_check_file_or_folder_exists_responses(
-            file_name="jokes.txt", base_path=base_path, exists=True
+        env.execute_adb_call.side_effect = (
+            fake_adb_responses.create_check_file_or_folder_exists_responses(
+                file_name=file_name, base_path=base_path, exists=True
+            )
         )
-    )
 
-    self.assertFalse(
-        file_utils.check_file_or_folder_exists("puns.txt", base_path, env)
-    )
+        self.assertTrue(
+            file_utils.check_file_or_folder_exists(file_name, base_path, env)
+        )
+
+    def test_create_check_file_or_folder_exists_responses_not_exists(self):
+        base_path = "/sdcard/FunStuff"
+        file_name = "jokes.txt"
+        env = mock.create_autospec(env_interface.AndroidEnvInterface)
+
+        env.execute_adb_call.side_effect = (
+            fake_adb_responses.create_check_file_or_folder_exists_responses(
+                file_name=file_name, base_path=base_path, exists=False
+            )
+        )
+
+        self.assertFalse(
+            file_utils.check_file_or_folder_exists(file_name, base_path, env)
+        )
+
+    def test_create_check_file_or_folder_exists_responses_different_file(self):
+        base_path = "/sdcard/FunStuff"
+        env = mock.create_autospec(env_interface.AndroidEnvInterface)
+
+        env.execute_adb_call.side_effect = (
+            fake_adb_responses.create_check_file_or_folder_exists_responses(
+                file_name="jokes.txt", base_path=base_path, exists=True
+            )
+        )
+
+        self.assertFalse(
+            file_utils.check_file_or_folder_exists("puns.txt", base_path, env)
+        )
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

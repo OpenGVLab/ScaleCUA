@@ -144,10 +144,7 @@ class LMMAgent:
             }
 
             if text_content is not None:
-                message["content"].append({
-                    "type": "text",
-                    "text": text_content
-                })
+                message["content"].append({"type": "text", "text": text_content})
 
             if isinstance(image_content, np.ndarray) or image_content:
                 # Check if image_content is a list or a single image
@@ -199,12 +196,9 @@ class LMMAgent:
                 "role": role,
                 "content": [],
             }
-            
+
             if text_content is not None:
-                message["content"].append({
-                    "type": "text",
-                    "text": text_content
-                })
+                message["content"].append({"type": "text", "text": text_content})
 
             if image_content:
                 # Check if image_content is a list or a single image

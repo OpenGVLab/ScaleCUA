@@ -20,41 +20,41 @@ from android_world.utils import test_utils
 
 class TestMakePhoneCall(test_utils.AdbEvalTestBase):
 
-  def test_is_successful_offhook(self):
-    self.mock_get_call_state.return_value = 'OFFHOOK'
-    self.mock_dialer_with_phone_number.return_value = True
+    def test_is_successful_offhook(self):
+        self.mock_get_call_state.return_value = "OFFHOOK"
+        self.mock_dialer_with_phone_number.return_value = True
 
-    env = mock.MagicMock()
-    params = {'phone_number': '1234567890'}
-    task = phone_validators.MakeCall(params)
+        env = mock.MagicMock()
+        params = {"phone_number": "1234567890"}
+        task = phone_validators.MakeCall(params)
 
-    self.assertEqual(test_utils.perform_task(task, env), 1)
+        self.assertEqual(test_utils.perform_task(task, env), 1)
 
-  def test_is_successful_not_offhook(self):
-    self.mock_get_call_state.return_value = 'IDLE'
-    self.mock_dialer_with_phone_number.return_value = True
+    def test_is_successful_not_offhook(self):
+        self.mock_get_call_state.return_value = "IDLE"
+        self.mock_dialer_with_phone_number.return_value = True
 
-    env = mock.MagicMock()
-    params = {'phone_number': '1234567890'}
-    task = phone_validators.MakeCall(params)
+        env = mock.MagicMock()
+        params = {"phone_number": "1234567890"}
+        task = phone_validators.MakeCall(params)
 
-    self.assertEqual(test_utils.perform_task(task, env), 0)
+        self.assertEqual(test_utils.perform_task(task, env), 0)
 
-  def test_is_successful_wrong_number(self):
-    self.mock_get_call_state.return_value = 'OFFHOOK'
-    self.mock_dialer_with_phone_number.return_value = False
+    def test_is_successful_wrong_number(self):
+        self.mock_get_call_state.return_value = "OFFHOOK"
+        self.mock_dialer_with_phone_number.return_value = False
 
-    env = mock.MagicMock()
-    params = {'phone_number': '1234567890'}
-    task = phone_validators.MakeCall(params)
+        env = mock.MagicMock()
+        params = {"phone_number": "1234567890"}
+        task = phone_validators.MakeCall(params)
 
-    self.assertEqual(test_utils.perform_task(task, env), 0)
+        self.assertEqual(test_utils.perform_task(task, env), 0)
 
-  def test_generate_random_params(self):
-    random_params = phone_validators.MakeCall.generate_random_params()
-    self.assertIn('phone_number', random_params)
-    self.assertIsInstance(random_params['phone_number'], str)
+    def test_generate_random_params(self):
+        random_params = phone_validators.MakeCall.generate_random_params()
+        self.assertIn("phone_number", random_params)
+        self.assertIsInstance(random_params["phone_number"], str)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

@@ -8,7 +8,7 @@ from evaluation.utils import find_matching_subtrees
 def extract_songs(xml_compressed_tree) -> List[Dict]:
     songs_data = find_matching_subtrees(xml_compressed_tree, "TextView ;; ;;")
     song_data = [list(sd.keys())[0].split(";; ;;")[-1].strip() for sd in songs_data]
-    duration_pattern = re.compile(r'^(\d+:)?[0-5]?\d:[0-5]?\d$')
+    duration_pattern = re.compile(r"^(\d+:)?[0-5]?\d:[0-5]?\d$")
     start_index = 0
     for i in range(4):
         if i + 2 < len(song_data):
@@ -22,11 +22,7 @@ def extract_songs(xml_compressed_tree) -> List[Dict]:
             artist = song_data[i + 1]
             duration = song_data[i + 2]
             if duration_pattern.match(duration):
-                song_info = {
-                    'song': song,
-                    'artist': artist,
-                    'duration': duration
-                }
+                song_info = {"song": song, "artist": artist, "duration": duration}
                 result.append(song_info)
             else:
                 break
@@ -34,7 +30,7 @@ def extract_songs(xml_compressed_tree) -> List[Dict]:
 
 
 def parse_duration(duration):
-    parts = list(map(int, duration.split(':')))
+    parts = list(map(int, duration.split(":")))
     if len(parts) == 2:
         return parts[0] * 60 + parts[1]
     elif len(parts) == 3:
@@ -221,7 +217,7 @@ class SingleTask_pimusic_7(SingleTask):
             "1": self.judge_list,
             "2": self.judge_favo,
             "3": judge_play,
-            "complete": self.judge_list & self.judge_favo & judge_play
+            "complete": self.judge_list & self.judge_favo & judge_play,
         }
 
 
@@ -256,10 +252,15 @@ class SingleTask_pimusic_8(SingleTask):
 
         if self.judge_sort_step:
             song_data = extract_songs(xml_compressed_tree)
+
             def dur2sec(duration):
                 return parse_duration(duration)
-            dur2sec_list = [dur2sec(song['duration']) for song in song_data]
-            judge_sort_final = all(dur2sec_list[i] >= dur2sec_list[i + 1] for i in range(len(dur2sec_list) - 1))
+
+            dur2sec_list = [dur2sec(song["duration"]) for song in song_data]
+            judge_sort_final = all(
+                dur2sec_list[i] >= dur2sec_list[i + 1]
+                for i in range(len(dur2sec_list) - 1)
+            )
 
         return {
             "judge_page": True,
@@ -267,7 +268,10 @@ class SingleTask_pimusic_8(SingleTask):
             "2": judge_pf,
             "3": self.judge_sort_step,
             "4": judge_sort_final,
-            "complete": self.judge_arti & judge_pf & self.judge_sort_step & judge_sort_final
+            "complete": self.judge_arti
+            & judge_pf
+            & self.judge_sort_step
+            & judge_sort_final,
         }
 
 
@@ -293,7 +297,7 @@ class SingleTask_pimusic_9(SingleTask):
             "judge_page": True,
             "1": judge_list,
             "2": judge_cree,
-            "complete": judge_list & judge_cree
+            "complete": judge_list & judge_cree,
         }
 
 
@@ -315,11 +319,7 @@ class SingleTask_pimusic_10(SingleTask):
         if "1:27" in play_info:
             judge_time = True
 
-        return {
-            "judge_page": True,
-            "1": judge_time,
-            "complete": judge_time
-        }
+        return {"judge_page": True, "1": judge_time, "complete": judge_time}
 
 
 class SingleTask_pimusic_11(SingleTask):
@@ -340,11 +340,7 @@ class SingleTask_pimusic_11(SingleTask):
         if "Lightship" in play_info:
             judge_play = True
 
-        return {
-            "judge_page": True,
-            "1": judge_play,
-            "complete": judge_play
-        }
+        return {"judge_page": True, "1": judge_play, "complete": judge_play}
 
 
 class SingleTask_pimusic_12(SingleTask):
@@ -365,14 +361,18 @@ class SingleTask_pimusic_12(SingleTask):
         judge_sort_final = False
 
         song_data = extract_songs(xml_compressed_tree)
+
         def dur2sec(duration):
             return parse_duration(duration)
-        dur2sec_list = [dur2sec(song['duration']) for song in song_data]
-        judge_sort_final = all(dur2sec_list[i] <= dur2sec_list[i + 1] for i in range(len(dur2sec_list) - 1))
+
+        dur2sec_list = [dur2sec(song["duration"]) for song in song_data]
+        judge_sort_final = all(
+            dur2sec_list[i] <= dur2sec_list[i + 1] for i in range(len(dur2sec_list) - 1)
+        )
 
         return {
             "judge_page": True,
             "1": self.judge_sort_step,
             "2": judge_sort_final,
-            "complete": self.judge_sort_step & judge_sort_final
+            "complete": self.judge_sort_step & judge_sort_final,
         }

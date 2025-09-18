@@ -1,6 +1,7 @@
 """Script to run end-to-end evaluation on the benchmark.
 Utils and basic architecture credit to https://github.com/web-arena-x/webarena/blob/main/run.py.
 """
+
 from dotenv import load_dotenv
 import argparse
 import datetime
@@ -16,6 +17,7 @@ from desktop_env.desktop_env import DesktopEnv
 from mm_agents.scalecua_agent import ScaleCUA
 from multiprocessing import Process, Manager
 from typing import List, Dict
+
 # import wandb
 
 
@@ -44,7 +46,7 @@ sdebug_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
     fmt="\x1b[1;33m[%(asctime)s \x1b[31m%(levelname)s \x1b[32m%(module)s/%(lineno)d-%(processName)s\x1b[1;33m] \x1b[0m%(message)s"
 )
-file_handler.setFormatter(formatter)#
+file_handler.setFormatter(formatter)  #
 debug_handler.setFormatter(formatter)
 stdout_handler.setFormatter(formatter)
 sdebug_handler.setFormatter(formatter)
@@ -96,7 +98,9 @@ def config() -> argparse.Namespace:
     parser.add_argument("--model_type", type=str, default="qwen25vl")
     parser.add_argument("--infer_mode", type=str, default="qwen25vl_normal")
     parser.add_argument("--prompt_style", type=str, default="qwen25vl_normal")
-    parser.add_argument("--input_swap", action="store_true", help="Use copy and paste to type content")
+    parser.add_argument(
+        "--input_swap", action="store_true", help="Use copy and paste to type content"
+    )
     parser.add_argument("--language", type=str, default="English")
     parser.add_argument("--max_pixels", type=float, default=2109744)
     parser.add_argument("--min_pixels", type=float, default=3136)
@@ -107,7 +111,12 @@ def config() -> argparse.Namespace:
     parser.add_argument("--callusr_tolerance", type=int, default=3)
     parser.add_argument("--max_tokens", type=int, default=500)
     parser.add_argument("--stop_token", type=str, default=None)
-    parser.add_argument("--num_envs", type=int, default=1, help="Number of environments to run in parallel")
+    parser.add_argument(
+        "--num_envs",
+        type=int,
+        default=1,
+        help="Number of environments to run in parallel",
+    )
     # example config
     parser.add_argument("--domain", type=str, default="all")
     parser.add_argument(
@@ -116,7 +125,9 @@ def config() -> argparse.Namespace:
     # logging related
     parser.add_argument("--result_dir", type=str, default="./results")
     parser.add_argument("--url_set", type=str, default=None)
-    parser.add_argument("--disable_think", action="store_true", help="diable the think step")
+    parser.add_argument(
+        "--disable_think", action="store_true", help="diable the think step"
+    )
     args = parser.parse_args()
 
     return args
@@ -129,32 +140,38 @@ def distribute_tasks(test_all_meta: dict, num_envs: int) -> List[Dict]:
     for domain, examples in test_all_meta.items():
         for example_id in examples:
             all_tasks.append((domain, example_id))
-    
+
     # Calculate tasks per environment
     tasks_per_env = math.ceil(len(all_tasks) / num_envs)
-    
+
     # Distribute tasks
     distributed_tasks = []
     for i in range(num_envs):
         env_tasks = {}
         start_idx = i * tasks_per_env
         end_idx = min((i + 1) * tasks_per_env, len(all_tasks))
-        
+
         for domain, example_id in all_tasks[start_idx:end_idx]:
             if domain not in env_tasks:
                 env_tasks[domain] = []
             env_tasks[domain].append(example_id)
-        
+
         distributed_tasks.append(env_tasks)
-    
+
     return distributed_tasks
 
 
-
-def run_env_tasks(env_idx: int, env: DesktopEnv, agent: ScaleCUA, env_tasks: dict, args: argparse.Namespace, shared_scores: list):
+def run_env_tasks(
+    env_idx: int,
+    env: DesktopEnv,
+    agent: ScaleCUA,
+    env_tasks: dict,
+    args: argparse.Namespace,
+    shared_scores: list,
+):
     """Run tasks for a single environment."""
     logger.info(f"Executing tasks in environment {env_idx + 1}/{args.num_envs}")
-    
+
     for domain in tqdm(env_tasks, desc=f"Env{env_idx+1}-Domain"):
         for example_id in tqdm(env_tasks[domain], desc="Example", leave=False):
             config_file = os.path.join(
@@ -166,7 +183,7 @@ def run_env_tasks(env_idx: int, env: DesktopEnv, agent: ScaleCUA, env_tasks: dic
             logger.info(f"[Env {env_idx+1}][Domain]: {domain}")
             logger.info(f"[Env {env_idx+1}][Example ID]: {example_id}")
             logger.info(f"[Env {env_idx+1}][Instruction]: {example['instruction']}")
-            
+
             example_result_dir = os.path.join(
                 args.result_dir,
                 args.action_space,
@@ -196,11 +213,13 @@ def run_env_tasks(env_idx: int, env: DesktopEnv, agent: ScaleCUA, env_tasks: dic
                 with open(os.path.join(example_result_dir, "traj.jsonl"), "a") as f:
                     f.write(
                         json.dumps(
-                            {"Error": f"Time limit exceeded in {domain}/{example_id}: {e}"}
+                            {
+                                "Error": f"Time limit exceeded in {domain}/{example_id}: {e}"
+                            }
                         )
                     )
                     f.write("\n")
-    
+
     env.close()
 
 
@@ -209,7 +228,7 @@ def test(args: argparse.Namespace, test_all_meta: dict) -> None:
     max_steps = args.max_steps
 
     distributed_tasks = distribute_tasks(test_all_meta, args.num_envs)
-    url_set = args.url_set.split(",")  
+    url_set = args.url_set.split(",")
 
     distributed_urls = []
     for i in range(len(distributed_tasks)):
@@ -245,25 +264,25 @@ def test(args: argparse.Namespace, test_all_meta: dict) -> None:
             "result_dir": args.result_dir,
             "diable_think": args.disable_think,
         }
-        
+
         agent = ScaleCUA(
             model_name=args.model,
             action_space=args.action_space,
             observation_type=args.observation_type,
             max_trajectory_length=args.max_trajectory_length,
             model_type=args.model_type,
-            runtime_conf = {
+            runtime_conf={
                 "history_n": args.history_n,
                 "max_pixels": args.max_pixels,
                 "min_pixels": args.min_pixels,
                 "temperature": args.temperature,
                 "top_p": args.top_p,
                 "top_k": args.top_k,
-                "max_tokens": args.max_tokens
+                "max_tokens": args.max_tokens,
             },
             api_url=distributed_urls[env_idx],
             max_steps=args.max_steps,
-            disable_think = args.disable_think,
+            disable_think=args.disable_think,
         )
         agents.append(agent)
 
@@ -272,7 +291,7 @@ def test(args: argparse.Namespace, test_all_meta: dict) -> None:
             action_space=agent.action_space,
             screen_size=(args.screen_width, args.screen_height),
             headless=args.headless,
-            os_type = "Ubuntu",
+            os_type="Ubuntu",
             require_a11y_tree=args.observation_type
             in ["a11y_tree", "screenshot_a11y_tree", "som"],
         )
@@ -282,24 +301,26 @@ def test(args: argparse.Namespace, test_all_meta: dict) -> None:
     # Create a shared list for scores across processes
     with Manager() as manager:
         shared_scores = manager.list()
-        
+
         # Create and start processes for each environment
         processes = []
-        for env_idx, (env, agent, env_tasks) in enumerate(zip(envs, agents, distributed_tasks)):
+        for env_idx, (env, agent, env_tasks) in enumerate(
+            zip(envs, agents, distributed_tasks)
+        ):
             p = Process(
                 target=run_env_tasks,
-                args=(env_idx, env, agent, env_tasks, args, shared_scores)
+                args=(env_idx, env, agent, env_tasks, args, shared_scores),
             )
             processes.append(p)
             p.start()
-        
+
         # Wait for all processes to complete
         for p in processes:
             p.join()
-        
+
         # Convert shared list to regular list
         scores = list(shared_scores)
-    
+
     logger.info(f"Average score: {sum(scores) / len(scores) if scores else 0}")
 
 
@@ -376,7 +397,7 @@ def get_result(action_space, use_model, observation_type, result_dir, total_file
 
 
 if __name__ == "__main__":
-    
+
     ####### The complete version of the list of examples #######
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     args = config()

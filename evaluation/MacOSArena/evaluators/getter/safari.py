@@ -10,16 +10,17 @@ script_dir = Path(__file__).resolve().parent.parent
 
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
+
 def safari_get_window_count(env: MacOSEnv) -> int:
     """
     Get the number of open Safari windows via AppleScript.
     Returns the count as an integer, or -1 if an error occurred.
     """
-    apple_script = '''
+    apple_script = """
     tell application "Safari"
         return count of windows
     end tell
-    '''
+    """
     env.connect_ssh()
     try:
         stdout, stderr = env.run_command(f"osascript -e '{apple_script}'")
@@ -28,7 +29,7 @@ def safari_get_window_count(env: MacOSEnv) -> int:
     except Exception as e:
         logger.error(f"Failed to get Safari window count: {e}")
         return -1
-    
+
 
 def safari_get_url(env: MacOSEnv) -> str:
     """
@@ -42,7 +43,7 @@ def safari_get_url(env: MacOSEnv) -> str:
     :param env: MacOSEnv instance containing SSH connection to macOS
     :return: The current URL string or "SafariWindowsNotFindError" if no window is open
     """
-    apple_script = '''
+    apple_script = """
     tell application "Safari"
         if (count of windows) > 0 then
             set currentURL to URL of front document
@@ -51,7 +52,7 @@ def safari_get_url(env: MacOSEnv) -> str:
             return "SafariWindowsNotFindError"
         end if
     end tell
-    '''
+    """
     env.connect_ssh()
     try:
         stdout, stderr = env.run_command(f"osascript -e '{apple_script}'")
@@ -61,7 +62,7 @@ def safari_get_url(env: MacOSEnv) -> str:
     except Exception as e:
         logger.error(f"Error occurred: {e}")
         return "SafariScriptExecutionError"
-        
+
 
 def safari_get_default_property(env: MacOSEnv, property_name: str) -> str:
     """
@@ -73,7 +74,7 @@ def safari_get_default_property(env: MacOSEnv, property_name: str) -> str:
     """
     env.connect_ssh()
     try:
-        command = f'defaults read com.apple.Safari {property_name}'
+        command = f"defaults read com.apple.Safari {property_name}"
         stdout, stderr = env.run_command(command)
         if isinstance(stdout, str):
             return stdout.strip()
@@ -81,8 +82,8 @@ def safari_get_default_property(env: MacOSEnv, property_name: str) -> str:
     except Exception as e:
         logger.error(f"Failed to read '{property_name}': {e}")
         return None
-    
-    
+
+
 def safari_get_all_bookmark_folders(env: MacOSEnv) -> list[str]:
     """
     Get all Safari bookmark folder names from Bookmarks.plist without writing intermediate files.
@@ -104,8 +105,7 @@ def safari_get_all_bookmark_folders(env: MacOSEnv) -> list[str]:
         logger.error(f"Failed to get bookmark folders: {e}")
         return []
 
-    
-    
+
 def safari_get_bookmarks_in_folder(env: MacOSEnv, folder_name: str) -> list[str]:
     """
     Get all bookmark URLs inside a specific Safari bookmark folder without intermediate files.
@@ -115,7 +115,7 @@ def safari_get_bookmarks_in_folder(env: MacOSEnv, folder_name: str) -> list[str]
         command = (
             f"plutil -convert json -o - ~/Library/Safari/Bookmarks.plist | "
             f"/opt/anaconda3/bin/jq -r '.Children[] |"
-            f"select(.Title==\"{folder_name}\") | .Children[] | .URLString'"
+            f'select(.Title=="{folder_name}") | .Children[] | .URLString\''
         )
         stdout, _ = env.run_command(command)
         if isinstance(stdout, str):
@@ -164,7 +164,6 @@ def safari_get_bookmarks_in_folder(env: MacOSEnv, folder_name: str) -> list[str]
 #         return {"count": 0, "has_expensive": False}
 
 
-
 # def get_steam_topseller_items(env) -> list[dict]:
 #     """
 #     Get the Steam top-sellers list from the current Safari page by parsing HTML.
@@ -209,7 +208,8 @@ def safari_get_bookmarks_in_folder(env: MacOSEnv, folder_name: str) -> list[str]
 #     except Exception as e:
 #         logger.error(f"Failed to get Steam top-seller items: {e}")
 #         return []
-    
+
+
 def safari_check_steam_cart_contains_all_top3_items(env) -> bool:
     """
     Check whether ALL top 3 Steam top-seller games appear in the Safari cart,
@@ -219,22 +219,30 @@ def safari_check_steam_cart_contains_all_top3_items(env) -> bool:
 
     def get_page_html():
         js = "document.documentElement.outerHTML"
-        apple_script = f'tell application "Safari" to do JavaScript "{js}" in document 1'
+        apple_script = (
+            f'tell application "Safari" to do JavaScript "{js}" in document 1'
+        )
         stdout, stderr = env.run_command(f"osascript -e '{apple_script}'")
-        return stdout.read().decode().strip() if not isinstance(stdout, str) else stdout.strip()
+        return (
+            stdout.read().decode().strip()
+            if not isinstance(stdout, str)
+            else stdout.strip()
+        )
 
     # Step 1: Navigate to top sellers
-    env.run_command('osascript -e \'tell application "Safari" to open location "https://store.steampowered.com/search/?filter=topsellers"\'')
+    env.run_command(
+        'osascript -e \'tell application "Safari" to open location "https://store.steampowered.com/search/?filter=topsellers"\''
+    )
     time.sleep(4)
 
     # Step 2: Parse top seller titles
     html_top = get_page_html()
-    soup_top = BeautifulSoup(html_top, 'html.parser')
-    games = soup_top.select('a.search_result_row')
+    soup_top = BeautifulSoup(html_top, "html.parser")
+    games = soup_top.select("a.search_result_row")
     top_titles = []
     for game in games[:3]:
         try:
-            title = game.find('span', class_='title').text.strip()
+            title = game.find("span", class_="title").text.strip()
             if title:
                 top_titles.append(title)
         except:
@@ -246,32 +254,37 @@ def safari_check_steam_cart_contains_all_top3_items(env) -> bool:
         return False
 
     # Step 3: Navigate to cart
-    env.run_command('osascript -e \'tell application "Safari" to open location "https://store.steampowered.com/cart"\'')
+    env.run_command(
+        'osascript -e \'tell application "Safari" to open location "https://store.steampowered.com/cart"\''
+    )
     time.sleep(4)
 
     # Step 4: Parse cart page and extract Panel Focusable content
     html_cart = get_page_html()
-    soup_cart = BeautifulSoup(html_cart, 'html.parser')
-    cart_blocks = soup_cart.find_all('div', class_='Panel Focusable')
+    soup_cart = BeautifulSoup(html_cart, "html.parser")
+    cart_blocks = soup_cart.find_all("div", class_="Panel Focusable")
 
     # Step 5: Match all titles
-    cart_text = " ".join([block.get_text(separator=' ', strip=True) for block in cart_blocks])
+    cart_text = " ".join(
+        [block.get_text(separator=" ", strip=True) for block in cart_blocks]
+    )
     found_all = all(title in cart_text for title in top_titles)
     logger.info(f"Cart contains all top 3 titles: {found_all}")
     return found_all
-    
-    
+
+
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
+
     prop = "ShowFavorites"
     value = safari_check_steam_cart_contains_all_top3_items(macos_env)
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

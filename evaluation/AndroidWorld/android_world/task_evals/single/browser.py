@@ -28,99 +28,95 @@ from android_world.utils import file_utils
 
 
 class BrowserTask(task_eval.TaskEval):
-  """Base class for browser tasks."""
+    """Base class for browser tasks."""
 
-  app_names = ['chrome']
-  complexity = 2
-  schema = {
-      'type': 'object',
-      'properties': {
-          'browser_task_seed': {'type': 'number'},
-      },
-      'required': ['browser_task_seed'],
-  }
-  template = ''
-  HTML = ''  # Implementation overrides.
+    app_names = ["chrome"]
+    complexity = 2
+    schema = {
+        "type": "object",
+        "properties": {
+            "browser_task_seed": {"type": "number"},
+        },
+        "required": ["browser_task_seed"],
+    }
+    template = ""
+    HTML = ""  # Implementation overrides.
 
-  preamble = (
-      'Open the file task.html in Downloads in the file manager; when prompted'
-      ' open it with Chrome.'
-  )
-
-  def initialize_device_time(self, env: interface.AsyncEnv) -> None:
-    """Initializes the device time."""
-    datetime_utils.toggle_auto_settings(
-        env.controller, datetime_utils.Toggle.ON
-    )
-    time.sleep(1.0)
-
-  def initialize_task(self, env: interface.AsyncEnv):
-    super().initialize_task(env)
-    user_data_generation.clear_device_storage(env)
-    chrome_activity = adb_utils.extract_package_name(
-        adb_utils.get_adb_activity('chrome')
+    preamble = (
+        "Open the file task.html in Downloads in the file manager; when prompted"
+        " open it with Chrome."
     )
 
-    adb_utils.clear_app_data(
-        chrome_activity,
-        env.controller,
-    )
-    adb_utils.grant_permissions(
-        chrome_activity,
-        'android.permission.POST_NOTIFICATIONS',
-        env.controller,
-    )
+    def initialize_device_time(self, env: interface.AsyncEnv) -> None:
+        """Initializes the device time."""
+        datetime_utils.toggle_auto_settings(env.controller, datetime_utils.Toggle.ON)
+        time.sleep(1.0)
 
-    html = self.HTML.replace('%%SEED%%', str(self.params['browser_task_seed']))
-    with open('/tmp/task.html', 'w') as f:
-      f.write(html)
-    file_utils.copy_data_to_device(
-        '/tmp/task.html',
-        os.path.join(device_constants.DOWNLOAD_DATA, 'task.html'),
-        env.controller,
-    )
+    def initialize_task(self, env: interface.AsyncEnv):
+        super().initialize_task(env)
+        user_data_generation.clear_device_storage(env)
+        chrome_activity = adb_utils.extract_package_name(
+            adb_utils.get_adb_activity("chrome")
+        )
 
-  def tear_down(self, env: interface.AsyncEnv):
-    super().tear_down(env)
-    user_data_generation.clear_device_storage(env)
-    adb_utils.clear_app_data(
-        adb_utils.extract_package_name(adb_utils.get_adb_activity('chrome')),
-        env.controller,
-    )
-    datetime_utils.toggle_auto_settings(
-        env.controller, datetime_utils.Toggle.OFF
-    )
+        adb_utils.clear_app_data(
+            chrome_activity,
+            env.controller,
+        )
+        adb_utils.grant_permissions(
+            chrome_activity,
+            "android.permission.POST_NOTIFICATIONS",
+            env.controller,
+        )
 
-  def is_successful(self, env: interface.AsyncEnv) -> float:
-    state = env.get_state()
-    package_name = adb_utils.extract_package_name(
-        adb_utils.get_current_activity(env.controller)[0]
-    )
-    if package_name != 'com.android.chrome':
-      return 0.0
+        html = self.HTML.replace("%%SEED%%", str(self.params["browser_task_seed"]))
+        with open("/tmp/task.html", "w") as f:
+            f.write(html)
+        file_utils.copy_data_to_device(
+            "/tmp/task.html",
+            os.path.join(device_constants.DOWNLOAD_DATA, "task.html"),
+            env.controller,
+        )
 
-    for element in state.ui_elements:
-      if element.text == 'Success!':
-        return 1.0
-    return 0.0
+    def tear_down(self, env: interface.AsyncEnv):
+        super().tear_down(env)
+        user_data_generation.clear_device_storage(env)
+        adb_utils.clear_app_data(
+            adb_utils.extract_package_name(adb_utils.get_adb_activity("chrome")),
+            env.controller,
+        )
+        datetime_utils.toggle_auto_settings(env.controller, datetime_utils.Toggle.OFF)
 
-  @classmethod
-  def generate_random_params(cls) -> dict[str, Any]:
-    return {'browser_task_seed': random.randint(0, 2**32 - 1)}
+    def is_successful(self, env: interface.AsyncEnv) -> float:
+        state = env.get_state()
+        package_name = adb_utils.extract_package_name(
+            adb_utils.get_current_activity(env.controller)[0]
+        )
+        if package_name != "com.android.chrome":
+            return 0.0
+
+        for element in state.ui_elements:
+            if element.text == "Success!":
+                return 1.0
+        return 0.0
+
+    @classmethod
+    def generate_random_params(cls) -> dict[str, Any]:
+        return {"browser_task_seed": random.randint(0, 2**32 - 1)}
 
 
 class BrowserMaze(BrowserTask):
-  """Task to create a maze game."""
+    """Task to create a maze game."""
 
-  @property
-  def goal(self) -> str:
-    return (
-        self.preamble
-        + ' Then navigate the X to the bottom-right cell, by using the'
-        ' direction buttons.'
-    )
+    @property
+    def goal(self) -> str:
+        return (
+            self.preamble
+            + " Then navigate the X to the bottom-right cell, by using the"
+            " direction buttons."
+        )
 
-  HTML = """\
+    HTML = """\
 <!DOCTYPE html>
 <html>
 <head>
@@ -325,19 +321,19 @@ class BrowserMaze(BrowserTask):
 
 
 class BrowserMultiply(BrowserTask):
-  """Task for multiplying multiple numbers together."""
+    """Task for multiplying multiple numbers together."""
 
-  complexity = 2.2
+    complexity = 2.2
 
-  @property
-  def goal(self) -> str:
-    return (
-        self.preamble
-        + ' Then click the button 5 times, remember the numbers displayed, and'
-        ' enter their product in the form.'
-    )
+    @property
+    def goal(self) -> str:
+        return (
+            self.preamble
+            + " Then click the button 5 times, remember the numbers displayed, and"
+            " enter their product in the form."
+        )
 
-  HTML = """\
+    HTML = """\
 <!DOCTYPE html>
 <html>
 <head>
@@ -439,17 +435,17 @@ class BrowserMultiply(BrowserTask):
 
 
 class BrowserDraw(BrowserTask):
-  """Task for drawing on a canvas."""
+    """Task for drawing on a canvas."""
 
-  @property
-  def goal(self) -> str:
-    return (
-        self.preamble
-        + ' Then create a drawing using the three colors shown at the top'
-        ' and hit submit.'
-    )
+    @property
+    def goal(self) -> str:
+        return (
+            self.preamble
+            + " Then create a drawing using the three colors shown at the top"
+            " and hit submit."
+        )
 
-  HTML = """\
+    HTML = """\
 <!DOCTYPE html>
 <html>
 <head>

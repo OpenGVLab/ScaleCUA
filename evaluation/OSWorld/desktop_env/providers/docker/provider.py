@@ -31,8 +31,8 @@ class DockerProvider(Provider):
         self.vlc_port = None
         self.container = None
         self.environment = {"DISK_SIZE": "32G", "RAM_SIZE": "4G", "CPU_CORES": "4"}
-        
-        temp_dir = Path(os.getenv('TEMP') if platform.system() == 'Windows' else '/tmp')
+
+        temp_dir = Path(os.getenv("TEMP") if platform.system() == "Windows" else "/tmp")
         self.lock_file = temp_dir / "docker_port_allocation.lck"
         self.lock_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -40,16 +40,16 @@ class DockerProvider(Provider):
         """Get all currently used ports (both system and Docker)."""
         # Get system ports
         system_ports = set(conn.laddr.port for conn in psutil.net_connections())
-        
+
         # Get Docker container ports
         docker_ports = set()
         for container in self.client.containers.list():
-            ports = container.attrs['NetworkSettings']['Ports']
+            ports = container.attrs["NetworkSettings"]["Ports"]
             if ports:
                 for port_mappings in ports.values():
                     if port_mappings:
-                        docker_ports.update(int(p['HostPort']) for p in port_mappings)
-        
+                        docker_ports.update(int(p["HostPort"]) for p in port_mappings)
+
         return system_ports | docker_ports
 
     def _get_available_port(self, start_port: int) -> int:
@@ -60,17 +60,18 @@ class DockerProvider(Provider):
             if port not in used_ports:
                 return port
             port += 1
-        raise PortAllocationError(f"No available ports found starting from {start_port}")
+        raise PortAllocationError(
+            f"No available ports found starting from {start_port}"
+        )
 
     def _wait_for_vm_ready(self, timeout: int = 300):
         """Wait for VM to be ready by checking screenshot endpoint."""
         start_time = time.time()
-        
+
         def check_screenshot():
             try:
                 response = requests.get(
-                    f"http://localhost:{self.server_port}/screenshot",
-                    timeout=(10, 10)
+                    f"http://localhost:{self.server_port}/screenshot", timeout=(10, 10)
                 )
                 return response.status_code == 200
             except Exception:
@@ -81,13 +82,13 @@ class DockerProvider(Provider):
                 return True
             logger.info("Checking if virtual machine is ready...")
             time.sleep(RETRY_INTERVAL)
-        
+
         raise TimeoutError("VM failed to become ready within timeout period")
 
     def start_emulator(self, path_to_vm: str, headless: bool, os_type: str):
         # Use a single lock for all port allocation and container startup
         lock = FileLock(str(self.lock_file), timeout=LOCK_TIMEOUT)
-        
+
         try:
             with lock:
                 # Allocate all required ports
@@ -105,20 +106,22 @@ class DockerProvider(Provider):
                     volumes={
                         os.path.abspath(path_to_vm): {
                             "bind": "/System.qcow2",
-                            "mode": "ro"
+                            "mode": "ro",
                         }
                     },
                     ports={
                         8006: self.vnc_port,
                         5000: self.server_port,
                         9222: self.chromium_port,
-                        8080: self.vlc_port
+                        8080: self.vlc_port,
                     },
-                    detach=True
+                    detach=True,
                 )
 
-            logger.info(f"Started container with ports - VNC: {self.vnc_port}, "
-                       f"Server: {self.server_port}, Chrome: {self.chromium_port}, VLC: {self.vlc_port}")
+            logger.info(
+                f"Started container with ports - VNC: {self.vnc_port}, "
+                f"Server: {self.server_port}, Chrome: {self.chromium_port}, VLC: {self.vlc_port}"
+            )
 
             # Wait for VM to be ready
             self._wait_for_vm_ready()
@@ -134,7 +137,9 @@ class DockerProvider(Provider):
             raise e
 
     def get_ip_address(self, path_to_vm: str) -> str:
-        if not all([self.server_port, self.chromium_port, self.vnc_port, self.vlc_port]):
+        if not all(
+            [self.server_port, self.chromium_port, self.vnc_port, self.vlc_port]
+        ):
             raise RuntimeError("VM not started - ports not allocated")
         return f"localhost:{self.server_port}:{self.chromium_port}:{self.vnc_port}:{self.vlc_port}"
 

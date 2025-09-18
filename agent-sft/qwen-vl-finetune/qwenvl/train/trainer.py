@@ -440,7 +440,7 @@ class GroupedSampler(Sampler):
         self.group_false = self.group_false[
             : (len(self.group_false) // total_batch_size) * total_batch_size
         ]
-        
+
         rank0_print(
             f"Length of multimodal samples: {len(self.group_true)}, "
             f"pure textual samples: {len(self.group_false)}"
@@ -460,7 +460,9 @@ class GroupedSampler(Sampler):
         # Radomly shuffle the indices if required
         shard_true, shard_false = self.make_data()
         idx_true, idx_false = 0, 0
-        ratio_true = max(len(shard_true) / (len(shard_true) + len(shard_false)) - 0.1, 0.5)
+        ratio_true = max(
+            len(shard_true) / (len(shard_true) + len(shard_false)) - 0.1, 0.5
+        )
         p = 0
         for idx in range(len(shard_true) + len(shard_false)):
             if idx % self.batch_size == 0:
@@ -479,7 +481,7 @@ class GroupedSampler(Sampler):
                 elif idx_true < len(shard_true):
                     item = shard_true[idx_true]
                     idx_true += 1
-            
+
             yield item
 
     def __len__(self):

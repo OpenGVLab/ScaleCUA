@@ -3,25 +3,29 @@ import copy
 import re
 
 
-
 _PATTERNS = {
-    "click": re.compile(r'^click\(\s*x=([^,]+),\s*y=([^)]+)\)$'),
-    "long_press": re.compile(r'^long_press\(\s*x=([^,]+),\s*y=([^,]+),\s*duration=([^)]+)\)$'),
-    "swipe_precise": re.compile(
-        r'^swipe\(\s*from_coord=\s*([\(\[])\s*([^,]+)\s*,\s*([^,\)\]]+)\s*[\)\]]\s*,\s*'
-        r'to_coord=\s*([\(\[])\s*([^,]+)\s*,\s*([^,\)\]]+)\s*[\)\]]'
-        r'(?:\s*,\s*[^=]+=[^,)]*)*\s*\)$'
+    "click": re.compile(r"^click\(\s*x=([^,]+),\s*y=([^)]+)\)$"),
+    "long_press": re.compile(
+        r"^long_press\(\s*x=([^,]+),\s*y=([^,]+),\s*duration=([^)]+)\)$"
     ),
-    "swipe_dir": re.compile(r'^swipe\(\s*direction=(["\'])(.+?)\1\s*,\s*amount=([^)]+)\)$'),
+    "swipe_precise": re.compile(
+        r"^swipe\(\s*from_coord=\s*([\(\[])\s*([^,]+)\s*,\s*([^,\)\]]+)\s*[\)\]]\s*,\s*"
+        r"to_coord=\s*([\(\[])\s*([^,]+)\s*,\s*([^,\)\]]+)\s*[\)\]]"
+        r"(?:\s*,\s*[^=]+=[^,)]*)*\s*\)$"
+    ),
+    "swipe_dir": re.compile(
+        r'^swipe\(\s*direction=(["\'])(.+?)\1\s*,\s*amount=([^)]+)\)$'
+    ),
     "write": re.compile(r'^write\(\s*message=(["\'])(.+?)\1\)$'),
     "open_app": re.compile(r'^open_app\(\s*app_name=(["\'])(.+?)\1\)$'),
-    "wait": re.compile(r'^wait\(\s*seconds=([^)]+)\)$'),
+    "wait": re.compile(r"^wait\(\s*seconds=([^)]+)\)$"),
     "response": re.compile(r'^response\(\s*answer=(["\'])(.+?)\1\)$'),
     "terminate_status_only": re.compile(r"^terminate\(\s*status=(['\"])(.+?)\1\s*\)$"),
     "terminate_with_info": re.compile(
         r'^terminate\(\s*status=(["\'])(?:.*?)\1\s*,\s*info=(["\'])(.+?)\2\)$'
     ),
 }
+
 
 def reverse_map_call_to_do(call_str: str) -> str:
     call_str = call_str.strip()
@@ -38,8 +42,12 @@ def reverse_map_call_to_do(call_str: str) -> str:
 
     m = _PATTERNS["swipe_precise"].match(call_str)
     if m:
-        x1, y1, x2, y2 = (m.group(2).strip(), m.group(3).strip(),
-                          m.group(5).strip(), m.group(6).strip())
+        x1, y1, x2, y2 = (
+            m.group(2).strip(),
+            m.group(3).strip(),
+            m.group(5).strip(),
+            m.group(6).strip(),
+        )
         return f'do(action="Swipe Precise", start=[{x1}, {y1}], end=[{x2}, {y2}])'
 
     m = _PATTERNS["swipe_dir"].match(call_str)
@@ -91,20 +99,19 @@ def reverse_map_call_to_do(call_str: str) -> str:
     return f'do(message="Unrecognized call: {call_str}")'
 
 
-
-
 def parse_sections(text: str):
-    pattern = re.compile(r'<(think|operation|action)>(.*?)</\1>', re.DOTALL)
+    pattern = re.compile(r"<(think|operation|action)>(.*?)</\1>", re.DOTALL)
     return {m.group(1): m.group(2).strip() for m in pattern.finditer(text)}
+
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 def image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 def replace_image_url(messages, throw_details=False, keep_path=False):
@@ -118,7 +125,9 @@ def replace_image_url(messages, throw_details=False, keep_path=False):
                     image_url = content["image_url"]["url"]
                     image_url_parts = image_url.split(";base64,")
                     if not keep_path:
-                        content["image_url"]["url"] = image_url_parts[0] + ";base64," + image_url_parts[1]
+                        content["image_url"]["url"] = (
+                            image_url_parts[0] + ";base64," + image_url_parts[1]
+                        )
                     else:
                         content["image_url"]["url"] = f"file://{image_url_parts[1]}"
                     if throw_details:

@@ -13,20 +13,21 @@ logger = ProjectLogger(log_dir=script_dir / "logs")
 
 CONDA_PATH = r"/opt/anaconda3/condabin/conda"
 
+
 def force_close_terminal(env: MacOSEnv):
     env.connect_ssh()
-    cmds = [
-        "osascript -e 'tell application \"Terminal\" to quit'"
-    ]
+    cmds = ["osascript -e 'tell application \"Terminal\" to quit'"]
     for cmd in cmds:
         env.run_command(f"{cmd}")
     time.sleep(3)
-    
+
+
 def terminal_reset_window_status(env: MacOSEnv):
     force_close_terminal(env)
     env.connect_ssh()
     env.run_command(f"open -a 'Terminal'")
     time.sleep(2)
+
 
 def terminal_check_package_in_conda_env(env, env_name: str, package_name: str) -> bool:
     """
@@ -42,11 +43,15 @@ def terminal_check_package_in_conda_env(env, env_name: str, package_name: str) -
     check_cmd = f'{CONDA_PATH} list -n {env_name} | grep "^{package_name}\\s"'
     stdout, _ = env.run_command(check_cmd)
     # logger.info(_)
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     return bool(output)
 
 
-def terminal_check_files_in_directory(env, folder_path: str, required_files: list[str]) -> bool:
+def terminal_check_files_in_directory(
+    env, folder_path: str, required_files: list[str]
+) -> bool:
     """
     Check if all files in `required_files` exist in the given folder (non-recursive).
 
@@ -62,7 +67,9 @@ def terminal_check_files_in_directory(env, folder_path: str, required_files: lis
     check_cmd = f'ls "{folder_path}"'
     stdout, _ = env.run_command(check_cmd)
     logger.info(_)
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     existing_files = set(output.splitlines())
 
     return all(filename in existing_files for filename in required_files)
@@ -79,15 +86,18 @@ def terminal_check_command_in_history(env, target_command: str) -> bool:
     env.connect_ssh()
 
     # Read full history from remote
-    check_cmd = 'cat ~/.zsh_history || cat ~/.bash_history'
+    check_cmd = "cat ~/.zsh_history || cat ~/.bash_history"
     stdout, _ = env.run_command(check_cmd)
     logger.info(stdout)
-    output = stdout.read().decode() if hasattr(stdout, 'read') else stdout
+    output = stdout.read().decode() if hasattr(stdout, "read") else stdout
 
     # Check if target command appears as exact substring
     return target_command in output
 
-def terminal_check_archive_validity_count_name_mod(env, base_path="/Users/Shared") -> bool:
+
+def terminal_check_archive_validity_count_name_mod(
+    env, base_path="/Users/Shared"
+) -> bool:
     """
     Check in whether a tar.gz archive with today's container date exists in the given directory,
     contains at least 5 files, and has permission 100 (execute-only for user).
@@ -101,7 +111,9 @@ def terminal_check_archive_validity_count_name_mod(env, base_path="/Users/Shared
     # 1. Get container time
     date_cmd = 'date "+%Y%m%d"'
     stdout, _ = env.run_command(date_cmd)
-    date_str = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    date_str = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if not date_str or not date_str.isdigit():
         logger.error(f"Failed to parse container date: {date_str}")
@@ -113,7 +125,9 @@ def terminal_check_archive_validity_count_name_mod(env, base_path="/Users/Shared
     # 2. Check if archive exists
     check_cmd = f'test -f "{archive_path}" && echo "Exists" || echo "NotFound"'
     stdout, _ = env.run_command(check_cmd)
-    if "NotFound" in (stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()):
+    if "NotFound" in (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    ):
         logger.info("Archive not found.")
         return False
 
@@ -121,7 +135,11 @@ def terminal_check_archive_validity_count_name_mod(env, base_path="/Users/Shared
     count_cmd = f'sudo tar -tzf "{archive_path}" | wc -l'
     stdout, _ = env.run_command(count_cmd)
     try:
-        count = int(stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip())
+        count = int(
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(count)
         if count < 5:
             logger.info(count)
@@ -134,12 +152,15 @@ def terminal_check_archive_validity_count_name_mod(env, base_path="/Users/Shared
     # 4. Check permission: user execute-only = 100
     perm_cmd = f'sudo stat -f "%p" "{archive_path}"'
     stdout, _ = env.run_command(perm_cmd)
-    raw_perm = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    raw_perm = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     if not raw_perm.endswith("100"):
         logger.info(f"Incorrect permissions: {raw_perm}")
         return False
 
     return True
+
 
 def terminal_check_echo_macos_script(env, base_path="/Users/Shared") -> bool:
     """
@@ -158,8 +179,12 @@ def terminal_check_echo_macos_script(env, base_path="/Users/Shared") -> bool:
         stdout, _ = env.run_command(cmd_list)
         logger.info(stdout)
         logger.info(_)
-        
-        matches = stdout.read().decode().strip().splitlines() if hasattr(stdout, 'read') else stdout.strip().splitlines()
+
+        matches = (
+            stdout.read().decode().strip().splitlines()
+            if hasattr(stdout, "read")
+            else stdout.strip().splitlines()
+        )
         logger.info(f"[Check] Matching files: {matches}")
 
         # 2. Ensure exactly one match
@@ -172,20 +197,28 @@ def terminal_check_echo_macos_script(env, base_path="/Users/Shared") -> bool:
         # 3. Check permission: only user execute
         cmd_perm = f'stat -f "%A" "{filepath}"'
         stdout, _ = env.run_command(cmd_perm)
-        perms = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+        perms = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(f"[Check] Permissions: {perms}")
-        valid_perms = {'100', '300', '500', '700'}
+        valid_perms = {"100", "300", "500", "700"}
         if perms not in valid_perms:
             logger.error(f"Error permissions: {perms}.")
             return False
         # if not perms.isdigit() or not int(perms) & 0o100:
         #     logger.error("User does not have execute permission.")
         #     return False
-        
+
         # 4. Execute and check output
         cmd_exec = f'bash "{filepath}"'
         stdout, _ = env.run_command(cmd_exec)
-        output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(f"[Check] Script output: {output}")
         return output == "macOS task complete"
 
@@ -197,13 +230,14 @@ def terminal_check_echo_macos_script(env, base_path="/Users/Shared") -> bool:
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
+
     value = terminal_check_echo_macos_script(macos_env)
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

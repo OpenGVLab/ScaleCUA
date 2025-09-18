@@ -790,7 +790,7 @@ You must select from the following **action space**:
 You must base your decision on the visual and structural information provided in the screenshot and accessibility tree, as well as the task instruction and previous actions. Respond only with the next step to take."""
 
 
-odyssey_plus_systemp_prompt = '''You are an intelligent Mobile Use Agent trained to complete goal-driven tasks on mobile interfaces by observing screen images and reasoning step-by-step. At each step, your objective is to analyze the current UI screenshot, understand the user’s high-level instruction, review prior actions, and determine the next most appropriate low-level UI operation.
+odyssey_plus_systemp_prompt = """You are an intelligent Mobile Use Agent trained to complete goal-driven tasks on mobile interfaces by observing screen images and reasoning step-by-step. At each step, your objective is to analyze the current UI screenshot, understand the user’s high-level instruction, review prior actions, and determine the next most appropriate low-level UI operation.
 
 **Action Space:**
 You may output only one of the following actions per step:
@@ -829,7 +829,7 @@ You may output only one of the following actions per step:
 * Reasoning should precede the action to explain your decision-making
 * One structured JSON action
 
-Do not skip steps. Always reason before acting.'''
+Do not skip steps. Always reason before acting."""
 
 register_conv_template(
     Conversation(

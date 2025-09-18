@@ -16,8 +16,12 @@ def coords_to_bounds(bounds):
 def check_valid_bounds(bounds):
     bounds = bounds_to_coords(bounds)
 
-    return bounds[0] >= 0 and bounds[1] >= 0 and \
-        bounds[0] < bounds[2] and bounds[1] < bounds[3]
+    return (
+        bounds[0] >= 0
+        and bounds[1] >= 0
+        and bounds[0] < bounds[2]
+        and bounds[1] < bounds[3]
+    )
 
 
 def check_point_containing(bounds, x, y, window, threshold=0):
@@ -26,26 +30,34 @@ def check_point_containing(bounds, x, y, window, threshold=0):
     screen_threshold_x = threshold * window[0]
     screen_threshold_y = threshold * window[1]
 
-    return bounds[0] - screen_threshold_x <= x <= bounds[2] + screen_threshold_x and \
-        bounds[1] - screen_threshold_y <= y <= bounds[3] + screen_threshold_y
+    return (
+        bounds[0] - screen_threshold_x <= x <= bounds[2] + screen_threshold_x
+        and bounds[1] - screen_threshold_y <= y <= bounds[3] + screen_threshold_y
+    )
 
 
 def check_bounds_containing(bounds_contained, bounds_containing):
     bounds_contained = bounds_to_coords(bounds_contained)
     bounds_containing = bounds_to_coords(bounds_containing)
 
-    return bounds_contained[0] >= bounds_containing[0] and \
-        bounds_contained[1] >= bounds_containing[1] and \
-        bounds_contained[2] <= bounds_containing[2] and \
-        bounds_contained[3] <= bounds_containing[3]
+    return (
+        bounds_contained[0] >= bounds_containing[0]
+        and bounds_contained[1] >= bounds_containing[1]
+        and bounds_contained[2] <= bounds_containing[2]
+        and bounds_contained[3] <= bounds_containing[3]
+    )
 
 
 def check_bounds_intersection(bounds1, bounds2):
     bounds1 = bounds_to_coords(bounds1)
     bounds2 = bounds_to_coords(bounds2)
 
-    return bounds1[0] < bounds2[2] and bounds1[2] > bounds2[0] and \
-        bounds1[1] < bounds2[3] and bounds1[3] > bounds2[1]
+    return (
+        bounds1[0] < bounds2[2]
+        and bounds1[2] > bounds2[0]
+        and bounds1[1] < bounds2[3]
+        and bounds1[3] > bounds2[1]
+    )
 
 
 def get_bounds_area(bounds):
@@ -115,17 +127,15 @@ class MiniMapSpecialCheck:
                 (["星级(可多选)", "价格"], "星级酒店"),
                 (["品牌", "宾客类型", "特色主题"], "更多筛选"),
                 (["92#", "95#", "98#", "0#"], "油类型"),
-                (["全部品牌", "中国石化", "中国石油", "壳牌"], "全部品牌")
+                (["全部品牌", "中国石化", "中国石油", "壳牌"], "全部品牌"),
             ],
             "route": [
                 (["驾车", "火车", "步行", "收起"], "出行方式"),
                 (["选择日期", "日", "一", "二", "三", "四", "五", "六"], "选择日期"),
                 (["选择出发时间弹窗", "现在出发"], "选择出发时间"),
-                (["选择出发时间", "确定"], "选择出发时间_taxi")
+                (["选择出发时间", "确定"], "选择出发时间_taxi"),
             ],
-            "search-result": [
-                (["周边", "收藏", "分享", "打车"], "周边收藏")
-            ]
+            "search-result": [(["周边", "收藏", "分享", "打车"], "周边收藏")],
         }
 
         for key, values in page_map.items():
@@ -142,31 +152,39 @@ class MiniMapSpecialCheck:
             "星级酒店": [("星级(可多选)", 10)],
             "更多筛选": [("品牌", 9)],
             "全部品牌": [("全部品牌", 14)],
-            "油类型": [("95#", 14)]
+            "油类型": [("95#", 14)],
         }
 
         pattern_need_fuzzy = ["km内"]
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
 
         # Find a node that can scroll in a loop.
-        if 'RecyclerView' in node.attrib.get('class', '') and 'true' in node.attrib.get('scrollable', ''):
+        if "RecyclerView" in node.attrib.get("class", "") and "true" in node.attrib.get(
+            "scrollable", ""
+        ):
             # If the node is not unique, find the one that is larger.
-            if compare_bounds_area(self.recycler_bounds, node.attrib['bounds']):
+            if compare_bounds_area(self.recycler_bounds, node.attrib["bounds"]):
                 self.recycler_node = node
-                self.recycler_bounds = node.attrib['bounds']
+                self.recycler_bounds = node.attrib["bounds"]
 
         for child in list(node):
             self.get_filter_base_node(child, page_type)
@@ -201,18 +219,19 @@ class MiniMapSpecialCheck:
             "出行方式": [("收起", 2)],
             "选择日期": [("选择日期", 5)],
             "选择出发时间": [("选择出发时间", 5)],
-            "选择出发时间_taxi": [("选择出发时间", 3)]
+            "选择出发时间_taxi": [("选择出发时间", 3)],
         }
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
                 if pattern == content_desc or pattern == text:
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
@@ -245,16 +264,22 @@ class MiniMapSpecialCheck:
 
         pattern_need_fuzzy = ["收藏按钮"]
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
@@ -277,9 +302,13 @@ class MiniMapSpecialCheck:
 
         parent = node.getparent()
         for ind, child in reversed(list(enumerate(parent))):
-            if child != node and check_bounds_intersection(child.attrib['bounds'], node.attrib['bounds']):
+            if child != node and check_bounds_intersection(
+                child.attrib["bounds"], node.attrib["bounds"]
+            ):
                 for ch in child.iter():
-                    if check_bounds_containing(ch.attrib['bounds'], node.attrib['bounds']):
+                    if check_bounds_containing(
+                        ch.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         ch_parent = ch.getparent()
                         ch_parent.remove(ch)
 
@@ -304,16 +333,14 @@ class WeiXinSpecialCheck:
 
     def check_page(self):
         page_map = {
-            "search": [
-                (["排序", "类型", "时间", "范围"], "搜索-全部")
-            ],
+            "search": [(["排序", "类型", "时间", "范围"], "搜索-全部")],
             "moments": [
                 (["朋友圈", "拍照分享"], "朋友圈-全部"),
-                (["轻触更换封面", "拍照分享"], "朋友圈-全部")
+                (["轻触更换封面", "拍照分享"], "朋友圈-全部"),
             ],
             "menu": [
                 (["微信", "通讯录", "发现", "我"], "首页"),
-            ]
+            ],
         }
 
         for key, values in page_map.items():
@@ -324,32 +351,41 @@ class WeiXinSpecialCheck:
 
     def check_moments_icons(self, page_type):
         page_criteria = {
-            "朋友圈-全部": {"ImageView": "选项：点赞/评论", "RelativeLayout": "选项：广告屏蔽"}
+            "朋友圈-全部": {
+                "ImageView": "选项：点赞/评论",
+                "RelativeLayout": "选项：广告屏蔽",
+            }
         }
 
         nodes_with_attribute = self.root.xpath('//*[@NAF="true"]')
         for node in nodes_with_attribute:
-            if node.attrib['class'] in page_criteria[page_type]:
-                node.attrib['func-desc'] = page_criteria[page_type][node.attrib['class']]
-                del node.attrib['NAF']
+            if node.attrib["class"] in page_criteria[page_type]:
+                node.attrib["func-desc"] = page_criteria[page_type][
+                    node.attrib["class"]
+                ]
+                del node.attrib["NAF"]
 
     def get_search_base_node(self, node, page_type):
-        page_criteria = {
-            "搜索-全部": [("清空", 1)]
-        }
+        page_criteria = {"搜索-全部": [("清空", 1)]}
 
         pattern_need_fuzzy = []
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
@@ -376,17 +412,18 @@ class WeiXinSpecialCheck:
             del parent[delete_ind:]
 
     def get_menu_base_node(self, node, page_type):
-        page_criteria = {
-            "首页": ["微信", "通讯录", "发现", "我"]
-        }
+        page_criteria = {"首页": ["微信", "通讯录", "发现", "我"]}
         retrieve_times = 1
 
-        if 'content-desc' in node.attrib:
-            content_desc = node.attrib['content-desc']
-            text = node.attrib['text']
-            if text in page_criteria.get(page_type, []) or content_desc in page_criteria.get(page_type, []):
-                if text not in self.base_node or compare_y_in_bounds(self.base_node[text].attrib['bounds'],
-                                                                     node.attrib['bounds']):
+        if "content-desc" in node.attrib:
+            content_desc = node.attrib["content-desc"]
+            text = node.attrib["text"]
+            if text in page_criteria.get(
+                page_type, []
+            ) or content_desc in page_criteria.get(page_type, []):
+                if text not in self.base_node or compare_y_in_bounds(
+                    self.base_node[text].attrib["bounds"], node.attrib["bounds"]
+                ):
                     self.base_node[text] = node
                     self.retrieve_times = retrieve_times
 
@@ -415,14 +452,19 @@ class WeiXinSpecialCheck:
         parent = cur.getparent()
         view_node = None
         for node in list(parent)[0].iter():
-            if "ListView" in node.attrib["class"] or "RecyclerView" in node.attrib["class"]:
+            if (
+                "ListView" in node.attrib["class"]
+                or "RecyclerView" in node.attrib["class"]
+            ):
                 view_node = node
                 break
 
         for node in list(view_node):
             intersect = False
             for check_node in self.base_node:
-                if check_bounds_intersection(node.attrib['bounds'], check_node.attrib['bounds']):
+                if check_bounds_intersection(
+                    node.attrib["bounds"], check_node.attrib["bounds"]
+                ):
                     intersect = True
                     break
             if intersect:
@@ -457,8 +499,11 @@ class MeituanSpecialCheck:
 
     def remove_children_overlap_with_bounds(self, node, overlap_bounds, current):
         for child in node:
-            child_bounds = child.attrib['bounds']
-            if check_bounds_intersection(child_bounds, overlap_bounds) and "EditText" not in child.attrib['class']:
+            child_bounds = child.attrib["bounds"]
+            if (
+                check_bounds_intersection(child_bounds, overlap_bounds)
+                and "EditText" not in child.attrib["class"]
+            ):
                 self.remove_children_overlap_with_bounds(child, overlap_bounds, current)
             else:
                 child.getparent().remove(child)
@@ -473,11 +518,11 @@ class MeituanSpecialCheck:
             current = self.queue.popleft()
             # print(current.get('text', ""), current.get('content-desc', ''), current.get('bounds', ''))
             # for nodes without bounds, just go ahead
-            if 'bounds' not in current.attrib:
+            if "bounds" not in current.attrib:
                 self.queue.extend(current.getchildren())
                 continue
 
-            current_bounds = current.attrib['bounds']
+            current_bounds = current.attrib["bounds"]
             # get siblings
             subsequent_siblings = []
             temp = current.getnext()
@@ -488,15 +533,17 @@ class MeituanSpecialCheck:
             # Check overlaps with each subsequent sibling
             overlap_bounds = None
             for sibling in subsequent_siblings:
-                sibling_bounds = sibling.attrib['bounds']
+                sibling_bounds = sibling.attrib["bounds"]
                 if check_bounds_intersection(current_bounds, sibling_bounds):
                     overlap_bounds = sibling_bounds
                     break
 
             if overlap_bounds is not None:
                 # Traverse children and handle overlaps
-                if "EditText" not in current.attrib['class']:
-                    self.remove_children_overlap_with_bounds(current, overlap_bounds, current)
+                if "EditText" not in current.attrib["class"]:
+                    self.remove_children_overlap_with_bounds(
+                        current, overlap_bounds, current
+                    )
                     current.getparent().remove(current)
             else:
                 # No overlap, enqueue all children
@@ -529,22 +576,26 @@ class MeituanSpecialCheck:
         return None, None
 
     def get_home_base_node(self, node, page_type):
-        page_criteria = {
-            "首页": [("搜索框", 1)]
-        }
+        page_criteria = {"首页": [("搜索框", 1)]}
 
         pattern_need_fuzzy = ["搜索框"]
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
@@ -567,7 +618,9 @@ class MeituanSpecialCheck:
 
         parent = node.getparent()
         for ind, child in reversed(list(enumerate(parent))):
-            if child != node and check_bounds_intersection(child.attrib['bounds'], node.attrib['bounds']):
+            if child != node and check_bounds_intersection(
+                child.attrib["bounds"], node.attrib["bounds"]
+            ):
                 parent.remove(child)
 
     def get_favourite_base_node(self, node, page_type):
@@ -578,16 +631,22 @@ class MeituanSpecialCheck:
 
         pattern_need_fuzzy = [""]
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(self.base_node.attrib['bounds'],
-                                                                     node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        self.base_node.attrib["bounds"], node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break
@@ -624,16 +683,22 @@ class MeituanSpecialCheck:
 
         pattern_need_fuzzy = [""]
 
-        if 'content-desc' in node.attrib:
+        if "content-desc" in node.attrib:
             for pattern, retrieve_times in page_criteria.get(page_type, []):
-                content_desc = node.attrib['content-desc']
-                text = node.attrib['text']
+                content_desc = node.attrib["content-desc"]
+                text = node.attrib["text"]
                 # find the specialCheck base node
-                if (pattern in pattern_need_fuzzy and (pattern in content_desc or pattern in text)) or \
-                        (pattern not in pattern_need_fuzzy and (pattern == content_desc or pattern == text)):
+                if (
+                    pattern in pattern_need_fuzzy
+                    and (pattern in content_desc or pattern in text)
+                ) or (
+                    pattern not in pattern_need_fuzzy
+                    and (pattern == content_desc or pattern == text)
+                ):
                     # If the base node is not unique, find the one that is lower.
-                    if self.base_node is None or compare_y_in_bounds(node.attrib['bounds'],
-                                                                     self.base_node.attrib['bounds']):
+                    if self.base_node is None or compare_y_in_bounds(
+                        node.attrib["bounds"], self.base_node.attrib["bounds"]
+                    ):
                         self.base_node = node
                         self.retrieve_times = retrieve_times
                         break

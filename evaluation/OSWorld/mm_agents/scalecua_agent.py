@@ -26,7 +26,7 @@ from mm_agents.accessibility_tree_wrap.heuristic_retrieve import (
 from mm_agents.prompts import (
     CUA_USER_PROMPT,
     CUA_SYSTEM_PROMPT_THOUGHT,
-    CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT
+    CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT,
 )
 
 
@@ -55,9 +55,11 @@ value_ns_windows = "https://accessibility.windows.example.org/ns/value"
 class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 # More namespaces defined in OSWorld, please check desktop_env/server/main.py
 
+
 def escape_single_quotes(text):
     pattern = r"(?<!\\)'"
     return re.sub(pattern, r"\\'", text)
+
 
 def round_by_factor(number: int, factor: int) -> int:
     """Returns the closest integer to 'number' that is divisible by 'factor'."""
@@ -68,27 +70,41 @@ def ceil_by_factor(number: int, factor: int) -> int:
     """Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'."""
     return math.ceil(number / factor) * factor
 
+
 def encode_image(image_content):
-    return base64.b64encode(image_content).decode('utf-8')
+    return base64.b64encode(image_content).decode("utf-8")
+
 
 def floor_by_factor(number: int, factor: int) -> int:
     """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
     return math.floor(number / factor) * factor
 
+
 def linear_resize(
-    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
 ) -> tuple[int, int]:
     if width * height > max_pixels:
         resize_factor = math.sqrt(max_pixels / (width * height))
         width, height = int(width * resize_factor), int(height * resize_factor)
     if width * height < min_pixels:
         resize_factor = math.sqrt(min_pixels / (width * height))
-        width, height = math.ceil(width * resize_factor), math.ceil(height * resize_factor)
+        width, height = math.ceil(width * resize_factor), math.ceil(
+            height * resize_factor
+        )
 
-    return height, width 
+    return height, width
+
 
 def smart_resize(
-    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
 ) -> tuple[int, int]:
     """
     Rescales the image so that the following conditions are met:
@@ -115,10 +131,12 @@ def smart_resize(
         w_bar = ceil_by_factor(width * beta, factor)
     return h_bar, w_bar
 
+
 def pil_to_base64(image):
     buffer = BytesIO()
     image.save(buffer, format="PNG")  # 你可以改成 "JPEG" 等格式
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
 
 def linearize_accessibility_tree(accessibility_tree, platform="ubuntu"):
 
@@ -179,6 +197,7 @@ def linearize_accessibility_tree(accessibility_tree, platform="ubuntu"):
 
     return "\n".join(linearized_accessibility_tree)
 
+
 def trim_accessibility_tree(linearized_accessibility_tree, max_tokens):
     # enc = tiktoken.encoding_for_model("gpt-4")
     # tokens = enc.encode(linearized_accessibility_tree)
@@ -186,6 +205,7 @@ def trim_accessibility_tree(linearized_accessibility_tree, max_tokens):
     #     linearized_accessibility_tree = enc.decode(tokens[:max_tokens])
     #     linearized_accessibility_tree += "[...]\n"
     return linearized_accessibility_tree
+
 
 class ScaleCUA:
     def __init__(
@@ -205,13 +225,13 @@ class ScaleCUA:
             "temperature": 1.0,
             "top_k": -1,
             "top_p": 0.9,
-            "max_tokens": 500
+            "max_tokens": 500,
         },
-        max_steps = 15,
-        api_url = "http://127.0.0.1:8000/v1",
-        disable_think = False,
+        max_steps=15,
+        api_url="http://127.0.0.1:8000/v1",
+        disable_think=False,
     ):
-        self.model_name = model_name 
+        self.model_name = model_name
         self.model = model_name
         self.max_steps = max_steps
         self.api_url = api_url
@@ -223,9 +243,9 @@ class ScaleCUA:
         self.model_type = model_type
         self.runtime_conf = runtime_conf
         self.vlm = OpenAI(
-            base_url= self.api_url,
+            base_url=self.api_url,
             api_key="empty",
-        ) 
+        )
         self.temperature = self.runtime_conf["temperature"]
         self.top_k = self.runtime_conf["top_k"]
         self.top_p = self.runtime_conf["top_p"]
@@ -239,22 +259,26 @@ class ScaleCUA:
         self.history_images = []
         self.history_responses = []
         self.history_instruction = []
-        
-    
-        self.system_prompt_template = CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT if disable_think else CUA_SYSTEM_PROMPT_THOUGHT
+
+        self.system_prompt_template = (
+            CUA_SYSTEM_PROMPT_WITHOUT_THOUGHT
+            if disable_think
+            else CUA_SYSTEM_PROMPT_THOUGHT
+        )
         self.user_prompt_template = CUA_USER_PROMPT
-        
-        
+
         if "history_n" in self.runtime_conf:
             self.history_n = self.runtime_conf["history_n"]
         else:
             self.history_n = 5
-        
+
         self.cur_callusr_count = 0
 
     def format_history(self, history):
         if len(history) > 0:
-            actions_history = [f"Step {i+1}: {low_level}" for i, low_level in enumerate(history)]
+            actions_history = [
+                f"Step {i+1}: {low_level}" for i, low_level in enumerate(history)
+            ]
         else:
             actions_history = None
         return "\n".join(actions_history) if actions_history is not None else None
@@ -341,7 +365,7 @@ class ScaleCUA:
         byte_image = self.history_images[-1]
         cur_image = Image.open(BytesIO(byte_image))
         self.screen_width, self.screen_height = cur_image.size
-        action_history =  self.format_history(self.history_instruction)
+        action_history = self.format_history(self.history_instruction)
         user_prompt = self.user_prompt_template.format(
             instruction=instruction,
             history=action_history,
@@ -349,22 +373,28 @@ class ScaleCUA:
         messages = [
             {
                 "role": "system",
-                "content": [{"type": "text", "text": self.system_prompt_template}]
+                "content": [{"type": "text", "text": self.system_prompt_template}],
             },
             {
                 "role": "user",
                 "content": [
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{encode_image(byte_image)}"}},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{encode_image(byte_image)}"
+                        },
+                    },
                     {"type": "text", "text": user_prompt},
-                ]
-                    
+                ],
             },
         ]
-    
+
         try_times = 3
         while True:
             if try_times <= 0:
-                print(f"Reach max retry times to fetch response from client, as error flag.")
+                print(
+                    f"Reach max retry times to fetch response from client, as error flag."
+                )
                 return "client error", ["DONE"]
             try:
                 response = self.vlm.chat.completions.create(
@@ -372,7 +402,7 @@ class ScaleCUA:
                     messages=messages,
                     max_tokens=self.max_tokens,
                     temperature=1,
-                    top_p=self.top_p
+                    top_p=self.top_p,
                 )
                 # print(response.choices[0].message.content)
                 prediction = response.choices[0].message.content.strip()
@@ -380,10 +410,12 @@ class ScaleCUA:
                 break
                 # prediction = response[0]["prediction"].strip()
             except Exception as e:
-                print(f"Error when fetching response from client, with response: {response}")
+                print(
+                    f"Error when fetching response from client, with response: {response}"
+                )
                 prediction = None
                 try_times -= 1
-                
+
         if prediction is None:
             return "client error", ["DONE"]
 
@@ -395,47 +427,51 @@ class ScaleCUA:
             pyautogui_actions = self.parse_action(actions)
         except Exception as e:
             print(f"Parsing action error: {prediction}, with error:\n{e}")
-            return f"Parsing action error: {prediction}, with error:\n{e}", ["DONE"] 
-        
+            return f"Parsing action error: {prediction}, with error:\n{e}", ["DONE"]
+
         if len(self.history_responses) >= self.max_steps:
             # Default to FAIL if exceed max steps
             pyautogui_actions = ["FAIL"]
         self.actions.append(pyautogui_actions)
-        
-        logger.info("RESPONE: %s",repr(prediction))
-        logger.info("PARSED ACTION: %s",repr(actions))
-        logger.info("pyautogui code(s): %s",repr(pyautogui_actions))
+
+        logger.info("RESPONE: %s", repr(prediction))
+        logger.info("PARSED ACTION: %s", repr(actions))
+        logger.info("pyautogui code(s): %s", repr(pyautogui_actions))
         return prediction, pyautogui_actions
 
-    
     def reset(self, _logger):
         global logger
-        logger = _logger if _logger is not None else logging.getLogger("desktopenv.agent")
+        logger = (
+            _logger if _logger is not None else logging.getLogger("desktopenv.agent")
+        )
 
         self.thoughts = []
         self.actions = []
         self.observations = []
-        
+
         self.history_images = []
         self.history_responses = []
         self.history_instruction = []
 
-
     def parse_response(self, response: str) -> Dict:
-        action_matches = re.findall(r'<action>\s*(.*?)\s*</action>', response, re.DOTALL)
+        action_matches = re.findall(
+            r"<action>\s*(.*?)\s*</action>", response, re.DOTALL
+        )
         actions = []
         if action_matches:
             for match in action_matches:
                 # Split each match by newline and strip whitespace from each line
-                lines = [line.strip() for line in match.split('\n') if line.strip()]
+                lines = [line.strip() for line in match.split("\n") if line.strip()]
                 actions.extend(lines)
         # actions = [action.strip() for action in action_matches] if action_matches else None
         # click
         # type
-        operation_match = re.search(r'<operation>\s*(.*?)\s*</operation>', response, re.DOTALL)
+        operation_match = re.search(
+            r"<operation>\s*(.*?)\s*</operation>", response, re.DOTALL
+        )
         operation = operation_match.group(1).strip() if operation_match else None
 
-        think_match = re.search(r'<think>\s*(.*?)\s*</think>', response, re.DOTALL)
+        think_match = re.search(r"<think>\s*(.*?)\s*</think>", response, re.DOTALL)
         think = think_match.group(1).strip() if think_match else None
 
         return (think, operation, actions)
@@ -451,24 +487,28 @@ class ScaleCUA:
             args_str = match.group(2)
             args = {}
 
-            if 'hotkey' in func_name.lower():
+            if "hotkey" in func_name.lower():
                 keys = re.findall(r"'(.*?)'", args_str)
                 keys = [key.lower() for key in keys]
                 args["args"] = keys
-            elif 'press' in func_name.lower():
+            elif "press" in func_name.lower():
                 keys = None
-                presses = 1  
+                presses = 1
                 presses_match = re.search(r"presses\s*=\s*(\d+)", args_str)
                 if presses_match:
                     presses = int(presses_match.group(1))
-                    args_str = args_str[:presses_match.start()] + args_str[presses_match.end():]
+                    args_str = (
+                        args_str[: presses_match.start()]
+                        + args_str[presses_match.end() :]
+                    )
                     args_str = args_str.rstrip(", ").strip()
 
                 keys_keyword_match = re.search(r"keys\s*=\s*(.*)", args_str, re.DOTALL)
                 if keys_keyword_match:
                     keys_str = keys_keyword_match.group(1).strip()
-                    if (keys_str.startswith("'") and keys_str.endswith("'")) or \
-                    (keys_str.startswith('"') and keys_str.endswith('"')):
+                    if (keys_str.startswith("'") and keys_str.endswith("'")) or (
+                        keys_str.startswith('"') and keys_str.endswith('"')
+                    ):
                         keys_str = keys_str[1:-1]
                     elif keys_str.startswith("[") and keys_str.endswith("]"):
 
@@ -476,54 +516,65 @@ class ScaleCUA:
                     keys = keys_str
                 elif args_str:
                     keys_str = args_str.strip()
-                    if (keys_str.startswith("'") and keys_str.endswith("'")) or \
-                    (keys_str.startswith('"') and keys_str.endswith('"')):
+                    if (keys_str.startswith("'") and keys_str.endswith("'")) or (
+                        keys_str.startswith('"') and keys_str.endswith('"')
+                    ):
                         keys_str = keys_str[1:-1]
                     keys = keys_str
 
                 args["keys"] = keys
                 args["presses"] = presses
-            elif 'scroll' in func_name.lower():
+            elif "scroll" in func_name.lower():
                 clicks, x, y = None, None, None
-                if '=' in args_str:
-                    kwargs = dict(re.findall(r'(\w+)\s*=\s*(-?\d+)', args_str))
-                    
-                    clicks = int(kwargs.get('clicks')) if kwargs.get('clicks') is not None else None
-                    x = int(kwargs.get('x')) if kwargs.get('x') is not None else None
-                    y = int(kwargs.get('y')) if kwargs.get('y') is not None else None
-                
+                if "=" in args_str:
+                    kwargs = dict(re.findall(r"(\w+)\s*=\s*(-?\d+)", args_str))
+
+                    clicks = (
+                        int(kwargs.get("clicks"))
+                        if kwargs.get("clicks") is not None
+                        else None
+                    )
+                    x = int(kwargs.get("x")) if kwargs.get("x") is not None else None
+                    y = int(kwargs.get("y")) if kwargs.get("y") is not None else None
+
                 elif args_str:
                     try:
                         clicks = int(args_str)
                     except ValueError:
                         pass
 
-                if clicks: args['clicks'] = clicks
-                if x: args['x'] = x
-                if y: args['y'] = y
+                if clicks:
+                    args["clicks"] = clicks
+                if x:
+                    args["x"] = x
+                if y:
+                    args["y"] = y
 
             else:
                 if "=" in args_str:
                     for arg in re.finditer(r"(\w+)=\[([^\]]+)\]", args_str):
                         param = arg.group(1)
                         list_str = arg.group(2)
-                        
+
                         list_items = []
-                        for item in re.finditer(r"'([^']*)'|\"([^\"]*)\"|([^,\]]+)", list_str):
-                            val = (item.group(1) or item.group(2) or item.group(3)).strip()
+                        for item in re.finditer(
+                            r"'([^']*)'|\"([^\"]*)\"|([^,\]]+)", list_str
+                        ):
+                            val = (
+                                item.group(1) or item.group(2) or item.group(3)
+                            ).strip()
                             if val:
-                                list_items.append(val.strip('"\'')) 
-                        
+                                list_items.append(val.strip("\"'"))
+
                         args[param] = list_items
 
-                    
                     for arg in re.finditer(r"(\w+)=([^,)]+)", args_str):
                         param = arg.group(1)
                         if param in args:
                             continue
-                        
+
                         value_str = arg.group(2).strip()
-                        
+
                         if value_str.isdigit():
                             value = int(value_str)
                         elif value_str.replace(".", "", 1).isdigit():
@@ -531,34 +582,30 @@ class ScaleCUA:
                         elif value_str.lower() in ("true", "false"):
                             value = value_str.lower() == "true"
                         else:
-                            value = value_str.strip('"\'')
-                        
+                            value = value_str.strip("\"'")
+
                         args[param] = value
 
-               
                 else:
                     args_list = []
                     for arg in re.finditer(r"'([^']*)'|\"([^\"]*)\"|([^,]+)", args_str):
                         val = (arg.group(1) or arg.group(2) or arg.group(3)).strip()
                         if val:
-                            args_list.append(val.strip('"\'')) 
-                    
+                            args_list.append(val.strip("\"'"))
+
                     if args_list:
                         args["args"] = args_list
 
-            parsed_action.append({
-                'name': func_name,
-                'parameters': args
-            })
+            parsed_action.append({"name": func_name, "parameters": args})
 
-        
-            
         pyautogui_actions = []
         for action in parsed_action:
-            logger.info(f"************************ Parsed Action ************************")
+            logger.info(
+                f"************************ Parsed Action ************************"
+            )
             logger.info(action)
             pyautogui_actions.append(self.transform_action(action))
-            
+
         return pyautogui_actions
 
     def _parse_kwargs(self, arg_str: str) -> Dict[str, str]:
@@ -577,11 +624,18 @@ class ScaleCUA:
         if func in ["click", "doubleClick", "rightClick"]:
             x = kwargs.get("x")
             y = kwargs.get("y")
-            resize_h, resize_w = smart_resize(self.screen_height, self.screen_width, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
+            resize_h, resize_w = smart_resize(
+                self.screen_height,
+                self.screen_width,
+                min_pixels=self.min_pixels,
+                max_pixels=self.max_pixels,
+            )
             x = "{:.4f}".format(float(x) / resize_w * self.screen_width)
-            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)            
+            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)
             clicks = "2" if func == "doubleClick" else kwargs.get("clicks", "1")
-            button = '"right"' if func == "rightClick" else kwargs.get("button", '"left"')
+            button = (
+                '"right"' if func == "rightClick" else kwargs.get("button", '"left"')
+            )
             return f"pyautogui.click(x={x}, y={y}, clicks={clicks}, button={button})"
 
         if func == "scroll":
@@ -589,10 +643,15 @@ class ScaleCUA:
             x = kwargs.get("x", None)
             y = kwargs.get("y", None)
             if x is not None and y is not None:
-                resize_h, resize_w = smart_resize(self.screen_height, self.screen_width, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
+                resize_h, resize_w = smart_resize(
+                    self.screen_height,
+                    self.screen_width,
+                    min_pixels=self.min_pixels,
+                    max_pixels=self.max_pixels,
+                )
                 x = "{:.4f}".format(float(x) / resize_w * self.screen_width)
-                y = "{:.4f}".format(float(y) / resize_h * self.screen_height)     
-                return f"pyautogui.scroll({clicks}, x={x}, y={y})"     
+                y = "{:.4f}".format(float(y) / resize_h * self.screen_height)
+                return f"pyautogui.scroll({clicks}, x={x}, y={y})"
             else:
                 return f"pyautogui.scroll({clicks})"
 
@@ -600,9 +659,14 @@ class ScaleCUA:
         if func == "moveTo":
             x = kwargs.get("x")
             y = kwargs.get("y")
-            resize_h, resize_w = smart_resize(self.screen_height, self.screen_width, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
+            resize_h, resize_w = smart_resize(
+                self.screen_height,
+                self.screen_width,
+                min_pixels=self.min_pixels,
+                max_pixels=self.max_pixels,
+            )
             x = "{:.4f}".format(float(x) / resize_w * self.screen_width)
-            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)     
+            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)
             return f"pyautogui.moveTo({x}, {y})"
 
         # dragTo
@@ -610,9 +674,14 @@ class ScaleCUA:
             x = kwargs.get("x")
             y = kwargs.get("y")
             button = kwargs.get("button", '"left"')
-            resize_h, resize_w = smart_resize(self.screen_height, self.screen_width, min_pixels=self.min_pixels, max_pixels=self.max_pixels)
+            resize_h, resize_w = smart_resize(
+                self.screen_height,
+                self.screen_width,
+                min_pixels=self.min_pixels,
+                max_pixels=self.max_pixels,
+            )
             x = "{:.4f}".format(float(x) / resize_w * self.screen_width)
-            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)     
+            y = "{:.4f}".format(float(y) / resize_h * self.screen_height)
             return f"pyautogui.dragTo({x}, {y}, button={button})"
 
         # press
@@ -636,26 +705,26 @@ class ScaleCUA:
 
         # hotkey
         if func == "hotkey":
-            
-            args_dict = ast.literal_eval(arg_str)  
-            keys = args_dict['args']
+
+            args_dict = ast.literal_eval(arg_str)
+            keys = args_dict["args"]
             args_str = ", ".join(f'"{k}"' for k in keys)
             return f"pyautogui.hotkey({args_str})"
 
         # keyDown
         if func == "keyDown":
             key = kwargs.get("key")
-            return f"pyautogui.keyDown(\"{key}\")"
+            return f'pyautogui.keyDown("{key}")'
 
         # keyUp
         if func == "keyUp":
             key = kwargs.get("key")
-            return f"pyautogui.keyUp(\"{key}\")"
+            return f'pyautogui.keyUp("{key}")'
 
         # write
         if func == "write":
             msg = kwargs.get("message") or kwargs.get("msg") or ""
-            return f"pyautogui.write(\"{msg}\")"
+            return f'pyautogui.write("{msg}")'
 
         # wait
         if func == "wait":
@@ -668,6 +737,7 @@ class ScaleCUA:
 
         return f"# Unhandled action: {func}"
 
+
 if __name__ == "__main__":
     agent = CUAAgent()
     print(agent.parse_action(["hotkey(['cmd','a'])"]))
@@ -679,5 +749,3 @@ if __name__ == "__main__":
     # print(agent.parse_action(["scroll(-8)"]))
     # print(agent.parse_action(["scroll(clicks=14)"]))
     # print(agent.parse_action(["scroll(14)"]))
-    
-    

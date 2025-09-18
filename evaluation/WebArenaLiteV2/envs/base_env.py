@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 import timeout_decorator
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+
 # Agent action decorator
 def agent_action(func):
     func.is_agent_action = True
     return func
+
 
 class BaseEnv(ABC):
     """
@@ -20,18 +22,18 @@ class BaseEnv(ABC):
     @abstractmethod
     def reset(self, **kwargs):
         pass
-    
+
     @abstractmethod
     def get_screen_size(self) -> tuple[int, int]:
         pass
-    
+
     def onScreen(self, x, y):
         screen_width, screen_height = self.get_screen_size()
         if isinstance(x, float) and isinstance(y, float):
             assert 0 <= x <= 1 and 0 <= y <= 1
             x = round(x * screen_width)
             y = round(y * screen_height)
-        
+
         return 0 <= x < screen_width and 0 <= y < screen_height
 
     @abstractmethod
@@ -68,16 +70,17 @@ class BaseEnv(ABC):
             self.execute(action_list)
         except Exception as e:
             from traceback import print_stack
+
             print_stack()
             return False
-        
+
         return True
 
     @abstractmethod
     @timeout_decorator.timeout(10)
     def execute_single_action(self, action: dict):
         pass
-    
+
     def execute(self, action_list: list[dict]):
         for action in action_list:
             self.execute_single_action(action)

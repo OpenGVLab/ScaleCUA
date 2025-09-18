@@ -1,6 +1,7 @@
 """
-    Ubuntu-Web Environment Server: Runs on Ubuntu VM to execute browser automation
+Ubuntu-Web Environment Server: Runs on Ubuntu VM to execute browser automation
 """
+
 import base64
 import signal
 import subprocess
@@ -45,6 +46,7 @@ recording_process = None
 recording_output_file = None
 recording_temp_dir = None
 
+
 # Define API request and response models
 class InitParams(BaseModel):
     width: int = 2560
@@ -54,20 +56,25 @@ class InitParams(BaseModel):
     explicitly_allowed_ports: List[int]
     web_proxy: str = None
 
+
 class ResetParams(BaseModel):
     kwargs: Dict
     task_config: Dict
 
+
 class ActionParams(BaseModel):
     action: Dict
+
 
 class EvaluateParams(BaseModel):
     benchmark: str
     actions: Optional[List] = None
     trajectory_dir: Optional[str] = None
 
+
 class EndRecordingResponse(BaseModel):
     video: str  # base64 encoded video
+
 
 # API route definitions
 @app.post("/init")
@@ -79,7 +86,9 @@ def initialize_browser(params: InitParams):
         # Store configuration
         screen_size = (params.width, params.height)
         dpr = params.dpr
-        css_width, css_height = int(params.width // params.dpr), int(params.height // params.dpr)
+        css_width, css_height = int(params.width // params.dpr), int(
+            params.height // params.dpr
+        )
         timeout = params.timeout * 1000
         explicitly_allowed_ports = params.explicitly_allowed_ports
 
@@ -97,23 +106,31 @@ def initialize_browser(params: InitParams):
             proxy_settings = {
                 "server": proxy_server,
                 "username": proxy_username,
-                "password": proxy_password
+                "password": proxy_password,
             }
         else:
             proxy_settings = None
 
-        browser_args = ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage', '--disable-logging',
-                        '--ignore-certificate-errors', '--disable-dev-shm-usage', '--disable-application-cache',
-                        '--media-cache-size=0', '--disk-cache-size=0', '--log-level=3', '--silent',
-                        '--allow-running-insecure-content',
-                        '--disable-web-security',
-                        f"--explicitly-allowed-ports={','.join(str(p) for p in explicitly_allowed_ports)}"]
+        browser_args = [
+            "--disable-gpu",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-logging",
+            "--ignore-certificate-errors",
+            "--disable-dev-shm-usage",
+            "--disable-application-cache",
+            "--media-cache-size=0",
+            "--disk-cache-size=0",
+            "--log-level=3",
+            "--silent",
+            "--allow-running-insecure-content",
+            "--disable-web-security",
+            f"--explicitly-allowed-ports={','.join(str(p) for p in explicitly_allowed_ports)}",
+        ]
 
         # Launch browser
         browser = browser_type.launch(
-            headless=False,
-            proxy=proxy_settings,
-            args=browser_args
+            headless=False, proxy=proxy_settings, args=browser_args
         )
 
         # Create context
@@ -125,7 +142,10 @@ def initialize_browser(params: InitParams):
         return {"status": "success", "message": "Browser initialization successful"}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Browser initialization failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Browser initialization failed: {str(e)}"
+        )
+
 
 @app.post("/reset")
 def reset_environment(params: ResetParams):
@@ -138,7 +158,10 @@ def reset_environment(params: ResetParams):
         kwargs = params.kwargs
 
         # Process task configuration file
-        if 'benchmark' in kwargs and kwargs['benchmark'] in ["webarena_multi_app", "vab_webarena_lite"]:
+        if "benchmark" in kwargs and kwargs["benchmark"] in [
+            "webarena_multi_app",
+            "vab_webarena_lite",
+        ]:
             # Automatically login
             if task_config["storage_state"]:
                 cookie_file_name = os.path.basename(task_config["storage_state"])
@@ -161,7 +184,9 @@ def reset_environment(params: ResetParams):
                 task_config["storage_state"] = f"{temp_dir}/{cookie_file_name}"
                 assert os.path.exists(task_config["storage_state"])
 
-        start_url = kwargs.get('url', None) or task_config.get('start_url', None) or None
+        start_url = (
+            kwargs.get("url", None) or task_config.get("start_url", None) or None
+        )
 
         # Set up browser environment
         _initialize_context(start_url)
@@ -173,7 +198,10 @@ def reset_environment(params: ResetParams):
 
     except Exception as e:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Environment reset failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Environment reset failed: {str(e)}"
+        )
+
 
 @app.post("/execute")
 def execute(params: ActionParams):
@@ -182,22 +210,30 @@ def execute(params: ActionParams):
         action = params.action
         success = execute_single_action(action)
         if not success:
-            raise HTTPException(status_code=400, detail=f"Failed to execute action: {action['name']}")
+            raise HTTPException(
+                status_code=400, detail=f"Failed to execute action: {action['name']}"
+            )
         return {"status": "success", "message": "Operations executed successfully"}
     except Exception as e:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Failed to execute operations: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to execute operations: {str(e)}"
+        )
+
 
 @app.get("/screenshot")
 def get_screenshot():
     """Get current screen screenshot"""
     try:
         screenshot_bytes = _get_screenshot()
-        base64_screenshot = base64.b64encode(screenshot_bytes).decode('utf-8')
+        base64_screenshot = base64.b64encode(screenshot_bytes).decode("utf-8")
         return {"screenshot": base64_screenshot}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get screenshot: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get screenshot: {str(e)}"
+        )
+
 
 @app.get("/elements")
 def get_elements():
@@ -207,7 +243,10 @@ def get_elements():
         return {"elements": []}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get element information: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get element information: {str(e)}"
+        )
+
 
 @app.post("/evaluate")
 def evaluate_trajectory(params: EvaluateParams):
@@ -215,13 +254,12 @@ def evaluate_trajectory(params: EvaluateParams):
     try:
         benchmark = params.benchmark
 
-        evaluate_dict = {
-            "vab_webarena_lite": evaluate_webarena,
-            "demo": evaluate_demo
-        }
+        evaluate_dict = {"vab_webarena_lite": evaluate_webarena, "demo": evaluate_demo}
 
         if benchmark not in evaluate_dict:
-            raise HTTPException(status_code=400, detail=f"Unsupported evaluation benchmark: {benchmark}")
+            raise HTTPException(
+                status_code=400, detail=f"Unsupported evaluation benchmark: {benchmark}"
+            )
 
         score = evaluate_dict[benchmark](params)
         return {"score": score}
@@ -229,6 +267,7 @@ def evaluate_trajectory(params: EvaluateParams):
     except Exception as e:
         print(traceback.print_exc())
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
+
 
 @app.post("/exit")
 def exit_browser():
@@ -266,7 +305,9 @@ def start_recording():
         save_folder = recording_temp_dir
         os.makedirs(save_folder, exist_ok=True)
 
-        recording_output_file = os.path.join(save_folder, f"recording_{time.strftime('%Y%m%d_%H%M%S')}.mp4")
+        recording_output_file = os.path.join(
+            save_folder, f"recording_{time.strftime('%Y%m%d_%H%M%S')}.mp4"
+        )
         # Set ffmpeg quality presets based on parameter
         # quality_presets = {
         #     "low": "-c:v libx264 -preset ultrafast -crf 28",
@@ -278,21 +319,27 @@ def start_recording():
         # Start ffmpeg process to record screen
         command = [
             "ffmpeg",
-            "-f", "x11grab",
-            "-framerate", "24",
-            "-video_size", "1920x1080",
-            "-i", ":1",
-            "-c:v", "libx264",
-            "-preset", "medium",
-            "-crf", "23",
-            "-pix_fmt", "yuv420p",
-            recording_output_file
+            "-f",
+            "x11grab",
+            "-framerate",
+            "24",
+            "-video_size",
+            "1920x1080",
+            "-i",
+            ":1",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "medium",
+            "-crf",
+            "23",
+            "-pix_fmt",
+            "yuv420p",
+            recording_output_file,
         ]
 
         recording_process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
 
         # Wait a moment to ensure recording starts
@@ -305,7 +352,9 @@ def start_recording():
 
     except Exception as e:
         print(traceback.print_exc())
-        raise HTTPException(status_code=500, detail=f"Failed to start recording: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to start recording: {str(e)}"
+        )
 
 
 @app.post("/end_recording", response_model=EndRecordingResponse)
@@ -333,15 +382,18 @@ def end_recording():
         with open(recording_output_file, "rb") as f:
             video_bytes = f.read()
 
-        print(f'Video bytes: {len(video_bytes)}')
+        print(f"Video bytes: {len(video_bytes)}")
         # Encode to base64
-        base64_video = base64.b64encode(video_bytes).decode('utf-8')
+        base64_video = base64.b64encode(video_bytes).decode("utf-8")
 
         return EndRecordingResponse(video=base64_video)
 
     except Exception as e:
         print(traceback.print_exc())
-        raise HTTPException(status_code=500, detail=f"Failed to end recording: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to end recording: {str(e)}"
+        )
+
 
 def _stop_recording_process():
     """
@@ -372,10 +424,13 @@ def _stop_recording_process():
         check_cmd = f"ffprobe -v error {recording_output_file}"
         result = subprocess.run(check_cmd, shell=True, stderr=subprocess.PIPE)
         if result.returncode != 0:
-            raise Exception(f"Recording file is corrupted: {result.stderr.decode('utf-8')}")
+            raise Exception(
+                f"Recording file is corrupted: {result.stderr.decode('utf-8')}"
+            )
     except Exception as e:
         print(f"File validation failed: {str(e)}")
         raise HTTPException(status_code=500, detail="Recording file is corrupted")
+
 
 # Helper functions
 def _exit():
@@ -457,8 +512,10 @@ def _update_browser_window_info():
                     browser_offset_x = x
                     browser_offset_y = y
 
-                    print(f"Detected browser window position: x={browser_offset_x}, y={browser_offset_y}, "
-                          f"width={geometry.width}, height={geometry.height}")
+                    print(
+                        f"Detected browser window position: x={browser_offset_x}, y={browser_offset_y}, "
+                        f"width={geometry.width}, height={geometry.height}"
+                    )
                     break
 
             except Exception as window_error:
@@ -470,6 +527,7 @@ def _update_browser_window_info():
 
     except Exception as e:
         print(f"Failed to get browser window info: {str(e)}")
+
 
 def _initialize_context(start_url):
     """Initialize or reinitialize browser context and page"""
@@ -491,7 +549,7 @@ def _initialize_context(start_url):
         "device_scale_factor": dpr,
         "is_mobile": False,
         "storage_state": storage_state,
-        "geolocation": geolocation
+        "geolocation": geolocation,
     }
 
     # Create new context and page
@@ -514,6 +572,7 @@ def _initialize_context(start_url):
         setup_global_page_listener()
         time.sleep(2)
 
+
 def _get_screenshot():
     """Get OS level screenshot and crop browser area using scrot and PIL"""
     try:
@@ -521,7 +580,9 @@ def _get_screenshot():
         if not browser_window:
             _update_browser_window_info()
             if not browser_window:
-                print("Warning: Unable to get browser window info, using Playwright screenshot")
+                print(
+                    "Warning: Unable to get browser window info, using Playwright screenshot"
+                )
                 return page.screenshot()
 
         # Create temp file path without pre-creating the file
@@ -530,7 +591,7 @@ def _get_screenshot():
         temp_file_path = os.path.join(temp_dir, f"{time.strftime('%Y%m%d_%H%M%S')}.png")
 
         # Capture screenshot using scrot
-        subprocess.run(['scrot', temp_file_path], check=True)
+        subprocess.run(["scrot", temp_file_path], check=True)
         time.sleep(2)
 
         # Open the screenshot with PIL
@@ -570,6 +631,7 @@ def _get_screenshot():
         # Fall back to Playwright screenshot
         return page.screenshot()
 
+
 def setup_global_page_listener():
     """Set up global page listener to automatically switch to new pages"""
 
@@ -584,6 +646,7 @@ def setup_global_page_listener():
     # Add page listener
     context.on("page", _handle_new_page)
 
+
 def _convert_to_os_coordinates(x, y):
     """Convert browser coordinates to OS coordinates"""
     if x is None or y is None:
@@ -594,6 +657,7 @@ def _convert_to_os_coordinates(x, y):
     y_os = browser_offset_y + y
 
     return x_os, y_os
+
 
 def execute_single_action(action):
     """Execute a single action based on action type"""
@@ -616,14 +680,14 @@ def execute_single_action(action):
             "doubleClick": _execute_double_click,
             "rightClick": _execute_right_click,
             "hotkey": _execute_hotkey,
-            "swipe": _execute_swipe
+            "swipe": _execute_swipe,
         }
 
         # Get the corresponding handler and execute
         handler = action_handlers.get(action_type)
         if handler:
             success = handler(parameters)
-            print(f'{action_type} is done~')
+            print(f"{action_type} is done~")
             time.sleep(2)
             # Desktop special operation, listen for URL changes after each step
             current_url = page.evaluate("window.location.href")
@@ -641,6 +705,7 @@ def execute_single_action(action):
         traceback.print_exc()
         return False
 
+
 # Various operation execution functions
 def _execute_move_to(parameters):
     """Move mouse to specified position"""
@@ -652,6 +717,7 @@ def _execute_move_to(parameters):
     if x_os is not None and y_os is not None:
         pyautogui.moveTo(x_os, y_os)
     return True
+
 
 def _execute_click(parameters):
     """Click at specified position"""
@@ -666,14 +732,18 @@ def _execute_click(parameters):
     if x_os is not None and y_os is not None:
         # Map button names
         button_map = {"left": "left", "middle": "middle", "right": "right"}
-        pyautogui.click(x_os, y_os, clicks=clicks, button=button_map.get(button, "left"))
+        pyautogui.click(
+            x_os, y_os, clicks=clicks, button=button_map.get(button, "left")
+        )
     return True
+
 
 def _execute_write(parameters):
     """Simulate keyboard typing text"""
     message = parameters.get("message", "")
     pyautogui.write(message)
     return True
+
 
 def _execute_drag_to(parameters):
     """Perform drag operation"""
@@ -692,6 +762,7 @@ def _execute_drag_to(parameters):
         pyautogui.moveTo(end_x_os, end_y_os, duration=0.5)
         pyautogui.mouseUp(end_x_os, end_y_os, button=button)
     return True
+
 
 def _execute_press(parameters):
     """Press and release specified key or key sequence"""
@@ -717,9 +788,11 @@ def _execute_press(parameters):
                 pyautogui.press(key)
     return True
 
+
 def _execute_call_user(parameters):
     """Call user, in actual operation might be a notification or callback"""
     return True
+
 
 def _execute_wait(parameters):
     """Wait for specified number of seconds"""
@@ -727,13 +800,16 @@ def _execute_wait(parameters):
     time.sleep(seconds)
     return True
 
+
 def _execute_response(parameters):
     """Send response or feedback"""
     return True
 
+
 def _execute_terminate(parameters):
     """Terminate operation sequence"""
     return True
+
 
 def _execute_double_click(parameters):
     """Perform double click operation"""
@@ -745,6 +821,7 @@ def _execute_double_click(parameters):
     if x_os is not None and y_os is not None:
         pyautogui.doubleClick(x_os, y_os)
     return True
+
 
 def _execute_right_click(parameters):
     """Perform right-click"""
@@ -769,6 +846,7 @@ def _execute_hotkey(parameters):
         pyautogui.hotkey(*mapped_args)
     return True
 
+
 def _execute_swipe(parameters):
     """Perform scroll operation"""
     x1, y1 = parameters.get("from_coord", (None, None))
@@ -782,10 +860,14 @@ def _execute_swipe(parameters):
     else:
         # Keep custom logic here
         if direction in ["up", "down"]:
-            distance = css_height * amount if direction == "up" else - css_height * amount
+            distance = (
+                css_height * amount if direction == "up" else -css_height * amount
+            )
             delta_x, delta_y = 0, distance
         else:  # direction in ["left", "right"]
-            distance = css_width * amount if direction == "left" else - css_width * amount
+            distance = (
+                css_width * amount if direction == "left" else -css_width * amount
+            )
             delta_x, delta_y = distance, 0
 
     # If from_coord coordinates are provided, move mouse to specified location, otherwise move global page
@@ -803,23 +885,22 @@ def _execute_swipe(parameters):
     page.wait_for_timeout(2000)
     return True
 
+
 # Evaluation functions
 def evaluate_webarena(params):
     action_list = params.actions
     try:
         evaluator = webarena_evaluator_router(task_config)
-        score = evaluator(
-            action_list=action_list,
-            task_config=task_config,
-            page=page
-        )
+        score = evaluator(action_list=action_list, task_config=task_config, page=page)
         return score
 
     except Exception as e:
         raise e
 
+
 def evaluate_demo(**kwargs):
     return 1
+
 
 # Start server
 if __name__ == "__main__":

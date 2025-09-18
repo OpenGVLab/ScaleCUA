@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 import timeout_decorator
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+
 # Agent action decorator
 def agent_action(func):
     func.is_agent_action = True
     return func
+
 
 class BaseEnv(ABC):
     """
@@ -20,18 +22,18 @@ class BaseEnv(ABC):
     @abstractmethod
     def reset(self, **kwargs):
         pass
-    
+
     @abstractmethod
     def get_screen_size(self) -> tuple[int, int]:
         pass
-    
+
     def onScreen(self, x, y):
         screen_width, screen_height = self.get_screen_size()
         if isinstance(x, float) and isinstance(y, float):
             assert 0 <= x <= 1 and 0 <= y <= 1
             x = round(x * screen_width)
             y = round(y * screen_height)
-        
+
         return 0 <= x < screen_width and 0 <= y < screen_height
 
     @abstractmethod
@@ -68,23 +70,24 @@ class BaseEnv(ABC):
             self.execute(action_list)
         except Exception as e:
             from traceback import print_stack
+
             print_stack()
             return False
-        
-        return True
-        
 
+        return True
 
     @abstractmethod
     @timeout_decorator.timeout(10)
     def execute_single_action(self, action: dict):
         pass
-    
+
     def execute(self, action_list: list[dict]):
         for action in action_list:
             self.execute_single_action(action)
+
     def parse_action(self, prediction):
         pass
+
     @agent_action
     def click(
         self,
@@ -100,15 +103,17 @@ class BaseEnv(ABC):
             button_type:str, which mouse button to press can be "left", "middle", or "right"
             hold_keys:List, list of keys to hold while clicking
         """
-        actions = [{
-            "name": "click",
-            "parameters":{
-                "x": None,
-                "y": None,
-                "clicks": num_clicks,
-                "button": button_type,
-                }
-        }]
+        actions = [
+            {
+                "name": "click",
+                "parameters": {
+                    "x": None,
+                    "y": None,
+                    "clicks": num_clicks,
+                    "button": button_type,
+                },
+            }
+        ]
         return actions
 
     @agent_action
@@ -131,28 +136,20 @@ class BaseEnv(ABC):
             actions.append(
                 {
                     "name": "click",
-                    "parameters":{ 
-                        "x": None,
-                        "y": None,
-                        "clicks": 1,
-                        "button": "left"}
-                    
-                })
-        actions.append(
-            {
-                "name": "write",
-                "parameters":{
-                    "message": text
+                    "parameters": {"x": None, "y": None, "clicks": 1, "button": "left"},
                 }
-            })
+            )
+        actions.append({"name": "write", "parameters": {"message": text}})
         if enter:
-            actions.append({
-                "name": "press",
-                "parameters":{
-                    "keys": "enter",
-                    "presses": 1,
+            actions.append(
+                {
+                    "name": "press",
+                    "parameters": {
+                        "keys": "enter",
+                        "presses": 1,
+                    },
                 }
-            })
+            )
         return actions
 
     @agent_action
@@ -164,18 +161,9 @@ class BaseEnv(ABC):
             shift:bool, whether to use shift+scroll for horizontal scrolling
         """
         actions = [
-            {
-                "name": "scroll",
-                "parameters": {
-                    'x': None,
-                    'y': None,
-                    "clicks": clicks
-                }
-            }
+            {"name": "scroll", "parameters": {"x": None, "y": None, "clicks": clicks}}
         ]
         return actions
-
-
 
     @agent_action
     def wait(self, time: float):
@@ -188,7 +176,7 @@ class BaseEnv(ABC):
                 "name": "wait",
                 "parameters": {
                     "seconds": time,
-                }
+                },
             }
         ]
         return actions
@@ -197,7 +185,7 @@ class BaseEnv(ABC):
     def done(
         self,
         answer: Optional[str] = None,
-        return_value: Optional[Union[Dict, str, List, Tuple, int, float, bool]] = None
+        return_value: Optional[Union[Dict, str, List, Tuple, int, float, bool]] = None,
     ):
         """End the current task with a success, output the final answer and the required return value
         Args:
@@ -205,19 +193,12 @@ class BaseEnv(ABC):
         """
         self.returned_info = return_value
         actions = [
-            {
-                "name": "terminate",
-                "parameters": {
-                    "status": "success",
-                    "answer": answer
-                }
-            }
+            {"name": "terminate", "parameters": {"status": "success", "answer": answer}}
         ]
         return actions
 
     @agent_action
-    def fail(self, 
-             rationale: Optional[str] = None):
+    def fail(self, rationale: Optional[str] = None):
         """End the current task with a failure, output the failure reason, and replan the whole task.
         Args:
             rationale: the failure reason of this task
@@ -225,10 +206,7 @@ class BaseEnv(ABC):
         actions = [
             {
                 "name": "terminate",
-                "parameters":{
-                    "status": "failure",
-                    "answer": rationale
-                }
+                "parameters": {"status": "failure", "answer": rationale},
             }
         ]
         return actions
@@ -239,10 +217,5 @@ class BaseEnv(ABC):
         Args:
             None
         """
-        actions = [
-            {
-            "name": "callUser",
-            "parameters":{}
-        }
-        ]
+        actions = [{"name": "callUser", "parameters": {}}]
         return actions

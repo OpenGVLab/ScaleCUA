@@ -14,23 +14,22 @@ def check_presenter_console_disable(config_file_path):
         tree = ET.parse(config_file_path)
         root = tree.getroot()
 
-        namespaces = {
-            'oor': 'http://openoffice.org/2001/registry'
-        }
+        namespaces = {"oor": "http://openoffice.org/2001/registry"}
 
         for item in root.findall(
-                ".//item[@oor:path='/org.openoffice.Office.Impress/Misc/Start']/prop[@oor:name='EnablePresenterScreen']",
-                namespaces):
+            ".//item[@oor:path='/org.openoffice.Office.Impress/Misc/Start']/prop[@oor:name='EnablePresenterScreen']",
+            namespaces,
+        ):
             # Check if the value of the configuration item indicates that the presenter console has been disabled
-            presenter_screen_enabled = item.find('value').text
-            if presenter_screen_enabled.lower() == 'false':
-                return 1.
+            presenter_screen_enabled = item.find("value").text
+            if presenter_screen_enabled.lower() == "false":
+                return 1.0
             else:
-                return 0.
-        return 0.
+                return 0.0
+        return 0.0
     except Exception as e:
         logger.error(f"Error: {e}")
-        return 0.
+        return 0.0
 
 
 def check_image_stretch_and_center(modified_ppt, original_ppt):
@@ -44,8 +43,12 @@ def check_image_stretch_and_center(modified_ppt, original_ppt):
     modified_slide = modified_pres.slides[0]
 
     # Get the image on the first slide of each presentation
-    original_slide_images = [shape for shape in original_slide.shapes if shape.shape_type == 13]
-    modified_slide_images = [shape for shape in modified_slide.shapes if shape.shape_type == 13]
+    original_slide_images = [
+        shape for shape in original_slide.shapes if shape.shape_type == 13
+    ]
+    modified_slide_images = [
+        shape for shape in modified_slide.shapes if shape.shape_type == 13
+    ]
 
     the_image = original_slide_images[0]
 
@@ -54,13 +57,23 @@ def check_image_stretch_and_center(modified_ppt, original_ppt):
         if the_image.image.blob == modified_image.image.blob:
             the_modified_image = modified_image
 
-    if (abs(the_modified_image.width - original_pres.slide_width) > Inches(0.5) or
-            abs(the_modified_image.height - original_pres.slide_height) > Inches(0.5) or
-            abs(the_modified_image.left - (original_pres.slide_width - the_modified_image.width) / 2) > Inches(0.5) or
-            abs(the_modified_image.top - (original_pres.slide_height - the_modified_image.height) / 2) > Inches(0.5)):
-        return 0.
+    if (
+        abs(the_modified_image.width - original_pres.slide_width) > Inches(0.5)
+        or abs(the_modified_image.height - original_pres.slide_height) > Inches(0.5)
+        or abs(
+            the_modified_image.left
+            - (original_pres.slide_width - the_modified_image.width) / 2
+        )
+        > Inches(0.5)
+        or abs(
+            the_modified_image.top
+            - (original_pres.slide_height - the_modified_image.height) / 2
+        )
+        > Inches(0.5)
+    ):
+        return 0.0
 
-    return 1.
+    return 1.0
 
 
 def is_red_color(color):
@@ -93,7 +106,9 @@ def check_slide_numbers_color(pptx_file_path):
                     # "SlidePlaceholder" is the name of the placeholder in the master slide
                     page_number_text = shape.text
                     font_color = get_master_placeholder_color(presentation)
-                    return 1 if font_color is not None and is_red_color(font_color) else 0
+                    return (
+                        1 if font_color is not None and is_red_color(font_color) else 0
+                    )
 
 
 # import numpy as np
@@ -128,6 +143,7 @@ def check_slide_numbers_color(pptx_file_path):
 #     similarity_index = ssim(image1_array, image2_array)
 
 #     return similarity_index
+
 
 def compare_pptx_files(file1_path, file2_path, **options):
     # todo: not strictly match since not all information is compared because we cannot get the info through pptx
@@ -173,7 +189,10 @@ def compare_pptx_files(file1_path, file2_path, **options):
             else:
                 return None
 
-        if get_slide_background_color(slide1) != get_slide_background_color(slide2) and examine_background_color:
+        if (
+            get_slide_background_color(slide1) != get_slide_background_color(slide2)
+            and examine_background_color
+        ):
             return 0
 
         def get_slide_notes(slide):
@@ -183,59 +202,122 @@ def compare_pptx_files(file1_path, file2_path, **options):
             else:
                 return None
 
-        if get_slide_notes(slide1).strip() != get_slide_notes(slide2).strip() and examine_note:
+        if (
+            get_slide_notes(slide1).strip() != get_slide_notes(slide2).strip()
+            and examine_note
+        ):
             return 0
         # check if the shapes are the same
         for shape1, shape2 in zip(slide1.shapes, slide2.shapes):
             if examine_title_bottom_position:
-                if hasattr(shape1, "text") and hasattr(shape2, "text") and shape1.text == shape2.text:
-                    if shape1.text == "Product Comparison" and (shape1.top <= shape2.top or shape1.top < 3600000):
+                if (
+                    hasattr(shape1, "text")
+                    and hasattr(shape2, "text")
+                    and shape1.text == shape2.text
+                ):
+                    if shape1.text == "Product Comparison" and (
+                        shape1.top <= shape2.top or shape1.top < 3600000
+                    ):
                         return 0
-                elif shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
+                elif (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
                     return 0
 
             if examine_table_bottom_position:
-                if slide_idx == 3 and shape1.shape_type == 19 and shape2.shape_type == 19:
+                if (
+                    slide_idx == 3
+                    and shape1.shape_type == 19
+                    and shape2.shape_type == 19
+                ):
                     if shape1.top <= shape2.top or shape1.top < 3600000:
                         return 0
-                elif shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
+                elif (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
                     return 0
 
             if examine_right_position:
-                if slide_idx == 2 and not hasattr(shape1, "text") and not hasattr(shape2, "text"):
+                if (
+                    slide_idx == 2
+                    and not hasattr(shape1, "text")
+                    and not hasattr(shape2, "text")
+                ):
                     if shape1.left <= shape2.left or shape1.left < 4320000:
                         return 0
 
             if examine_top_position:
-                if slide_idx == 2 and shape1.shape_type == 13 and shape2.shape_type == 13:
+                if (
+                    slide_idx == 2
+                    and shape1.shape_type == 13
+                    and shape2.shape_type == 13
+                ):
                     if shape1.top >= shape2.top or shape1.top > 1980000:
                         return 0
-                elif shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
+                elif (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
                     return 0
 
             if examine_shape_for_shift_size:
-                if shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
-                    if not (hasattr(shape1, "text") and hasattr(shape2,
-                                                                "text") and shape1.text == shape2.text and shape1.text == "Elaborate on what you want to discuss."):
+                if (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
+                    if not (
+                        hasattr(shape1, "text")
+                        and hasattr(shape2, "text")
+                        and shape1.text == shape2.text
+                        and shape1.text == "Elaborate on what you want to discuss."
+                    ):
                         return 0
 
             if (
-                    shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height) and examine_shape:
+                shape1.left != shape2.left
+                or shape1.top != shape2.top
+                or shape1.width != shape2.width
+                or shape1.height != shape2.height
+            ) and examine_shape:
                 return 0
 
             if examine_image_size:
                 if shape1.shape_type == 13 and shape2.shape_type == 13:
                     if shape1.width != shape2.width or shape1.height != shape2.height:
                         return 0
-                elif shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
+                elif (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
                     return 0
 
             if examine_modify_height:
-                if not hasattr(shape1, "text") and not hasattr(shape2,
-                                                               "text") or shape1.shape_type == 5 and shape2.shape_type == 5:
+                if (
+                    not hasattr(shape1, "text")
+                    and not hasattr(shape2, "text")
+                    or shape1.shape_type == 5
+                    and shape2.shape_type == 5
+                ):
                     if shape1.height != shape2.height:
                         return 0
-                elif shape1.left != shape2.left or shape1.top != shape2.top or shape1.width != shape2.width or shape1.height != shape2.height:
+                elif (
+                    shape1.left != shape2.left
+                    or shape1.top != shape2.top
+                    or shape1.width != shape2.width
+                    or shape1.height != shape2.height
+                ):
                     return 0
 
             if hasattr(shape1, "text") and hasattr(shape2, "text"):
@@ -243,7 +325,9 @@ def compare_pptx_files(file1_path, file2_path, **options):
                     return 0
 
                     # check if the paragraphs are the same
-                for para1, para2 in zip(shape1.text_frame.paragraphs, shape2.text_frame.paragraphs):
+                for para1, para2 in zip(
+                    shape1.text_frame.paragraphs, shape2.text_frame.paragraphs
+                ):
                     if para1.alignment != para2.alignment and examine_alignment:
                         return 0
 
@@ -256,7 +340,7 @@ def compare_pptx_files(file1_path, file2_path, **options):
 
                     for run1, run2 in zip(para1.runs, para2.runs):
 
-                        # check if the font properties are the same                        
+                        # check if the font properties are the same
                         if run1.font.name != run2.font.name and examine_font_name:
                             return 0
 
@@ -269,48 +353,71 @@ def compare_pptx_files(file1_path, file2_path, **options):
                         if run1.font.italic != run2.font.italic and examine_font_italic:
                             return 0
 
-                        if hasattr(run1.font.color, "rgb") and hasattr(run2.font.color, "rgb"):
-                            if run1.font.color.rgb != run2.font.color.rgb and examine_color_rgb:
+                        if hasattr(run1.font.color, "rgb") and hasattr(
+                            run2.font.color, "rgb"
+                        ):
+                            if (
+                                run1.font.color.rgb != run2.font.color.rgb
+                                and examine_color_rgb
+                            ):
                                 return 0
 
-                        if run1.font.underline != run2.font.underline and examine_font_underline:
+                        if (
+                            run1.font.underline != run2.font.underline
+                            and examine_font_underline
+                        ):
                             return 0
 
-                        if run1.font._element.attrib.get('strike', 'noStrike') != run2.font._element.attrib.get(
-                                'strike', 'noStrike') and examine_strike_through:
+                        if (
+                            run1.font._element.attrib.get("strike", "noStrike")
+                            != run2.font._element.attrib.get("strike", "noStrike")
+                            and examine_strike_through
+                        ):
                             return 0
 
                         def _extract_bullets(xml_data):
                             root = ET.fromstring(xml_data)
 
                             namespaces = {
-                                'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-                                'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
+                                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+                                "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
                             }
 
                             bullets = []
 
-                            for paragraph in root.findall('.//a:p', namespaces):
-                                pPr = paragraph.find('a:pPr', namespaces)
+                            for paragraph in root.findall(".//a:p", namespaces):
+                                pPr = paragraph.find("a:pPr", namespaces)
                                 if pPr is not None:
-                                    lvl = pPr.get('lvl')
-                                    buChar = pPr.find('a:buChar', namespaces)
-                                    char = buChar.get('char') if buChar is not None else "No Bullet"
-                                    buClr = pPr.find('a:buClr/a:srgbClr', namespaces)
-                                    color = buClr.get('val') if buClr is not None else "No Color"
+                                    lvl = pPr.get("lvl")
+                                    buChar = pPr.find("a:buChar", namespaces)
+                                    char = (
+                                        buChar.get("char")
+                                        if buChar is not None
+                                        else "No Bullet"
+                                    )
+                                    buClr = pPr.find("a:buClr/a:srgbClr", namespaces)
+                                    color = (
+                                        buClr.get("val")
+                                        if buClr is not None
+                                        else "No Color"
+                                    )
                                 else:
                                     lvl = "No Level"
                                     char = "No Bullet"
                                     color = "No Color"
 
-                                text = "".join(t.text for t in paragraph.findall('.//a:t', namespaces))
+                                text = "".join(
+                                    t.text
+                                    for t in paragraph.findall(".//a:t", namespaces)
+                                )
 
                                 bullets.append((lvl, char, text, color))
 
                             return bullets
 
-                        if examine_bullets and _extract_bullets(run1.part.blob.decode('utf-8')) != _extract_bullets(
-                                run2.part.blob.decode('utf-8')):
+                        if examine_bullets and _extract_bullets(
+                            run1.part.blob.decode("utf-8")
+                        ) != _extract_bullets(run2.part.blob.decode("utf-8")):
                             return 0
 
                     # fixme: Actually there are more properties to be compared, we can add them later via parsing the xml data
@@ -338,9 +445,8 @@ def check_strikethrough(pptx_path, rules):
                 for paragraph_index in paragraph_index_s:
                     paragraph = paragraphs[paragraph_index]
                     run = paragraph.runs[0]
-                    if 'strike' not in run.font._element.attrib:
+                    if "strike" not in run.font._element.attrib:
                         return 0
-
 
     except Exception as e:
         logger.error(f"Error: {e}")
@@ -365,103 +471,114 @@ def evaluate_presentation_fill_to_rgb_distance(pptx_file, rules):
 
     def slide_fill_distance_to_rgb(_slide, _rgb):
         fill = _slide.background.fill
-        
+
         def get_rgb_from_color(color):
             # For theme colors, we need to map them to approximate RGB values
             # This is a simplified mapping - actual values may vary by theme
             theme_color_to_rgb = {
                 14: (255, 255, 255),  # BACKGROUND_1 (usually white)
-                15: (0, 0, 0),        # TEXT_1 (usually black)
-                16: (0, 0, 0),        # BACKGROUND_2 (usually black)
+                15: (0, 0, 0),  # TEXT_1 (usually black)
+                16: (0, 0, 0),  # BACKGROUND_2 (usually black)
                 17: (255, 255, 255),  # TEXT_2 (usually white)
-                0: (0, 0, 0),         # ACCENT_1 (varies by theme)
-                1: (0, 0, 0),         # ACCENT_2 (varies by theme)
-                2: (0, 0, 0),         # ACCENT_3 (varies by theme)
-                3: (0, 0, 0),         # ACCENT_4 (varies by theme)
-                4: (0, 0, 0),         # ACCENT_5 (varies by theme)
-                5: (0, 0, 0),         # ACCENT_6 (varies by theme)
+                0: (0, 0, 0),  # ACCENT_1 (varies by theme)
+                1: (0, 0, 0),  # ACCENT_2 (varies by theme)
+                2: (0, 0, 0),  # ACCENT_3 (varies by theme)
+                3: (0, 0, 0),  # ACCENT_4 (varies by theme)
+                4: (0, 0, 0),  # ACCENT_5 (varies by theme)
+                5: (0, 0, 0),  # ACCENT_6 (varies by theme)
                 13: (128, 128, 128),  # DARK_1 (usually dark gray)
                 12: (192, 192, 192),  # LIGHT_1 (usually light gray)
-                11: (64, 64, 64),     # DARK_2 (usually darker gray)
+                11: (64, 64, 64),  # DARK_2 (usually darker gray)
                 10: (224, 224, 224),  # LIGHT_2 (usually lighter gray)
             }
-            
+
             # Try to get RGB directly
-            if hasattr(color, 'rgb') and color.rgb is not None:
+            if hasattr(color, "rgb") and color.rgb is not None:
                 return color.rgb
-                
+
             # Try to get theme color
-            if hasattr(color, 'theme_color') and color.theme_color is not None:
+            if hasattr(color, "theme_color") and color.theme_color is not None:
                 theme_index = int(color.theme_color)
                 if theme_index in theme_color_to_rgb:
                     return theme_color_to_rgb[theme_index]
-            
+
             # Default fallback
             return None
-        
+
         if fill.type == 1:  # Solid fill
             rgb1 = get_rgb_from_color(fill.fore_color)
             if rgb1 is None:
                 return 1
-            
+
             r1, g1, b1 = rgb1
             r2, g2, b2 = _rgb
-            return sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / sqrt(255 ** 2 + 255 ** 2 + 255 ** 2)
+            return sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / sqrt(
+                255**2 + 255**2 + 255**2
+            )
         elif fill.type == 5:  # Background fill
             master_fill = _slide.slide_layout.slide_master.background.fill
             if master_fill.type == 1:  # Solid fill
                 rgb1 = get_rgb_from_color(master_fill.fore_color)
                 if rgb1 is None:
                     return 1
-                
+
                 r1, g1, b1 = rgb1
                 r2, g2, b2 = _rgb
-                return sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / sqrt(255 ** 2 + 255 ** 2 + 255 ** 2)
+                return sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) / sqrt(
+                    255**2 + 255**2 + 255**2
+                )
             else:
                 return 1
 
         return 1
 
     prs = Presentation(pptx_file)
-    similarity = 1 - sum(slide_fill_distance_to_rgb(slide, rgb) for slide in prs.slides) / len(prs.slides)
+    similarity = 1 - sum(
+        slide_fill_distance_to_rgb(slide, rgb) for slide in prs.slides
+    ) / len(prs.slides)
     return similarity
 
 
 def check_left_panel(accessibility_tree):
     namespaces = {
-        'st': 'uri:deskat:state.at-spi.gnome.org',
-        'cp': 'uri:deskat:component.at-spi.gnome.org'
+        "st": "uri:deskat:state.at-spi.gnome.org",
+        "cp": "uri:deskat:component.at-spi.gnome.org",
     }
 
     root = ET.fromstring(accessibility_tree)
 
-    for root_pane in root.iter('root-pane'):
-        for panel in root_pane.iter('panel'):
-            for split_pane in panel.iter('split-pane'):
+    for root_pane in root.iter("root-pane"):
+        for panel in root_pane.iter("panel"):
+            for split_pane in panel.iter("split-pane"):
                 # Get the left panel
-                if split_pane.attrib.get("{{{}}}parentcoord".format(namespaces['cp'])) == "(0, 0)":
+                if (
+                    split_pane.attrib.get("{{{}}}parentcoord".format(namespaces["cp"]))
+                    == "(0, 0)"
+                ):
                     # Get the visible attribute
-                    visible = split_pane.attrib.get("{{{}}}visible".format(namespaces['st']))
+                    visible = split_pane.attrib.get(
+                        "{{{}}}visible".format(namespaces["st"])
+                    )
                     if visible:
                         # decide if it is left panel
-                        return 1.
+                        return 1.0
 
-    return 0.
+    return 0.0
 
 
 def check_transition(pptx_file, rules):
-    slide_idx = rules['slide_idx']
-    transition_type = rules['transition_type']
+    slide_idx = rules["slide_idx"]
+    transition_type = rules["transition_type"]
 
     # Use the zipfile module to open the .pptx file
-    with zipfile.ZipFile(pptx_file, 'r') as zip_ref:
+    with zipfile.ZipFile(pptx_file, "r") as zip_ref:
         # Get the slide XML file
-        slide_name = 'ppt/slides/slide{}.xml'.format(slide_idx + 1)
+        slide_name = "ppt/slides/slide{}.xml".format(slide_idx + 1)
         try:
             zip_ref.getinfo(slide_name)
         except KeyError:
             # Slide does not exist
-            return 0.
+            return 0.0
 
         with zip_ref.open(slide_name) as slide_file:
             tree = ET.parse(slide_file)
@@ -469,21 +586,23 @@ def check_transition(pptx_file, rules):
 
             # XML namespace
             namespaces = {
-                'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-                'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
+                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+                "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
             }
 
             # Search for the transition element
-            transition = root.find('.//p:transition', namespaces)
+            transition = root.find(".//p:transition", namespaces)
             if transition is not None:
                 # Check if the transition is an expected transition
-                dissolve = transition.find('.//p:{}'.format(transition_type), namespaces)
+                dissolve = transition.find(
+                    ".//p:{}".format(transition_type), namespaces
+                )
                 if dissolve is not None:
-                    return 1.
+                    return 1.0
                 else:
-                    return 0.
+                    return 0.0
             else:
-                return 0.
+                return 0.0
 
 
 def check_page_number_colors(pptx_file, rules):
@@ -505,19 +624,19 @@ def check_page_number_colors(pptx_file, rules):
         r, g, b = int(rgb_str[1:3], 16), int(rgb_str[3:5], 16), int(rgb_str[5:7], 16)
         return r < threshold and g < threshold and b < threshold
 
-    with zipfile.ZipFile(pptx_file, 'r') as zip_ref:
-        slide_master_name = 'ppt/slideMasters/slideMaster1.xml'
+    with zipfile.ZipFile(pptx_file, "r") as zip_ref:
+        slide_master_name = "ppt/slideMasters/slideMaster1.xml"
         with zip_ref.open(slide_master_name) as slide_master_file:
             tree = ET.parse(slide_master_file)
             root = tree.getroot()
 
             namespaces = {
-                'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-                'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
+                "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+                "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
             }
 
-            color_elems = root.findall('.//a:solidFill//a:srgbClr', namespaces)
-            slides_color_val = color_elems[-2].get('val')
+            color_elems = root.findall(".//a:solidFill//a:srgbClr", namespaces)
+            slides_color_val = color_elems[-2].get("val")
 
     if slides_color_val is None:
         return 0
@@ -545,11 +664,11 @@ def check_auto_saving_time(pptx_file, rules):
         autosave_time = None
         for item in root.findall(".//item"):
             # Check the path attribute
-            path = item.get('{http://openoffice.org/2001/registry}path')
+            path = item.get("{http://openoffice.org/2001/registry}path")
             if path == "/org.openoffice.Office.Common/Save/Document":
                 # Once the correct item is found, look for the prop element with the name "AutoSaveTimeIntervall"
                 for prop in item.findall(".//prop"):
-                    name = prop.get('{http://openoffice.org/2001/registry}name')
+                    name = prop.get("{http://openoffice.org/2001/registry}name")
                     if name == "AutoSaveTimeIntervall":
                         # Extract the value of the autosave time interval
                         autosave_time = prop.find(".//value").text

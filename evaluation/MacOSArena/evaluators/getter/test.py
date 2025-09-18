@@ -13,6 +13,7 @@ script_dir = Path(__file__).resolve().parent.parent
 
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
+
 def test_click_top_left(env) -> bool:
     """
     Directly executes a pyautogui script on the remote macOS or GUI-capable Docker environment
@@ -41,8 +42,16 @@ def test_click_top_left(env) -> bool:
         cmd = f'python3 -c "{inline_py}"'
         stdout, stderr = env.run_command(cmd)
 
-        out = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
-        err = stderr.read().decode().strip() if hasattr(stderr, "read") else stderr.strip()
+        out = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
+        err = (
+            stderr.read().decode().strip()
+            if hasattr(stderr, "read")
+            else stderr.strip()
+        )
 
         logger.info(f"[stdout]\n{out}")
         logger.info(f"[stderr]\n{err}")
@@ -52,17 +61,19 @@ def test_click_top_left(env) -> bool:
     except Exception as e:
         logger.error(f"test_click_top_left failed: {e}")
         return False
-    
+
+
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
+
     value = test_click_top_left(macos_env)
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

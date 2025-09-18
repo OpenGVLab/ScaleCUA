@@ -1,5 +1,6 @@
 import io
 from PIL import Image, ImageDraw
+
 KEYBOARD_KEYS = [
     "\t",
     "\n",
@@ -323,6 +324,7 @@ key_mapping = {
     "optionright": "AltRight",
 }
 
+
 def draw_tag_on_image(data: dict, image_bytes: bytes, output_path: str):
     image = Image.open(io.BytesIO(image_bytes))
     draw = ImageDraw.Draw(image)
@@ -335,15 +337,20 @@ def draw_tag_on_image(data: dict, image_bytes: bytes, output_path: str):
         abs_x = x_ratio * width
         abs_y = y_ratio * height
 
-
         cross_color = "red"
-        cross_size = 20 
-        
+        cross_size = 20
+
         offset = cross_size / 2
 
-
-        draw.line([(abs_x - offset, abs_y - offset), (abs_x + offset, abs_y + offset)], fill=cross_color, width=3)
-        draw.line([(abs_x - offset, abs_y + offset), (abs_x + offset, abs_y - offset)], fill=cross_color, width=3)
+        draw.line(
+            [(abs_x - offset, abs_y - offset), (abs_x + offset, abs_y + offset)],
+            fill=cross_color,
+            width=3,
+        )
+        draw.line(
+            [(abs_x - offset, abs_y + offset), (abs_x + offset, abs_y - offset)],
+            fill=cross_color,
+            width=3,
+        )
 
         image.save(output_path)
-

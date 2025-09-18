@@ -21,84 +21,79 @@ from typing import Optional
 
 @dataclasses.dataclass(frozen=True)
 class Property:
-  """A schema property."""
+    """A schema property."""
 
-  name: str
-  type: str
-  is_required: bool
-  options: Optional[list[str]]
+    name: str
+    type: str
+    is_required: bool
+    options: Optional[list[str]]
 
 
 def string(name: str, is_required: bool = False) -> Property:
-  """Returns a string property.
+    """Returns a string property.
 
-  Args:
-    name: The name of the property.
-    is_required: If true, the property must be set in the schema.
-  """
-  return Property(name, type="string", is_required=is_required, options=None)
+    Args:
+      name: The name of the property.
+      is_required: If true, the property must be set in the schema.
+    """
+    return Property(name, type="string", is_required=is_required, options=None)
 
 
 def number(name: str, is_required: bool = False) -> Property:
-  """Returns a number property.
+    """Returns a number property.
 
-  Args:
-    name: The name of the property.
-    is_required: If true, the property must be set in the schema.
-  """
-  return Property(name, type="number", is_required=is_required, options=None)
+    Args:
+      name: The name of the property.
+      is_required: If true, the property must be set in the schema.
+    """
+    return Property(name, type="number", is_required=is_required, options=None)
 
 
 def integer(name: str, is_required: bool = False) -> Property:
-  """Returns an integer property.
+    """Returns an integer property.
 
-  Args:
-    name: The name of the property.
-    is_required: If true, the property must be set in the schema.
-  """
-  return Property(name, type="integer", is_required=is_required, options=None)
+    Args:
+      name: The name of the property.
+      is_required: If true, the property must be set in the schema.
+    """
+    return Property(name, type="integer", is_required=is_required, options=None)
 
 
-def enum(
-    name: str, options: Sequence[str], is_required: bool = False
-) -> Property:
-  """Returns an enum property.
+def enum(name: str, options: Sequence[str], is_required: bool = False) -> Property:
+    """Returns an enum property.
 
-  Args:
-    name: The name of the property.
-    options: A list of options for the enum.
-    is_required: If true, the property must be set in the schema.
-  """
-  return Property(
-      name, type="string", is_required=is_required, options=list(options)
-  )
+    Args:
+      name: The name of the property.
+      options: A list of options for the enum.
+      is_required: If true, the property must be set in the schema.
+    """
+    return Property(name, type="string", is_required=is_required, options=list(options))
 
 
 def create(properties: Sequence[Property]) -> object:
-  """Returns a schema object.
+    """Returns a schema object.
 
-  Args:
-    properties: A list of properties for the schema.
-  """
-  def property_to_object(prop: Property) -> object:
-    schema = {
-        "type": prop.type,
+    Args:
+      properties: A list of properties for the schema.
+    """
+
+    def property_to_object(prop: Property) -> object:
+        schema = {
+            "type": prop.type,
+        }
+        if prop.options:
+            schema["enum"] = prop.options
+        return schema
+
+    return {
+        "type": "object",
+        "properties": {
+            property.name: property_to_object(property) for property in properties
+        },
+        "required": [property.name for property in properties if property.is_required],
     }
-    if prop.options:
-      schema["enum"] = prop.options
-    return schema
-
-  return {
-      "type": "object",
-      "properties": {
-          property.name: property_to_object(property) for property in properties
-      },
-      "required": [
-          property.name for property in properties if property.is_required
-      ],
-  }
 
 
 def no_params() -> object:
-  """Returns a schema object without any parameters."""
-  return create([])
+    """Returns a schema object without any parameters."""
+    return create([])

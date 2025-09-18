@@ -27,16 +27,19 @@ class XFixesCursorImage(ctypes.Structure):
     endif
     } XFixesCursorImage;
     """
-    _fields_ = [('x', ctypes.c_short),
-                ('y', ctypes.c_short),
-                ('width', ctypes.c_ushort),
-                ('height', ctypes.c_ushort),
-                ('xhot', ctypes.c_ushort),
-                ('yhot', ctypes.c_ushort),
-                ('cursor_serial', ctypes.c_ulong),
-                ('pixels', PIXEL_DATA_PTR),
-                ('atom', Atom),
-                ('name', ctypes.c_char_p)]
+
+    _fields_ = [
+        ("x", ctypes.c_short),
+        ("y", ctypes.c_short),
+        ("width", ctypes.c_ushort),
+        ("height", ctypes.c_ushort),
+        ("xhot", ctypes.c_ushort),
+        ("yhot", ctypes.c_ushort),
+        ("cursor_serial", ctypes.c_ulong),
+        ("pixels", PIXEL_DATA_PTR),
+        ("atom", Atom),
+        ("name", ctypes.c_char_p),
+    ]
 
 
 class Display(ctypes.Structure):
@@ -79,19 +82,20 @@ class Xcursor:
             self.display = self.xlib.XOpenDisplay(display)  # (display) or (None)
 
     def argbdata_to_pixdata(self, data, len):
-        if data == None or len < 1: return None
+        if data == None or len < 1:
+            return None
 
         # Create byte array
-        b = array.array('b', b'\x00' * 4 * len)
+        b = array.array("b", b"\x00" * 4 * len)
 
         offset, i = 0, 0
         while i < len:
-            argb = data[i] & 0xffffffff
+            argb = data[i] & 0xFFFFFFFF
             rgba = (argb << 8) | (argb >> 24)
-            b1 = (rgba >> 24) & 0xff
-            b2 = (rgba >> 16) & 0xff
-            b3 = (rgba >> 8) & 0xff
-            b4 = rgba & 0xff
+            b1 = (rgba >> 24) & 0xFF
+            b2 = (rgba >> 16) & 0xFF
+            b3 = (rgba >> 8) & 0xFF
+            b4 = rgba & 0xFF
 
             struct.pack_into("=BBBB", b, offset, b1, b2, b3, b4)
             offset = offset + 4
@@ -127,7 +131,9 @@ class Xcursor:
         # x, y = data.x, data.y
         height, width = data.height, data.width
 
-        bytearr = ctypes.cast(data.pixels, ctypes.POINTER(ctypes.c_ulong * height * width))[0]
+        bytearr = ctypes.cast(
+            data.pixels, ctypes.POINTER(ctypes.c_ulong * height * width)
+        )[0]
         imgarray = np.array(bytearray(bytearr))
         imgarray = imgarray.reshape(height, width, 8)[:, :, (0, 1, 2, 3)]
         del bytearr
@@ -136,6 +142,7 @@ class Xcursor:
 
     def saveImage(self, imgarray, text):
         from PIL import Image
+
         img = Image.fromarray(imgarray)
         img.save(text)
 
@@ -143,4 +150,4 @@ class Xcursor:
 if __name__ == "__main__":
     cursor = Xcursor()
     imgarray = cursor.getCursorImageArrayFast()
-    cursor.saveImage(imgarray, 'cursor_image.png')
+    cursor.saveImage(imgarray, "cursor_image.png")

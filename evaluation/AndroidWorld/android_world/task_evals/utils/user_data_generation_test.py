@@ -20,43 +20,43 @@ import cv2
 
 
 def get_video_properties(file_path: str) -> tuple[int, float]:
-  """Retrieve the total number of frames and FPS of a video file.
+    """Retrieve the total number of frames and FPS of a video file.
 
-  Args:
-    file_path: Path to the video file.
+    Args:
+      file_path: Path to the video file.
 
-  Returns:
-    A tuple containing the total number of frames and the FPS of the video.
-  """
-  cap = cv2.VideoCapture(file_path)
-  if not cap.isOpened():
-    raise ValueError(f"Failed to open video file: {file_path}")
+    Returns:
+      A tuple containing the total number of frames and the FPS of the video.
+    """
+    cap = cv2.VideoCapture(file_path)
+    if not cap.isOpened():
+        raise ValueError(f"Failed to open video file: {file_path}")
 
-  total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-  fps = cap.get(cv2.CAP_PROP_FPS)
-  cap.release()
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    cap.release()
 
-  return total_frames, fps
+    return total_frames, fps
 
 
 class TestCreateMpegWithMessages(absltest.TestCase):
 
-  def test_video_properties(self):
-    file_path = os.path.join(tempfile.mkdtemp(), "test_video.mp4")
-    messages = ["Hello", "World"]
-    width = 10
-    height = 12
-    fps = 30
-    display_time = 5
+    def test_video_properties(self):
+        file_path = os.path.join(tempfile.mkdtemp(), "test_video.mp4")
+        messages = ["Hello", "World"]
+        width = 10
+        height = 12
+        fps = 30
+        display_time = 5
 
-    user_data_generation._create_mpeg_with_messages(
-        file_path, messages, width, height, fps, display_time
-    )
+        user_data_generation._create_mpeg_with_messages(
+            file_path, messages, width, height, fps, display_time
+        )
 
-    total_frames, video_fps = get_video_properties(file_path)
-    self.assertEqual(video_fps, fps)
-    self.assertEqual(total_frames, 300)
+        total_frames, video_fps = get_video_properties(file_path)
+        self.assertEqual(video_fps, fps)
+        self.assertEqual(total_frames, 300)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

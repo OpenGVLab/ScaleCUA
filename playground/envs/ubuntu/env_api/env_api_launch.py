@@ -29,14 +29,17 @@ def byte_to_b64(byte_data) -> str:
     img_b64 = base64.b64encode(byte_data).decode("utf-8")
     return img_b64
 
+
 def get_json_data(request: Request):
     return asyncio.run(request.json())
+
 
 def get_time():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 app = FastAPI()
+
 
 @app.get("/")
 def read_root():
@@ -59,13 +62,13 @@ def start(request: Request):
         print(f"[{get_time()}] [env api] vitual machine starting...")
         global env
         env = VirtualMachine(
-                path_to_vm=vm_path,
-                action_space=action_space,
-                screen_size=(screen_width, screen_height),
-                headless=headless,
-                require_a11y_tree=require_a11y_tree,
-                os_type=os_type,
-            )
+            path_to_vm=vm_path,
+            action_space=action_space,
+            screen_size=(screen_width, screen_height),
+            headless=headless,
+            require_a11y_tree=require_a11y_tree,
+            os_type=os_type,
+        )
         print(f"[{get_time()}] [env api] vitual machine done.")
         return JSONResponse({"success": True})
 
@@ -80,7 +83,9 @@ def get_task_config(request: Request):
         data = get_json_data(request)
         domain = data.get("domain")
         example_id = data.get("example_id")
-        config_file = os.path.join(CONFIG_BASE_DIR, f"examples/{domain}/{example_id}.json")
+        config_file = os.path.join(
+            CONFIG_BASE_DIR, f"examples/{domain}/{example_id}.json"
+        )
         with open(config_file, "r", encoding="utf-8") as f:
             task_config = json.load(f)
         return JSONResponse({"task_config": task_config, "success": True})
@@ -96,29 +101,32 @@ def reset(request: Request):
     try:
         data = get_json_data(request)
         task_config = data.get("task_config", None)
-        
+
         # import ipdb;ipdb.set_trace()
         if task_config is None:
-            if 'domain' in data and 'example_id' in data:
+            if "domain" in data and "example_id" in data:
                 domain = data.get("domain")
                 example_id = data.get("example_id")
-                config_file = os.path.join(CONFIG_BASE_DIR, f"examples/{domain}/{example_id}.json")
+                config_file = os.path.join(
+                    CONFIG_BASE_DIR, f"examples/{domain}/{example_id}.json"
+                )
                 with open(config_file, "r", encoding="utf-8") as f:
                     task_config = json.load(f)
-        
+
         print(f"[{get_time()}] [env api] task_config:{task_config}...")
 
         print(f"[{get_time()}] [env api] env reset starting...")
         obs = env.reset(task_config=task_config)
         print(f"[{get_time()}] [env api] env reset done...")
-        screenshot = obs['screenshot']
+        screenshot = obs["screenshot"]
         screenshot_b64 = byte_to_b64(screenshot)
-        obs['screenshot'] = screenshot_b64
+        obs["screenshot"] = screenshot_b64
         return JSONResponse({"obs": obs, "success": True})
 
     except Exception as e:
         print(f"[{get_time()}] [env api] reset failed:", e)
         return JSONResponse({"success": False, "message": str(e)})
+
 
 @app.get("/screenshot")
 def screenshot():
@@ -130,6 +138,7 @@ def screenshot():
         print(f"[{get_time()}] [env api] get screenshot failed:", e)
         return JSONResponse({"success": False, "message": str(e)})
 
+
 @app.get("/accessibility")
 def accessibility():
     try:
@@ -137,7 +146,8 @@ def accessibility():
         return JSONResponse({"accessibility": a11tree, "success": True})
     except Exception as e:
         print(f"[{get_time()}] [env api] get accessibility failed:", e)
-        return JSONResponse({"success": False, "message": str(e)})        
+        return JSONResponse({"success": False, "message": str(e)})
+
 
 @app.post("/step")
 # async def step(request: Request):
@@ -149,21 +159,22 @@ def step(request: Request):
         pause = data.get("pause", 2)
         obs, reward, done, info = env.step(action, pause=pause)
 
-        screenshot = obs['screenshot']
+        screenshot = obs["screenshot"]
         screenshot_b64 = byte_to_b64(screenshot)
-        obs['screenshot'] = screenshot_b64
+        obs["screenshot"] = screenshot_b64
         result = {
             "obs": obs,
             "reward": reward,
             "done": done,
             "info": info,
-            "success": True
+            "success": True,
         }
         return JSONResponse(result)
 
     except Exception as e:
         print(f"[{get_time()}] [env api] step failed:", e)
         return JSONResponse({"success": False, "message": str(e)})
+
 
 @app.post("/execute")
 def execute(request: Request):
@@ -175,7 +186,8 @@ def execute(request: Request):
         return JSONResponse({"success": True})
     except Exception as e:
         print(f"[{get_time()}] [env api] execute failed:", e)
-        return JSONResponse({"success": False, "message": str(e)})   
+        return JSONResponse({"success": False, "message": str(e)})
+
 
 @app.get("/evaluate")
 def evaluate():
@@ -184,7 +196,9 @@ def evaluate():
         return JSONResponse({"metric": metric, "success": True})
     except Exception as e:
         print(f"[{get_time()}] [env api] evaluate failed:", e)
-        import traceback; traceback.print_exc()
+        import traceback
+
+        traceback.print_exc()
         return JSONResponse({"success": False, "message": str(e)})
 
 
@@ -221,6 +235,7 @@ def close():
         print(f"[{get_time()}] [env api] closing vitual machine failed:", e)
         return JSONResponse({"success": False, "message": str(e)})
 
+
 @app.get("/start_recording")
 def start_recording():
     try:
@@ -228,8 +243,11 @@ def start_recording():
         return JSONResponse({"success": True})
     except Exception as e:
         print(f"[{get_time()}] [env api] start recording failed:", e)
-        import traceback; traceback.print_exc()
+        import traceback
+
+        traceback.print_exc()
         return JSONResponse({"success": False, "message": str(e)})
+
 
 @app.post("/end_recording")
 def end_recording(request: Request):
@@ -240,5 +258,7 @@ def end_recording(request: Request):
         return JSONResponse({"success": True})
     except Exception as e:
         print(f"[{get_time()}] [env api] end recording failed:", e)
-        import traceback; traceback.print_exc()
+        import traceback
+
+        traceback.print_exc()
         return JSONResponse({"success": False, "message": str(e)})

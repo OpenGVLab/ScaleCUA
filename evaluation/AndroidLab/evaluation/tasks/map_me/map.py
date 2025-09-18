@@ -201,7 +201,9 @@ class SingleTask_Mapme_12(SingleTask):
 class SingleTask_Mapme_13(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        if not find_subtrees_of_parents_with_key(xml_compressed_tree, "University South"):
+        if not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "University South"
+        ):
             return False
         if not find_subtrees_of_parents_with_key(xml_compressed_tree, "My location"):
             return False
@@ -237,7 +239,9 @@ class SingleTask_Mapme_14(SingleTask):
 class SingleTask_Mapme_15(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        if not find_subtrees_of_parents_with_key(xml_compressed_tree, "University of California, Berkeley"):
+        if not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "University of California, Berkeley"
+        ):
             return False
         if not find_subtrees_of_parents_with_key(xml_compressed_tree, "My location"):
             return False

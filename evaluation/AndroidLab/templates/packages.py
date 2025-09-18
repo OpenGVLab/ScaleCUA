@@ -62,7 +62,7 @@ def find_closest(input_str, dict):
         return dict[input_str.replace(" ", "").lower()]
 
     input_str = input_str.replace(" ", "").lower()
-    min_distance = float('inf')
+    min_distance = float("inf")
     closest_key = None
 
     for key in dict:

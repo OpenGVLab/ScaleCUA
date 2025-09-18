@@ -1,5 +1,5 @@
 """
-    Ubuntu-Web Environment Client: Connect to a remote server to execute Web Tasks
+Ubuntu-Web Environment Client: Connect to a remote server to execute Web Tasks
 """
 
 import base64
@@ -12,15 +12,18 @@ from PIL import Image
 
 from env.base_env import BaseEnv, agent_action
 
+
 class VMUbuntuWebEnv(BaseEnv):
     """
     Client for interacting with a remote Ubuntu web environment.
     Provides methods to control a browser, capture screenshots, and execute actions.
     """
 
-    def __init__(self,
-                 server_path: str,  # Server address, e.g.: "http://192.168.1.100:8000"
-                 **kwargs):
+    def __init__(
+        self,
+        server_path: str,  # Server address, e.g.: "http://192.168.1.100:8000"
+        **kwargs,
+    ):
         """
         Initialize the Ubuntu Web Environment client.
 
@@ -39,7 +42,9 @@ class VMUbuntuWebEnv(BaseEnv):
         self.server_path = server_path
         self.screen_size = (kwargs.get("width", 1280), kwargs.get("height", 720))
         self.dpr = kwargs.get("dpr", 1)
-        self.css_width, self.css_height = int(self.screen_size[0] // self.dpr), int(self.screen_size[1] // self.dpr)
+        self.css_width, self.css_height = int(self.screen_size[0] // self.dpr), int(
+            self.screen_size[1] // self.dpr
+        )
         self.wait_timeout = kwargs.get("wait_timeout", 5) * 1000
 
         # Initialize browser on the server
@@ -48,14 +53,16 @@ class VMUbuntuWebEnv(BaseEnv):
             "height": self.screen_size[1],
             "dpr": self.dpr,
             "timeout": self.wait_timeout,
-            "explicitly_allowed_ports": kwargs.get("explicitly_allowed_ports", [])
+            "explicitly_allowed_ports": kwargs.get("explicitly_allowed_ports", []),
         }
 
         response = requests.post(f"{self.server_path}/init", json=init_params)
         if response.status_code != 200:
             raise Exception(f"Failed to initialize server: {response.text}")
 
-        print(f'UbuntuWebEnvClient initialized successfully, connected to server: {server_path}')
+        print(
+            f"UbuntuWebEnvClient initialized successfully, connected to server: {server_path}"
+        )
 
     def end_recording(self, path: str):
         """
@@ -109,13 +116,10 @@ class VMUbuntuWebEnv(BaseEnv):
     def reset(self, **kwargs):
         """重置环境，创建新的上下文并导航到指定URL"""
         if "task_config" in kwargs and "file_path" in kwargs["task_config"]:
-            with open(kwargs["task_config"]["file_path"], 'r', encoding='utf-8') as f:
+            with open(kwargs["task_config"]["file_path"], "r", encoding="utf-8") as f:
                 self.task_config = json.load(f)
 
-        reset_params = {
-            "kwargs": kwargs,
-            "task_config": self.task_config
-        }
+        reset_params = {"kwargs": kwargs, "task_config": self.task_config}
 
         response = requests.post(f"{self.server_path}/reset", json=reset_params)
         if response.status_code != 200:

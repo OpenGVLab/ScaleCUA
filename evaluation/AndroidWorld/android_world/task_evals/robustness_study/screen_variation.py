@@ -30,71 +30,71 @@ def generate_screen_variation_wrapper(
     params: dict[str, Any],
     screen_config_name: str,
 ) -> type[task_eval.TaskEval]:
-  """Generate a wrapper for a given task for the screen variation experiment.
+    """Generate a wrapper for a given task for the screen variation experiment.
 
-  Args:
-    base_task: The base task to run the experiment.
-    screen_width: The width for the new resolution.
-    screen_height: The height for the new resolution.
-    screen_orientation: The orientation for the experiment.
-    params: The fixed parameter for the experiment.
-    screen_config_name: The experiment name suffix.
+    Args:
+      base_task: The base task to run the experiment.
+      screen_width: The width for the new resolution.
+      screen_height: The height for the new resolution.
+      screen_orientation: The orientation for the experiment.
+      params: The fixed parameter for the experiment.
+      screen_config_name: The experiment name suffix.
 
-  Returns:
-    A wrapper class for the given task with the given screen config.
-  """
+    Returns:
+      A wrapper class for the given task with the given screen config.
+    """
 
-  class ScreenVariation(base_task):
-    """A wrapper class for screen variation robustness experiments."""
+    class ScreenVariation(base_task):
+        """A wrapper class for screen variation robustness experiments."""
 
-    width = screen_width
-    height = screen_height
-    orientation = screen_orientation
-    config_name = screen_config_name
+        width = screen_width
+        height = screen_height
+        orientation = screen_orientation
+        config_name = screen_config_name
 
-    def initialize_task(self, env: interface.AsyncEnv):
-      super().initialize_task(env)
-      # Go back to home screen with a reset.
-      env.reset(True)
-      adb_utils.set_screen_size(self.width, self.height, env.controller)
-      # It has been observed that without this pause, the following orientation
-      # change will not work.
-      time.sleep(2)
-      # Task starts from the home screen and the following orientation change
-      # will take effect for the next app opened but expired after closing.
-      adb_utils.change_orientation(self.orientation, env.controller)
+        def initialize_task(self, env: interface.AsyncEnv):
+            super().initialize_task(env)
+            # Go back to home screen with a reset.
+            env.reset(True)
+            adb_utils.set_screen_size(self.width, self.height, env.controller)
+            # It has been observed that without this pause, the following orientation
+            # change will not work.
+            time.sleep(2)
+            # Task starts from the home screen and the following orientation change
+            # will take effect for the next app opened but expired after closing.
+            adb_utils.change_orientation(self.orientation, env.controller)
 
-    @property
-    def name(self) -> str:
-      return base_task.__name__ + '_' + self.config_name
+        @property
+        def name(self) -> str:
+            return base_task.__name__ + "_" + self.config_name
 
-    @classmethod
-    def generate_random_params(cls):
-      return params
+        @classmethod
+        def generate_random_params(cls):
+            return params
 
-  return ScreenVariation
+    return ScreenVariation
 
 
 SCREEN_MODIFIERS = {
-    'NormalPortrait': {
-        'width': 1080,
-        'height': 2400,
-        'orientation': 'portrait',
+    "NormalPortrait": {
+        "width": 1080,
+        "height": 2400,
+        "orientation": "portrait",
     },
-    'NormalLandscape': {
-        'width': 1080,
-        'height': 2400,
-        'orientation': 'landscape',
+    "NormalLandscape": {
+        "width": 1080,
+        "height": 2400,
+        "orientation": "landscape",
     },
-    'LowResPortrait': {'width': 720, 'height': 1520, 'orientation': 'portrait'},
-    'LowResLandscape': {
-        'width': 720,
-        'height': 1520,
-        'orientation': 'landscape',
+    "LowResPortrait": {"width": 720, "height": 1520, "orientation": "portrait"},
+    "LowResLandscape": {
+        "width": 720,
+        "height": 1520,
+        "orientation": "landscape",
     },
-    'HighResPortrait': {
-        'width': 1600,
-        'height': 2560,
-        'orientation': 'portrait',
+    "HighResPortrait": {
+        "width": 1600,
+        "height": 2560,
+        "orientation": "portrait",
     },
 }

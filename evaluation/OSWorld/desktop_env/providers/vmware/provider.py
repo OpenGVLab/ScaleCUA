@@ -13,16 +13,16 @@ WAIT_TIME = 3
 
 
 def get_vmrun_type(return_list=False):
-    if platform.system() == 'Windows' or platform.system() == 'Linux':
+    if platform.system() == "Windows" or platform.system() == "Linux":
         if return_list:
-            return ['-T', 'ws']
+            return ["-T", "ws"]
         else:
-            return '-T ws'
-    elif platform.system() == 'Darwin':  # Darwin is the system name for macOS
+            return "-T ws"
+    elif platform.system() == "Darwin":  # Darwin is the system name for macOS
         if return_list:
-            return ['-T', 'fusion']
+            return ["-T", "fusion"]
         else:
-            return '-T fusion'
+            return "-T fusion"
     else:
         raise Exception("Unsupported operating system")
 
@@ -35,7 +35,7 @@ class VMwareProvider(Provider):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            encoding="utf-8"
+            encoding="utf-8",
         )
 
         if return_output:
@@ -50,17 +50,28 @@ class VMwareProvider(Provider):
 
         while True:
             try:
-                output = subprocess.check_output(f"vmrun {get_vmrun_type()} list", shell=True, stderr=subprocess.STDOUT)
+                output = subprocess.check_output(
+                    f"vmrun {get_vmrun_type()} list",
+                    shell=True,
+                    stderr=subprocess.STDOUT,
+                )
                 output = output.decode()
                 output = output.splitlines()
                 normalized_path_to_vm = os.path.abspath(os.path.normpath(path_to_vm))
 
-                if any(os.path.abspath(os.path.normpath(line)) == normalized_path_to_vm for line in output):
+                if any(
+                    os.path.abspath(os.path.normpath(line)) == normalized_path_to_vm
+                    for line in output
+                ):
                     logger.info("VM is running.")
                     break
                 else:
                     logger.info("Starting VM...")
-                    _command = ["vmrun"] + get_vmrun_type(return_list=True) + ["start", path_to_vm]
+                    _command = (
+                        ["vmrun"]
+                        + get_vmrun_type(return_list=True)
+                        + ["start", path_to_vm]
+                    )
                     if headless:
                         _command.append("nogui")
                     VMwareProvider._execute_command(_command)
@@ -74,8 +85,10 @@ class VMwareProvider(Provider):
         while True:
             try:
                 output = VMwareProvider._execute_command(
-                    ["vmrun"] + get_vmrun_type(return_list=True) + ["getGuestIPAddress", path_to_vm, "-wait"],
-                    return_output=True
+                    ["vmrun"]
+                    + get_vmrun_type(return_list=True)
+                    + ["getGuestIPAddress", path_to_vm, "-wait"],
+                    return_output=True,
                 )
                 logger.info(f"VMware VM IP address: {output}")
                 return output
@@ -87,17 +100,25 @@ class VMwareProvider(Provider):
     def save_state(self, path_to_vm: str, snapshot_name: str):
         logger.info("Saving VMware VM state...")
         VMwareProvider._execute_command(
-            ["vmrun"] + get_vmrun_type(return_list=True) + ["snapshot", path_to_vm, snapshot_name])
+            ["vmrun"]
+            + get_vmrun_type(return_list=True)
+            + ["snapshot", path_to_vm, snapshot_name]
+        )
         time.sleep(WAIT_TIME)  # Wait for the VM to save
 
     def revert_to_snapshot(self, path_to_vm: str, snapshot_name: str):
         logger.info(f"Reverting VMware VM to snapshot: {snapshot_name}...")
         VMwareProvider._execute_command(
-            ["vmrun"] + get_vmrun_type(return_list=True) + ["revertToSnapshot", path_to_vm, snapshot_name])
+            ["vmrun"]
+            + get_vmrun_type(return_list=True)
+            + ["revertToSnapshot", path_to_vm, snapshot_name]
+        )
         time.sleep(WAIT_TIME)  # Wait for the VM to revert
         return path_to_vm
 
     def stop_emulator(self, path_to_vm: str):
         logger.info("Stopping VMware VM...")
-        VMwareProvider._execute_command(["vmrun"] + get_vmrun_type(return_list=True) + ["stop", path_to_vm])
+        VMwareProvider._execute_command(
+            ["vmrun"] + get_vmrun_type(return_list=True) + ["stop", path_to_vm]
+        )
         time.sleep(WAIT_TIME)  # Wait for the VM to stop

@@ -13,7 +13,10 @@ script_dir = Path(__file__).resolve().parent.parent
 
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
-def calendar_check_weekly_event(env, event_name: str, start_hour: int = 10, start_minute: int = 0) -> bool:
+
+def calendar_check_weekly_event(
+    env, event_name: str, start_hour: int = 10, start_minute: int = 0
+) -> bool:
     """
     Check if a Calendar event with the given name exists,
     and repeats weekly on Monday at 10:00 AM.
@@ -24,7 +27,7 @@ def calendar_check_weekly_event(env, event_name: str, start_hour: int = 10, star
     """
     env.connect_ssh()
 
-    apple_script = f'''
+    apple_script = f"""
     set matched to false
     set debug_output to ""
     tell application "Calendar"
@@ -49,17 +52,22 @@ def calendar_check_weekly_event(env, event_name: str, start_hour: int = 10, star
     else
         return "false__DEBUG__" & debug_output
     end if
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e {shlex.quote(apple_script)}")
 
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         return output.startswith("true__")
     except Exception as e:
         logger.error(f"Failed to check calendar event: {e}")
         return False
-    
+
+
 def calendar_check_weekly_event_advanced(
     env,
     event_name: str,
@@ -67,7 +75,7 @@ def calendar_check_weekly_event_advanced(
     start_hour: int = None,
     start_minute: int = None,
     end_hour: int = None,
-    end_minute: int = None
+    end_minute: int = None,
 ) -> bool:
     """
     Check if a Calendar event with the given name exists,
@@ -93,7 +101,7 @@ def calendar_check_weekly_event_advanced(
     eh = "null" if end_hour is None else str(end_hour)
     em = "null" if end_minute is None else str(end_minute)
 
-    apple_script = f'''
+    apple_script = f"""
     set matched to false
     set debug_output to ""
     tell application "Calendar"
@@ -125,22 +133,29 @@ def calendar_check_weekly_event_advanced(
     else
         return "false__DEBUG__" & debug_output
     end if
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e {shlex.quote(apple_script)}")
         logger.info(stdout)
         logger.info(_)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         return output.startswith("true__")
     except Exception as e:
         logger.error(f"Failed to check calendar event: {e}")
         return False
-    
-def calendar_debug(env, event_name: str, start_hour: int = 10, start_minute: int = 0) -> bool:
+
+
+def calendar_debug(
+    env, event_name: str, start_hour: int = 10, start_minute: int = 0
+) -> bool:
     env.connect_ssh()
 
-    apple_script = f'''
+    apple_script = f"""
     set matched to false
     set debug_output to ""
     tell application "Calendar"
@@ -167,17 +182,22 @@ def calendar_debug(env, event_name: str, start_hour: int = 10, start_minute: int
     else
         return "false__DEBUG__" & debug_output
     end if
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e {shlex.quote(apple_script)}")
 
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         return output
     except Exception as e:
         logger.error(f"Failed to check calendar event: {e}")
         return False
-    
+
+
 # id:2A7C6C19-3DF7-41D2-A363-D006497BB934, recurrence:missing value, stamp date:date Thursday, May 15, 2025 at 3:36:55 AM, class:event, url:1111, end date:date Monday, May 12, 2025 at 7:15:00 AM, excluded dates:, description:hahaha, summary:test_note, location:missing value, allday event:false, start date:date Monday, May 12, 2025 at 6:15:00 AM, sequence:0, status:none
 
 
@@ -191,7 +211,7 @@ def calendar_check_calendar_with_at_least_3_events(env, calendar_name: str) -> b
     """
     env.connect_ssh()
 
-    apple_script = f'''
+    apple_script = f"""
     set matched to false
     set event_count to 0
     tell application "Calendar"
@@ -209,19 +229,26 @@ def calendar_check_calendar_with_at_least_3_events(env, calendar_name: str) -> b
     else
         return "false__DEBUG__event_count=" & event_count
     end if
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e '{apple_script}'")
         logger.info(stdout)
         logger.info(_)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         return output.startswith("true__")
     except Exception as e:
         logger.error(f"Calendar check failed: {e}")
         return False
 
-def calendar_check_calendar_contains_events(env, calendar_name: str, event_names: list[str]) -> bool:
+
+def calendar_check_calendar_contains_events(
+    env, calendar_name: str, event_names: list[str]
+) -> bool:
     """
     Check if a named calendar exists and contains all specified event names.
 
@@ -236,9 +263,11 @@ def calendar_check_calendar_contains_events(env, calendar_name: str, event_names
     env.connect_ssh()
 
     # Construct AppleScript list of event names
-    applescript_event_names = "{" + ", ".join([f'"{name}"' for name in event_names]) + "}"
+    applescript_event_names = (
+        "{" + ", ".join([f'"{name}"' for name in event_names]) + "}"
+    )
 
-    apple_script = f'''
+    apple_script = f"""
     set matched to false
     set found_names to {{}}
     set required_names to {applescript_event_names}
@@ -280,30 +309,35 @@ def calendar_check_calendar_contains_events(env, calendar_name: str, event_names
     else
         return "false__DEBUG__missing=" & missing_str
     end if
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e {shlex.quote(apple_script)}")
         # logger.info(apple_script[1216:1250])
         # logger.info(_)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(f"[calendar_check_calendar_contains_events] Raw output: {output}")
         return output.startswith("true__")
     except Exception as e:
         logger.error(f"Calendar event list check failed: {e}")
         return False
 
-    
+
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
-    value = calendar_debug(macos_env, 'test_note')
+
+    value = calendar_debug(macos_env, "test_note")
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

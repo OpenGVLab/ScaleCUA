@@ -5,13 +5,14 @@ from openai import OpenAI
 import re
 import ast
 import math
+
 # import pynput
 
 
-# OpenCUA series agent 
+# OpenCUA series agent
 # Support for both Internvl and Qwen2.5VL model type
 
-SCREEN_WITDH = 1920 
+SCREEN_WITDH = 1920
 SCREEN_HEIGHT = 1080
 
 # === String Constants ===
@@ -153,6 +154,7 @@ MIN_PIXELS = 3136
 MAX_PIXELS = 69 * 39 * 28 * 28
 MAX_RATIO = 200
 
+
 def round_by_factor(number: int, factor: int) -> int:
     """Returns the closest integer to 'number' that is divisible by 'factor'."""
     return round(number / factor) * factor
@@ -167,20 +169,32 @@ def floor_by_factor(number: int, factor: int) -> int:
     """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
     return math.floor(number / factor) * factor
 
+
 def linear_resize(
-    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
 ) -> tuple[int, int]:
     if width * height > max_pixels:
         resize_factor = math.sqrt(max_pixels / (width * height))
         width, height = int(width * resize_factor), int(height * resize_factor)
     if width * height < min_pixels:
         resize_factor = math.sqrt(min_pixels / (width * height))
-        width, height = math.ceil(width * resize_factor), math.ceil(height * resize_factor)
+        width, height = math.ceil(width * resize_factor), math.ceil(
+            height * resize_factor
+        )
 
-    return height, width 
+    return height, width
+
 
 def smart_resize(
-    height: int, width: int, factor: int = IMAGE_FACTOR, min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
 ) -> tuple[int, int]:
     """
     Rescales the image so that the following conditions are met:
@@ -207,17 +221,19 @@ def smart_resize(
         w_bar = ceil_by_factor(width * beta, factor)
     return h_bar, w_bar
 
+
 KEY_MAP = {
-    "enter":   "pynput.keyboard.Key.enter",
-    "space":   "pynput.keyboard.Key.space",
-    "shift":   "pynput.keyboard.Key.shift",
-    "ctrl":    "pynput.keyboard.Key.ctrl",
-    "alt":     "pynput.keyboard.Key.alt",
-    "cmd":     "pynput.keyboard.Key.cmd",
+    "enter": "pynput.keyboard.Key.enter",
+    "space": "pynput.keyboard.Key.space",
+    "shift": "pynput.keyboard.Key.shift",
+    "ctrl": "pynput.keyboard.Key.ctrl",
+    "alt": "pynput.keyboard.Key.alt",
+    "cmd": "pynput.keyboard.Key.cmd",
     "command": "pynput.keyboard.Key.cmd",
-    "tab":     "pynput.keyboard.Key.tab",
-    "esc":     "pynput.keyboard.Key.esc",
+    "tab": "pynput.keyboard.Key.tab",
+    "esc": "pynput.keyboard.Key.esc",
 }
+
 
 class InternvlAgent:
     def __init__(
@@ -251,14 +267,16 @@ class InternvlAgent:
                 self.base_url = "http://10.140.66.139:10025/v1"
             else:
                 raise ValueError("Unspported Model Name")
-            
+
         self.api_key = api_key
         self.max_tokens = max_tokens
         self.temperature = temperature
         self.action_space = action_space
         self.observation_type = observation_type
         self.max_trajectory_length = max_trajectory_length
-        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key) # API Wrapper, for vllm or lmdeploy, leave api_key='empty' is ok
+        self.client = OpenAI(
+            base_url=self.base_url, api_key=self.api_key
+        )  # API Wrapper, for vllm or lmdeploy, leave api_key='empty' is ok
         self.thoughts: List[str] = []
         self.actions: List[List[str]] = []
         self.observations: List[Dict] = []
@@ -266,10 +284,8 @@ class InternvlAgent:
         self.logger = logging.getLogger(__name__)
 
     def encode_image(self, image_bytes: bytes) -> str:
-        b64 = base64.b64encode(image_bytes).decode('utf-8')
+        b64 = base64.b64encode(image_bytes).decode("utf-8")
         return f"data:image/png;base64,{b64}"
-    
-
 
     def key_mapping(self, key: str) -> str:
         k = key.lower()
@@ -277,9 +293,8 @@ class InternvlAgent:
             return KEY_MAP[k]
         return repr(key)
 
-
     def build_messages(self, instruction: str, obs: Dict) -> List[Dict]:
-        screenshot_uri = self.encode_image(obs['screenshot'])
+        screenshot_uri = self.encode_image(obs["screenshot"])
         if self.operations:
             flat_ops = [step for op_list in self.operations for step in op_list]
             prev = "\n".join(f"Step {i+1}: {line}" for i, line in enumerate(flat_ops))
@@ -287,24 +302,36 @@ class InternvlAgent:
             prev = "None"
         # content = {"instruction": instruction, "previous_actions": prev, "screenshot": screenshot_uri}
         return [
-            {"role": "system", "content": [{
-                "type": "text",
-                "text": INTERNVL3_SYSTEM_PROMPT}]},
-            {"role": "user", "content":[{
-                "type": "text",
-                "text": INTERNVL3_TASK_PROMPT.format(instruction=instruction) + "\n" + INTERNVL3_HISTORY_PROMPT.format(operations=prev)
-            }]},
+            {
+                "role": "system",
+                "content": [{"type": "text", "text": INTERNVL3_SYSTEM_PROMPT}],
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": INTERNVL3_TASK_PROMPT.format(instruction=instruction)
+                        + "\n"
+                        + INTERNVL3_HISTORY_PROMPT.format(operations=prev),
+                    }
+                ],
+            },
             # {"role": "user", "content":[{
             #     "type": "text",
             #     "text": INTERNVL3_HISTORY_PROMPT.format(operations=prev)
             # }]},
-            {"role": "user", "content":[{
-                "type": "image_url",
-                "image_url": {"url": screenshot_uri}}]
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": screenshot_uri}}
+                ],
             },
         ]
 
-    def parse_between_tags(self, text: str, start_tag: str, end_tag: str) -> Optional[str]:
+    def parse_between_tags(
+        self, text: str, start_tag: str, end_tag: str
+    ) -> Optional[str]:
         pattern = re.escape(start_tag) + r"(.*?)" + re.escape(end_tag)
         match = re.search(pattern, text, re.DOTALL)
         return match.group(1).strip() if match else None
@@ -323,18 +350,22 @@ class InternvlAgent:
         """
         try:
             # Wrap in a dummy function call to capture args and keywords
-            tree = ast.parse(f"f({arg_str})", mode='eval').body
+            tree = ast.parse(f"f({arg_str})", mode="eval").body
             args = [ast.literal_eval(node) for node in tree.args]
             kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in tree.keywords}
             return args, kwargs
         except Exception:
             # Fallback: split on top-level commas and distinguish args/kwargs
-            parts = [p.strip() for p in re.split(r',(?=(?:[^\'\"]|\'[^\']*\'|\"[^\"]*\")*$)', arg_str) if p.strip()]
+            parts = [
+                p.strip()
+                for p in re.split(r",(?=(?:[^\'\"]|\'[^\']*\'|\"[^\"]*\")*$)", arg_str)
+                if p.strip()
+            ]
             args: List[Any] = []
             kwargs: Dict[str, Any] = {}
             for part in parts:
-                if '=' in part:
-                    key, val = part.split('=', 1)
+                if "=" in part:
+                    key, val = part.split("=", 1)
                     val = val.strip()
                     try:
                         parsed = ast.literal_eval(val)
@@ -377,8 +408,8 @@ class InternvlAgent:
 
         # click
         if func_name == "click":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is not None:
                 x = f"{float(x) * SCREEN_WITDH:.4f}"
             if y is not None:
@@ -386,14 +417,16 @@ class InternvlAgent:
             if self.model != "gui_v91" and x is not None and y is not None:
                 x = str(float(x) / smart_w)
                 y = str(float(y) / smart_h)
-            clicks = get_arg('clicks', 2, 1)
-            button = get_arg('button', 3, 'left')
-            return f"pyautogui.click(x={x}, y={y}, clicks={clicks}, button={repr(button)})"
+            clicks = get_arg("clicks", 2, 1)
+            button = get_arg("button", 3, "left")
+            return (
+                f"pyautogui.click(x={x}, y={y}, clicks={clicks}, button={repr(button)})"
+            )
 
         # doubleClick
         if func_name == "doubleClick":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is not None:
                 x = f"{float(x) * SCREEN_WITDH:.4f}"
             if y is not None:
@@ -408,8 +441,8 @@ class InternvlAgent:
 
         # rightClick
         if func_name == "rightClick":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is not None:
                 x = f"{float(x) * SCREEN_WITDH:.4f}"
             if y is not None:
@@ -424,13 +457,13 @@ class InternvlAgent:
 
         # scroll
         if func_name == "scroll":
-            clicks = get_arg('clicks', 0, 0)
+            clicks = get_arg("clicks", 0, 0)
             return f"mouse = pynput.mouse.Controller(); mouse.scroll(0, {clicks})"
 
         # moveTo
         if func_name == "moveTo":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is not None and y is not None:
                 x = f"{float(x) * SCREEN_WITDH:.4f}"
                 y = f"{float(y) * SCREEN_HEIGHT:.4f}"
@@ -442,22 +475,24 @@ class InternvlAgent:
 
         # dragTo
         if func_name == "dragTo":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
-            button = get_arg('button', 2, 'left')
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
+            button = get_arg("button", 2, "left")
             if x is not None and y is not None:
                 x = f"{float(x) * SCREEN_WITDH:.4f}"
                 y = f"{float(y) * SCREEN_HEIGHT:.4f}"
                 if self.model != "gui_v91":
                     x = str(float(x) / smart_w)
                     y = str(float(y) / smart_h)
-                return f"pyautogui.dragTo({x}, {y}, button={repr(button)}, duration=1.0)"
+                return (
+                    f"pyautogui.dragTo({x}, {y}, button={repr(button)}, duration=1.0)"
+                )
             return ""
 
         # press
         if func_name == "press":
-            raw = get_arg('keys', 0, [])
-            presses = get_arg('presses', 1, 1)
+            raw = get_arg("keys", 0, [])
+            presses = get_arg("presses", 1, 1)
             keys_list = raw if isinstance(raw, list) else [raw]
             seq = []
             for key in keys_list:
@@ -476,9 +511,13 @@ class InternvlAgent:
                 call = ast.parse(f"{func_name}({arg_str})", mode="eval").body
                 args_list = [ast.literal_eval(node) for node in call.args]
             except Exception:
-                args_list = [s.strip().strip('"\'') for s in arg_str.split(",")]
+                args_list = [s.strip().strip("\"'") for s in arg_str.split(",")]
             # map Ctrl to cmd for common combos
-            if len(args_list) == 2 and args_list[0].lower() == "ctrl" and args_list[1].lower() in {"a","c","v","s"}:
+            if (
+                len(args_list) == 2
+                and args_list[0].lower() == "ctrl"
+                and args_list[1].lower() in {"a", "c", "v", "s"}
+            ):
                 args_list[0] = "cmd"
             seq = []
             for key in args_list:
@@ -494,17 +533,17 @@ class InternvlAgent:
 
         # keyDown
         if func_name == "keyDown":
-            key = get_arg('key', 0, None)
+            key = get_arg("key", 0, None)
             return f"kb = pynput.keyboard.Controller(); kb.press({key})"
 
         # keyUp
         if func_name == "keyUp":
-            key = get_arg('key', 0, None)
+            key = get_arg("key", 0, None)
             return f"kb = pynput.keyboard.Controller(); kb.release({key})"
 
         # write
         if func_name == "write":
-            raw = get_arg('message', 0, None) or get_arg('text', 0, None) or ""
+            raw = get_arg("message", 0, None) or get_arg("text", 0, None) or ""
             print(raw)
             if isinstance(raw, int):
                 raw = str(raw)
@@ -512,7 +551,7 @@ class InternvlAgent:
 
         # wait
         if func_name == "wait":
-            secs = get_arg('seconds', 0, 1)
+            secs = get_arg("seconds", 0, 1)
             return f"time.sleep({secs})"
 
         # terminate or response
@@ -522,7 +561,9 @@ class InternvlAgent:
         # fallback for unhandled actions
         return f"# Unhandled action: {a}"
 
-    def predict(self, instruction: str, obs: Dict, last_action_after_obs: Optional[Dict] = None) -> Tuple[str, List[str]]:
+    def predict(
+        self, instruction: str, obs: Dict, last_action_after_obs: Optional[Dict] = None
+    ) -> Tuple[str, List[str]]:
         assert len(self.observations) == len(self.actions) == len(self.thoughts)
         self.observations.append(obs)
         messages = self.build_messages(instruction, obs)
@@ -533,7 +574,7 @@ class InternvlAgent:
             max_tokens=self.max_tokens,
             temperature=self.temperature,
         )
-        
+
         content = resp.choices[0].message.content
         print(content)
         self.thoughts.append(content)
@@ -545,10 +586,10 @@ class InternvlAgent:
         self.operations.append(parsed["operation"])
         # truncate
         if len(self.actions) > self.max_trajectory_length:
-            self.observations = self.observations[-self.max_trajectory_length:]
-            self.thoughts = self.thoughts[-self.max_trajectory_length:]
-            self.actions = self.actions[-self.max_trajectory_length:]
-            self.operations = self.operations[-self.max_trajectory_length:]
+            self.observations = self.observations[-self.max_trajectory_length :]
+            self.thoughts = self.thoughts[-self.max_trajectory_length :]
+            self.actions = self.actions[-self.max_trajectory_length :]
+            self.operations = self.operations[-self.max_trajectory_length :]
         return content, execs
 
     def reset(self) -> None:
@@ -556,9 +597,11 @@ class InternvlAgent:
         self.actions.clear()
         self.observations.clear()
         self.operations.clear()
-        
+
+
 if __name__ == "__main__":
     import os
+
     # Configure logging
     logging.basicConfig(level=logging.INFO)
 

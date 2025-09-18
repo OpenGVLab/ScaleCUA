@@ -13,6 +13,7 @@ script_dir = Path(__file__).resolve().parent.parent
 
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
+
 def finder_check_file_exists(env, file_path: str) -> bool:
     """
     Check if a file exists at the given path on macOS via SSH.
@@ -24,8 +25,11 @@ def finder_check_file_exists(env, file_path: str) -> bool:
     env.connect_ssh()
     cmd = f'test -f "{file_path}" && echo "Exists" || echo "Not found"'
     stdout, stderr = env.run_command(cmd)
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     return output == "Exists"
+
 
 def finder_check_folder_exists(env, folder_path: str) -> bool:
     """
@@ -38,8 +42,11 @@ def finder_check_folder_exists(env, folder_path: str) -> bool:
     env.connect_ssh()
     cmd = f'test -d "{folder_path}" && echo "Exists" || echo "Not found"'
     stdout, stderr = env.run_command(cmd)
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     return output == "Exists"
+
 
 def finder_read_file_contents(env, file_path: str) -> str:
     """
@@ -52,7 +59,7 @@ def finder_read_file_contents(env, file_path: str) -> str:
     env.connect_ssh()
     file_path = file_path.replace("~", "$HOME")
     cmd = f'cat "{file_path}"'
-    
+
     stdout, stderr = env.run_command(cmd)
     logger.info(stdout)
     logger.info(stderr)
@@ -61,8 +68,11 @@ def finder_read_file_contents(env, file_path: str) -> str:
         logger.error(f"[finder_read_file_contents] Error reading file: {file_path}")
         return ""
 
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     return output
+
 
 def finder_check_file_tag(env, file_path: str, target_tag: str = "Blue") -> bool:
     """
@@ -104,7 +114,11 @@ except Exception as e:
         stdout, stderr = env.run_command(f"python3 {remote_tmp_path}")
         # logger.info(stdout)
         # logger.info(stderr)
-        output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
 
         if "__NOT_FOUND__" in output:
             return False
@@ -121,8 +135,11 @@ except Exception as e:
     except Exception as e:
         logger.error(f"Failed to check file tag: {e}")
         return False
-    
-def finder_check_tagged_files_strict(env, directory: str, expected_tagged_files: list[str], target_tag: str = "Red") -> bool:
+
+
+def finder_check_tagged_files_strict(
+    env, directory: str, expected_tagged_files: list[str], target_tag: str = "Red"
+) -> bool:
     env.connect_ssh()
 
     # Prepare embedded values
@@ -131,7 +148,8 @@ def finder_check_tagged_files_strict(env, directory: str, expected_tagged_files:
     directory_str = str(directory)
 
     # Inline script with resolved Python values
-    remote_py = textwrap.dedent(f"""
+    remote_py = textwrap.dedent(
+        f"""
     import os
     from pathlib import Path
     from osxmetadata import OSXMetaData
@@ -173,12 +191,15 @@ def finder_check_tagged_files_strict(env, directory: str, expected_tagged_files:
             print("__ALL_OK__")
         else:
             print("__ISSUES__:" + "||".join(issues))
-    """)
+    """
+    )
 
     # Safely quote and run
     safe_code = shlex.quote(remote_py)
     stdout, _ = env.run_command(f"python3 -c {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output == "__ALL_OK__":
         return True
@@ -194,7 +215,7 @@ def finder_check_tagged_files_strict(env, directory: str, expected_tagged_files:
     else:
         logger.error(f"Unexpected output: {output}")
         return False
-    
+
 
 def finder_check_smart_folder_filters_pdf_in_seven_days(env, name: str) -> bool:
     """
@@ -206,7 +227,8 @@ def finder_check_smart_folder_filters_pdf_in_seven_days(env, name: str) -> bool:
     """
     env.connect_ssh()
 
-    remote_py = textwrap.dedent("""
+    remote_py = textwrap.dedent(
+        """
     from pathlib import Path
     import plistlib
 
@@ -243,13 +265,16 @@ def finder_check_smart_folder_filters_pdf_in_seven_days(env, name: str) -> bool:
         print("__MATCH__")
     elif not smart_ok:
         print("__SMART_FAIL__")
-    """).format(name=name)
+    """
+    ).format(name=name)
 
     safe_code = shlex.quote(remote_py.strip())
     stdout, _ = env.run_command(f"python3 -c {safe_code}")
     logger.info(stdout)
     logger.info(_)
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output == "__MATCH__":
         return True
@@ -260,17 +285,19 @@ def finder_check_smart_folder_filters_pdf_in_seven_days(env, name: str) -> bool:
     else:
         logger.error(f"Unexpected output: {output}")
     return False
-    
+
+
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
-    value = finder_check_smart_folder_filters_pdf_in_seven_days(macos_env, 'test1')
+
+    value = finder_check_smart_folder_filters_pdf_in_seven_days(macos_env, "test1")
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

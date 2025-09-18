@@ -12,11 +12,12 @@ script_dir = Path(__file__).resolve().parent.parent
 MACNOTESAPP_PATH = "/usr/local/bin/notes"
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
+
 def notes_find_note_by_title(env: MacOSEnv, title: str) -> bool:
     """
     Check if a note with the given title exists in the default Notes folder.
     """
-    script = f'''
+    script = f"""
     tell application "Notes"
         set found to false
         repeat with n in notes of folder "Notes"
@@ -27,9 +28,11 @@ def notes_find_note_by_title(env: MacOSEnv, title: str) -> bool:
         end repeat
         return found
     end tell
-    '''
+    """
     stdout, _ = env.run_command(f"osascript -e '{script.strip()}'")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     return output.lower() == "true"
 
 
@@ -56,7 +59,9 @@ except Exception as e:
 
     safe_code = shlex.quote(python_script.strip())
     stdout, _ = env.run_command(f"python3 -c {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     # logger.info(stdout)
     # logger.info(_)
 
@@ -70,7 +75,8 @@ except Exception as e:
     else:
         logger.error(f"Unexpected output from notes listing: {output}")
         return []
-    
+
+
 def notes_count_notes_in_folder(env, folder_name: str) -> int:
     """
     Count the number of notes inside a specific folder.
@@ -93,7 +99,9 @@ except Exception as e:
 
     safe_code = shlex.quote(remote_py.strip())
     stdout, _ = env.run_command(f"python3 -c {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output.startswith("__COUNT__:"):
         return int(output.replace("__COUNT__:", ""))
@@ -103,7 +111,7 @@ except Exception as e:
     else:
         logger.error(f"Unexpected count output: {output}")
         return 0
-    
+
 
 def notes_get_note_plaintext_by_name(env, name: str, folder: str = None) -> list[str]:
     """
@@ -132,10 +140,14 @@ except Exception as e:
 """
     safe_code = shlex.quote(remote_py.strip())
     stdout, _ = env.run_command(f"python3 -c {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output.startswith("__TEXT__:"):
-        return [s.replace("\\n", "\n") for s in output.replace("__TEXT__:", "").split("|||")]
+        return [
+            s.replace("\\n", "\n") for s in output.replace("__TEXT__:", "").split("|||")
+        ]
     elif output == "__NOT_FOUND__":
         return []
     elif output.startswith("__ERROR__"):
@@ -156,7 +168,7 @@ def notes_get_properties_by_name(env, note_name: str) -> dict:
     """
     env.connect_ssh()
 
-    apple_script = f'''
+    apple_script = f"""
     on run
         try
             tell application "Notes"
@@ -168,17 +180,19 @@ def notes_get_properties_by_name(env, note_name: str) -> dict:
             return "__ERROR__" & errMsg
         end try
     end run
-    '''
+    """
 
     safe_code = shlex.quote(apple_script.strip())
     stdout, _ = env.run_command(f"osascript -e {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output.startswith("__PROPERTIES__"):
         props_block = output.replace("__PROPERTIES__\n", "")
         result = {}
         for line in props_block.splitlines():
-            if ':' in line:
+            if ":" in line:
                 k, v = line.split(":", 1)
                 result[k.strip()] = v.strip()
         return result
@@ -188,6 +202,7 @@ def notes_get_properties_by_name(env, note_name: str) -> dict:
     else:
         logger.error(f"Unexpected AppleScript output: {output}")
         return {}
+
 
 def notes_list_attachment_names_by_note_name(env, note_name: str) -> list[str]:
     """
@@ -199,7 +214,7 @@ def notes_list_attachment_names_by_note_name(env, note_name: str) -> list[str]:
     """
     env.connect_ssh()
 
-    apple_script = f'''
+    apple_script = f"""
     on run
         try
             tell application "Notes"
@@ -215,11 +230,13 @@ def notes_list_attachment_names_by_note_name(env, note_name: str) -> list[str]:
             return "__ERROR__" & errMsg
         end try
     end run
-    '''
+    """
 
     safe_code = shlex.quote(apple_script.strip())
     stdout, _ = env.run_command(f"osascript -e {safe_code}")
-    output = stdout.read().decode().strip() if hasattr(stdout, 'read') else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
 
     if output.startswith("__RESULT__"):
         lines = output.replace("__RESULT__", "").strip().splitlines()
@@ -227,20 +244,19 @@ def notes_list_attachment_names_by_note_name(env, note_name: str) -> list[str]:
     else:
         logger.error(f"Attachment list error: {output}")
         return []
-    
-
 
 
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
- 
+
     value = notes_list_attachment_names_by_note_name(macos_env, "document")
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

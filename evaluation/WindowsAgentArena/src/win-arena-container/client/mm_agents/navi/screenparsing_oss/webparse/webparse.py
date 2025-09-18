@@ -2,6 +2,7 @@ import asyncio
 from playwright.async_api import async_playwright
 from mm_agents.navi.screenparsing_oss.webparse.extract_async import extract_locate
 
+
 class WebParse:
     def __init__(self, cdp_url=None, launch_browser=False) -> None:
         self.pw_page = None
@@ -9,7 +10,7 @@ class WebParse:
         self.chromium_cdp_url = cdp_url
         self.pw = None
         assert not launch_browser, "launch_browser not supported"
-    
+
     async def _attach_to_existing(self, chromium_cdp_url):
         try:
             browser = await self.pw.chromium.connect_over_cdp(chromium_cdp_url)
@@ -17,7 +18,9 @@ class WebParse:
             self.pw_page = default_context.pages[0]
             return True
         except Exception as e:
-            print(f"[webparse] Could not attach to RDP session at the given URL ({chromium_cdp_url}). Make sure the browser is running in debug mode and the URL is correct.")
+            print(
+                f"[webparse] Could not attach to RDP session at the given URL ({chromium_cdp_url}). Make sure the browser is running in debug mode and the URL is correct."
+            )
             print(f"[webparse] Error: {e}")
             return False
 
@@ -25,7 +28,7 @@ class WebParse:
         browser = await self.pw.chromium.launch(headless=False)
         page = await browser.new_page()
         await page.goto("https://google.com")
-        await page.wait_for_load_state('networkidle')
+        await page.wait_for_load_state("networkidle")
         self.pw_page = page
 
     async def _attach_page(self):
@@ -37,7 +40,7 @@ class WebParse:
         if not self.pw_page and self.launch_browser:
             # If cdp url is not provided or not found, we'll launch a new browser
             await self._launch_and_attach()
-    
+
     # def propose_ents(self, image):
     #     return asyncio.run(self._propose_ents(image))
 
@@ -52,7 +55,7 @@ class WebParse:
             self.pw = playwright
             if not (await self._attach_to_existing(self.chromium_cdp_url)):
                 return []
-            
+
             attempts = 0
             while attempts < 2:
                 has_match, entities = await extract_locate(image, self.pw_page)
@@ -64,12 +67,13 @@ class WebParse:
                 {
                     "from": "webparse",
                     "type": "text/html",
-                    "shape": { 
-                        "x": int(entity['shape'][0]),
-                        "y": int(entity['shape'][1]),
-                        "width": int(entity['shape'][2]),
-                        "height": int(entity['shape'][3])
+                    "shape": {
+                        "x": int(entity["shape"][0]),
+                        "y": int(entity["shape"][1]),
+                        "width": int(entity["shape"][2]),
+                        "height": int(entity["shape"][3]),
                     },
-                    "text": entity.get('textContent')
-                } for entity in entities
+                    "text": entity.get("textContent"),
+                }
+                for entity in entities
             ]

@@ -39,83 +39,79 @@ def setup_task_state(
     exclusion_conditions: list[task_pb2.ExclusionCondition],
     env: interface.AsyncEnv,
 ) -> None:
-  """Sets up the  state for the Joplin app.
+    """Sets up the  state for the Joplin app.
 
-  Args:
-    relevant_state: The state to set up.
-    exclusion_conditions: The exclusion conditions to use when generating random
-      notes.
-    env: The Android environment interface for database interaction.
-  """
-  clear_dbs(env)
-  notes = []
+    Args:
+      relevant_state: The state to set up.
+      exclusion_conditions: The exclusion conditions to use when generating random
+        notes.
+      env: The Android environment interface for database interaction.
+    """
+    clear_dbs(env)
+    notes = []
 
-  # Keep track of already created folders.
-  folder_mapping = {}
-  notes += _generate_random_notes(
-      100,
-      exclusion_conditions,
-      [note.folder for note in relevant_state.notes],
-      folder_mapping,
-      env,
-  )
-  for note in relevant_state.notes:
-    notes.append(_create_note_from_proto(note, folder_mapping, env))
-  random.shuffle(notes)
-  add_notes(notes, env)
+    # Keep track of already created folders.
+    folder_mapping = {}
+    notes += _generate_random_notes(
+        100,
+        exclusion_conditions,
+        [note.folder for note in relevant_state.notes],
+        folder_mapping,
+        env,
+    )
+    for note in relevant_state.notes:
+        notes.append(_create_note_from_proto(note, folder_mapping, env))
+    random.shuffle(notes)
+    add_notes(notes, env)
 
 
 def clear_dbs(env: interface.AsyncEnv) -> None:
-  """Clears Joplin databases."""
-  sqlite_utils.delete_all_rows_from_table(
-      _FOLDER_TABLE, _DB_PATH, env, _APP_NAME
-  )
-  sqlite_utils.delete_all_rows_from_table(
-      _NOTES_TABLE, _DB_PATH, env, _APP_NAME
-  )
-  sqlite_utils.delete_all_rows_from_table(
-      _NOTES_NORMALIZED_TABLE, _DB_PATH, env, _APP_NAME
-  )
-  adb_utils.close_app(_APP_NAME, env.controller)  # Register changes.
+    """Clears Joplin databases."""
+    sqlite_utils.delete_all_rows_from_table(_FOLDER_TABLE, _DB_PATH, env, _APP_NAME)
+    sqlite_utils.delete_all_rows_from_table(_NOTES_TABLE, _DB_PATH, env, _APP_NAME)
+    sqlite_utils.delete_all_rows_from_table(
+        _NOTES_NORMALIZED_TABLE, _DB_PATH, env, _APP_NAME
+    )
+    adb_utils.close_app(_APP_NAME, env.controller)  # Register changes.
 
 
 def _get_folder_to_id(
     env: interface.AsyncEnv,
 ) -> dict[str, str]:
-  """Gets a mapping from folder title to ID as represented in Folder table."""
-  with env.controller.pull_file(_DB_PATH) as local_db_directory:
-    local_db_path = os.path.join(local_db_directory, os.path.split(_DB_PATH)[1])
-    folder_info = sqlite_utils.execute_query(
-        f"select * from {_FOLDER_TABLE};",
-        local_db_path,
-        sqlite_schema_utils.JoplinFolder,
-    )
+    """Gets a mapping from folder title to ID as represented in Folder table."""
+    with env.controller.pull_file(_DB_PATH) as local_db_directory:
+        local_db_path = os.path.join(local_db_directory, os.path.split(_DB_PATH)[1])
+        folder_info = sqlite_utils.execute_query(
+            f"select * from {_FOLDER_TABLE};",
+            local_db_path,
+            sqlite_schema_utils.JoplinFolder,
+        )
 
-  result = {}
-  for row in folder_info:
-    result[row.title] = row.id
-  return result
+    result = {}
+    for row in folder_info:
+        result[row.title] = row.id
+    return result
 
 
 def _add_folders(
     rows: list[sqlite_schema_utils.JoplinFolder],
     env: interface.AsyncEnv,
 ) -> None:
-  """Inserts multiple folder rows into the remote Joplin database.
+    """Inserts multiple folder rows into the remote Joplin database.
 
-  Args:
-      rows: A list of JoplinFolder instances to be inserted.
-      env: The Android environment interface for database interaction.
-  """
+    Args:
+        rows: A list of JoplinFolder instances to be inserted.
+        env: The Android environment interface for database interaction.
+    """
 
-  sqlite_utils.insert_rows_to_remote_db(
-      rows,
-      _EXCLUDE_FIELD,
-      _FOLDER_TABLE,
-      _DB_PATH,
-      _APP_NAME,
-      env,
-  )
+    sqlite_utils.insert_rows_to_remote_db(
+        rows,
+        _EXCLUDE_FIELD,
+        _FOLDER_TABLE,
+        _DB_PATH,
+        _APP_NAME,
+        env,
+    )
 
 
 def create_note(
@@ -127,82 +123,82 @@ def create_note(
     is_todo: int = False,
     todo_completed: bool = False,
 ) -> sqlite_schema_utils.JoplinNote:
-  """Generates random note."""
-  if not folder_mapping:
-    folder_mapping.update(_get_folder_to_id(env))
+    """Generates random note."""
+    if not folder_mapping:
+        folder_mapping.update(_get_folder_to_id(env))
 
-  if folder not in folder_mapping:
-    # Folder hasn't been created yet.
-    _add_folders([sqlite_schema_utils.JoplinFolder(folder)], env)
-    folder_mapping.clear()
-    folder_mapping.update(_get_folder_to_id(env))
     if folder not in folder_mapping:
-      raise ValueError("Something went wrong could not find or create folder.")
-  parent_id = folder_mapping[folder]
-  return sqlite_schema_utils.JoplinNote(
-      parent_id=parent_id,
-      title=title,
-      body=body,
-      is_todo=int(is_todo),
-      todo_completed=int(todo_completed),
-  )
+        # Folder hasn't been created yet.
+        _add_folders([sqlite_schema_utils.JoplinFolder(folder)], env)
+        folder_mapping.clear()
+        folder_mapping.update(_get_folder_to_id(env))
+        if folder not in folder_mapping:
+            raise ValueError("Something went wrong could not find or create folder.")
+    parent_id = folder_mapping[folder]
+    return sqlite_schema_utils.JoplinNote(
+        parent_id=parent_id,
+        title=title,
+        body=body,
+        is_todo=int(is_todo),
+        todo_completed=int(todo_completed),
+    )
 
 
 def add_notes(
     rows: list[sqlite_schema_utils.JoplinNote],
     env: interface.AsyncEnv,
 ) -> None:
-  """Inserts multiple note rows into the remote Joplin database."""
-  sqlite_utils.insert_rows_to_remote_db(
-      rows,
-      None,
-      _NOTES_TABLE,
-      _DB_PATH,
-      _APP_NAME,
-      env,
-  )
-  sqlite_utils.insert_rows_to_remote_db(
-      _normalize_notes(rows),
-      None,
-      _NOTES_NORMALIZED_TABLE,
-      _DB_PATH,
-      _APP_NAME,
-      env,
-  )
+    """Inserts multiple note rows into the remote Joplin database."""
+    sqlite_utils.insert_rows_to_remote_db(
+        rows,
+        None,
+        _NOTES_TABLE,
+        _DB_PATH,
+        _APP_NAME,
+        env,
+    )
+    sqlite_utils.insert_rows_to_remote_db(
+        _normalize_notes(rows),
+        None,
+        _NOTES_NORMALIZED_TABLE,
+        _DB_PATH,
+        _APP_NAME,
+        env,
+    )
 
 
 def _normalize_notes(
     notes: list[sqlite_schema_utils.JoplinNote],
 ) -> list[sqlite_schema_utils.JoplinNormalizedNote]:
-  return [
-      sqlite_schema_utils.JoplinNormalizedNote(
-          id=note.id,
-          parent_id=note.parent_id,
-          title=note.title.lower(),
-          body=note.body,
-          is_todo=note.is_todo,
-          todo_completed=note.todo_completed,
-          user_created_time=note.user_created_time,
-          user_updated_time=note.user_updated_time,
-          latitude=note.latitude,
-          longitude=note.longitude,
-          altitude=note.altitude,
-          source_url=note.source_url,
-          todo_due=note.todo_due,
-      )
-      for note in notes
-  ]
+    return [
+        sqlite_schema_utils.JoplinNormalizedNote(
+            id=note.id,
+            parent_id=note.parent_id,
+            title=note.title.lower(),
+            body=note.body,
+            is_todo=note.is_todo,
+            todo_completed=note.todo_completed,
+            user_created_time=note.user_created_time,
+            user_updated_time=note.user_updated_time,
+            latitude=note.latitude,
+            longitude=note.longitude,
+            altitude=note.altitude,
+            source_url=note.source_url,
+            todo_due=note.todo_due,
+        )
+        for note in notes
+    ]
 
 
 def list_notes(
     env: interface.AsyncEnv,
 ) -> list[sqlite_schema_utils.JoplinNote]:
-  return sqlite_utils.get_rows_from_remote_device(
-      _NOTES_TABLE,
-      _DB_PATH,
-      sqlite_schema_utils.JoplinNote,
-      env,
-  )
+    return sqlite_utils.get_rows_from_remote_device(
+        _NOTES_TABLE,
+        _DB_PATH,
+        sqlite_schema_utils.JoplinNote,
+        env,
+    )
 
 
 def _create_note_from_proto(
@@ -210,18 +206,18 @@ def _create_note_from_proto(
     folder_mapping: dict[str, str],
     env: interface.AsyncEnv,
 ) -> sqlite_schema_utils.JoplinNote:
-  """Creates a JoplinNote object from a state_pb2.Note proto."""
-  is_todo = note.is_todo.lower() == "true"
-  todo_completed = note.todo_completed.lower() == "true"
-  return create_note(
-      note.folder,
-      note.title,
-      note.body,
-      folder_mapping,
-      env,
-      is_todo,
-      todo_completed,
-  )
+    """Creates a JoplinNote object from a state_pb2.Note proto."""
+    is_todo = note.is_todo.lower() == "true"
+    todo_completed = note.todo_completed.lower() == "true"
+    return create_note(
+        note.folder,
+        note.title,
+        note.body,
+        folder_mapping,
+        env,
+        is_todo,
+        todo_completed,
+    )
 
 
 def _generate_random_notes(
@@ -231,16 +227,16 @@ def _generate_random_notes(
     folder_mapping: dict[str, str],
     env: interface.AsyncEnv,
 ) -> list[sqlite_schema_utils.JoplinNote]:
-  """Generates random notes with the given exclusion conditions."""
-  return sqlite_schema_utils.get_random_items(
-      num_notes,
-      generate_item_fn=lambda: _generate_random_note(
-          relevant_folders, folder_mapping, env
-      ),
-      filter_fn=lambda x: _check_note_conditions(
-          x, exclusion_conditions, folder_mapping
-      ),
-  )
+    """Generates random notes with the given exclusion conditions."""
+    return sqlite_schema_utils.get_random_items(
+        num_notes,
+        generate_item_fn=lambda: _generate_random_note(
+            relevant_folders, folder_mapping, env
+        ),
+        filter_fn=lambda x: _check_note_conditions(
+            x, exclusion_conditions, folder_mapping
+        ),
+    )
 
 
 def _generate_random_note(
@@ -248,26 +244,26 @@ def _generate_random_note(
     folder_mapping: dict[str, str],
     env: interface.AsyncEnv,
 ):
-  """Generates a single random sqlite_schema_utils.JoplinNote object."""
-  new_note = state_pb2.Note()
-  # add to relevant folders 30% of the time:
-  add_to_relevant_folder = random.random() < 0.3
-  if add_to_relevant_folder:
-    folder = random.choice(relevant_folders)
-    if folder not in _FOLDERS:
-      raise ValueError("Unexpected folder name: {}".format(folder))
-  else:
-    folder = random.choice(list(_FOLDERS.keys()))
-  new_note.folder = folder
-  new_note.is_todo = str(random.choice([True, False]))
-  if new_note.is_todo:
-    new_note.todo_completed = random.choice(["True", "False"])
-  random_note = random.choice(_FOLDERS[folder])
+    """Generates a single random sqlite_schema_utils.JoplinNote object."""
+    new_note = state_pb2.Note()
+    # add to relevant folders 30% of the time:
+    add_to_relevant_folder = random.random() < 0.3
+    if add_to_relevant_folder:
+        folder = random.choice(relevant_folders)
+        if folder not in _FOLDERS:
+            raise ValueError("Unexpected folder name: {}".format(folder))
+    else:
+        folder = random.choice(list(_FOLDERS.keys()))
+    new_note.folder = folder
+    new_note.is_todo = str(random.choice([True, False]))
+    if new_note.is_todo:
+        new_note.todo_completed = random.choice(["True", "False"])
+    random_note = random.choice(_FOLDERS[folder])
 
-  new_note.title = random_note["title"]
-  new_note.body = random_note["body"]
-  note = _create_note_from_proto(new_note, folder_mapping, env)
-  return note
+    new_note.title = random_note["title"]
+    new_note.body = random_note["body"]
+    note = _create_note_from_proto(new_note, folder_mapping, env)
+    return note
 
 
 def _check_note_conditions(
@@ -275,62 +271,62 @@ def _check_note_conditions(
     exclusion_conditions: list[task_pb2.ExclusionCondition],
     folder_mapping: dict[str, str],
 ) -> bool:
-  """Evaluates the specified task against a set of exclusion conditions.
+    """Evaluates the specified task against a set of exclusion conditions.
 
-  A note is considered eligible if it does not satisfy all of the conditions
-  specified in the exclusion_conditions list. Each condition is checked against
-  various fields of the note. The note is eligible if not all of these
-  conditions are met, ensuring it doesn't fall under any exclusion criteria
-  defined.
+    A note is considered eligible if it does not satisfy all of the conditions
+    specified in the exclusion_conditions list. Each condition is checked against
+    various fields of the note. The note is eligible if not all of these
+    conditions are met, ensuring it doesn't fall under any exclusion criteria
+    defined.
 
-  Args:
-    note: The note to check.
-    exclusion_conditions: All the conditions the note will be checked against,
-      if they are all met, this note should be excluded and does not meet the
-      conditions.
-    folder_mapping: A map from folder name to ID as represented in the Folder
-      table.
+    Args:
+      note: The note to check.
+      exclusion_conditions: All the conditions the note will be checked against,
+        if they are all met, this note should be excluded and does not meet the
+        conditions.
+      folder_mapping: A map from folder name to ID as represented in the Folder
+        table.
 
-  Returns:
-    A bool, True if the note does not meet all of the exclusion conditions,
-    False otherwise.
-  """
-  if not exclusion_conditions:
-    return True
-  # Keeps track of whether an exclusion condition is met.
-  all_conditions_met = True
-  for condition in exclusion_conditions:
-    if condition.field == "title":
-      all_conditions_met = all_conditions_met and proto_utils.compare(
-          note.title.lower(),
-          condition.operation,
-          condition.value.lower(),
-      )
-    elif condition.field == "folder":
-      folder_name = [
-          key.lower()
-          for (key, value) in folder_mapping.items()
-          if note.parent_id == value
-      ]
-      all_conditions_met = all_conditions_met and proto_utils.compare(
-          folder_name[0],
-          condition.operation,
-          condition.value.lower(),
-      )
-    elif condition.field == "is_todo":
-      all_conditions_met = all_conditions_met and proto_utils.compare(
-          note.is_todo,
-          condition.operation,
-          1 if condition.value.lower() == "true" else 0,
-      )
-    elif condition.field == "todo_completed":
-      all_conditions_met = all_conditions_met and proto_utils.compare(
-          note.todo_completed,
-          condition.operation,
-          1 if condition.value.lower() == "true" else 0,
-      )
+    Returns:
+      A bool, True if the note does not meet all of the exclusion conditions,
+      False otherwise.
+    """
+    if not exclusion_conditions:
+        return True
+    # Keeps track of whether an exclusion condition is met.
+    all_conditions_met = True
+    for condition in exclusion_conditions:
+        if condition.field == "title":
+            all_conditions_met = all_conditions_met and proto_utils.compare(
+                note.title.lower(),
+                condition.operation,
+                condition.value.lower(),
+            )
+        elif condition.field == "folder":
+            folder_name = [
+                key.lower()
+                for (key, value) in folder_mapping.items()
+                if note.parent_id == value
+            ]
+            all_conditions_met = all_conditions_met and proto_utils.compare(
+                folder_name[0],
+                condition.operation,
+                condition.value.lower(),
+            )
+        elif condition.field == "is_todo":
+            all_conditions_met = all_conditions_met and proto_utils.compare(
+                note.is_todo,
+                condition.operation,
+                1 if condition.value.lower() == "true" else 0,
+            )
+        elif condition.field == "todo_completed":
+            all_conditions_met = all_conditions_met and proto_utils.compare(
+                note.todo_completed,
+                condition.operation,
+                1 if condition.value.lower() == "true" else 0,
+            )
 
-  return not all_conditions_met
+    return not all_conditions_met
 
 
 _RECIPES = [
@@ -418,8 +414,7 @@ _RECIPES = [
     {
         "title": "Chicken Tikka Masala",
         "body": (
-            "Marinated chicken cooked in a creamy tomato sauce with aromatic"
-            " spices."
+            "Marinated chicken cooked in a creamy tomato sauce with aromatic" " spices."
         ),
     },
     {
@@ -446,8 +441,7 @@ _RECIPES = [
     {
         "title": "Salmon with Roasted Vegetables",
         "body": (
-            "Healthy and flavorful dish with baked salmon and seasonal"
-            " vegetables."
+            "Healthy and flavorful dish with baked salmon and seasonal" " vegetables."
         ),
     },
     {
@@ -495,8 +489,7 @@ _RECIPES = [
     {
         "title": "Vegetable Curry",
         "body": (
-            "Aromatic curry with a variety of vegetables, coconut milk, and"
-            " spices."
+            "Aromatic curry with a variety of vegetables, coconut milk, and" " spices."
         ),
     },
     {
@@ -540,9 +533,7 @@ _RECIPES = [
     },
     {
         "title": "Pancakes",
-        "body": (
-            "Fluffy pancakes topped with butter, maple syrup, and fresh fruit."
-        ),
+        "body": ("Fluffy pancakes topped with butter, maple syrup, and fresh fruit."),
     },
     {
         "title": "Smoothie Recipes",
@@ -645,8 +636,7 @@ _TASKS = [
     {
         "title": "Email Project Update to Client",
         "body": (
-            "Send a summary of project progress and next steps to Acme Corp. by"
-            " EOD."
+            "Send a summary of project progress and next steps to Acme Corp. by" " EOD."
         ),
     },
     {
@@ -660,29 +650,25 @@ _TASKS = [
     {
         "title": "Renew Driver's License",
         "body": (
-            "Visit the DMV to renew driver's license before it expires next"
-            " month."
+            "Visit the DMV to renew driver's license before it expires next" " month."
         ),
     },
     {
         "title": "Research Summer Camps for Kids",
         "body": (
-            "Find options for summer camps that align with kids' interests and"
-            " ages."
+            "Find options for summer camps that align with kids' interests and" " ages."
         ),
     },
     {
         "title": "Meal Prep for the Week",
         "body": (
-            "Cook a large batch of chicken and vegetables for lunches and"
-            " dinners."
+            "Cook a large batch of chicken and vegetables for lunches and" " dinners."
         ),
     },
     {
         "title": "Clean Out Garage",
         "body": (
-            "Sort through items, donate unwanted items, organize remaining"
-            " items."
+            "Sort through items, donate unwanted items, organize remaining" " items."
         ),
     },
     {
@@ -707,8 +693,7 @@ _TASKS = [
     {
         "title": "Plant Vegetable Garden",
         "body": (
-            "Buy seeds or seedlings, prepare soil, plant vegetables in raised"
-            " beds."
+            "Buy seeds or seedlings, prepare soil, plant vegetables in raised" " beds."
         ),
     },
     {
@@ -721,8 +706,7 @@ _TASKS = [
     {
         "title": "File Taxes",
         "body": (
-            "Gather tax documents, complete tax return, submit online or by"
-            " mail."
+            "Gather tax documents, complete tax return, submit online or by" " mail."
         ),
     },
     {
@@ -742,8 +726,7 @@ _TASKS = [
     {
         "title": "Set Up Retirement Account",
         "body": (
-            "Open a Roth IRA or 401(k) and start contributing to retirement"
-            " savings."
+            "Open a Roth IRA or 401(k) and start contributing to retirement" " savings."
         ),
     },
 ]
@@ -778,28 +761,22 @@ _MEETING_NOTES = [
     {
         "title": "Team Meeting - May 6, 2024",
         "body": (
-            "Agenda, discussion points, action items, decisions made, next"
-            " steps."
+            "Agenda, discussion points, action items, decisions made, next" " steps."
         ),
     },
     {
         "title": "Client Meeting - Acme Corp. - April 25, 2024",
-        "body": (
-            "Attendees, project updates, feedback, next steps, action items."
-        ),
+        "body": ("Attendees, project updates, feedback, next steps, action items."),
     },
     {
         "title": "Brainstorming Session - New Product Ideas - April 18, 2024",
         "body": (
-            "Generated ideas, pros and cons, feasibility assessment, next"
-            " steps."
+            "Generated ideas, pros and cons, feasibility assessment, next" " steps."
         ),
     },
     {
         "title": "Project Kickoff Meeting - Website Redesign - April 10, 2024",
-        "body": (
-            "Project scope, timeline, team roles, communication plan, budget."
-        ),
+        "body": ("Project scope, timeline, team roles, communication plan, budget."),
     },
     {
         "title": "One-on-One Meeting with John - April 3, 2024",
@@ -831,9 +808,7 @@ _MEETING_NOTES = [
     },
     {
         "title": "Training Session - New Software - March 7, 2024",
-        "body": (
-            "Key features, how-to guide, troubleshooting tips, Q&A session."
-        ),
+        "body": ("Key features, how-to guide, troubleshooting tips, Q&A session."),
     },
     {
         "title": "Conference Call - Remote Team - February 28, 2024",
@@ -859,8 +834,7 @@ _MEETING_NOTES = [
     {
         "title": "All-Hands Meeting - Company Update - February 7, 2024",
         "body": (
-            "CEO presentation on company performance, new initiatives, Q&A"
-            " session."
+            "CEO presentation on company performance, new initiatives, Q&A" " session."
         ),
     },
     {
@@ -1008,8 +982,7 @@ _MEETING_NOTES = [
             "Attendees:\n"
             + "\n".join(random.sample(_ATTENDEES, 4))
             + "\nAgenda:\nCompany updates\nDepartment announcements\nCelebrate"
-            " wins\nAction Items:\n"
-            + "\n".join(random.sample(_ACTION_ITEMS, 3))
+            " wins\nAction Items:\n" + "\n".join(random.sample(_ACTION_ITEMS, 3))
         ),
     },
 ]
@@ -1088,9 +1061,7 @@ _PERSONAL = [
     },
     {
         "title": "Password Ideas",
-        "body": (
-            "Combination of letters, numbers, symbols, not easily guessable"
-        ),
+        "body": ("Combination of letters, numbers, symbols, not easily guessable"),
     },
     {
         "title": "Favorite Recipes",
@@ -1109,15 +1080,12 @@ _PERSONAL = [
     },
     {
         "title": "Things to Do This Weekend",
-        "body": (
-            "Hike in the mountains, visit a museum, have a picnic in the park"
-        ),
+        "body": ("Hike in the mountains, visit a museum, have a picnic in the park"),
     },
     {
         "title": "Self-Care Ideas",
         "body": (
-            "Take a bubble bath, read a good book, meditate, spend time in"
-            " nature"
+            "Take a bubble bath, read a good book, meditate, spend time in" " nature"
         ),
     },
     {
@@ -1212,8 +1180,7 @@ _WORK = [
     {
         "title": "Code Snippets - Python",
         "body": (
-            "Useful code examples for data analysis, web scraping, automation"
-            " tasks."
+            "Useful code examples for data analysis, web scraping, automation" " tasks."
         ),
     },
     {
@@ -1314,8 +1281,7 @@ _SCHOOL = [
     {
         "title": "Class Syllabus - Introduction to Computer Science",
         "body": (
-            "Course overview, grading policy, weekly schedule, required"
-            " readings."
+            "Course overview, grading policy, weekly schedule, required" " readings."
         ),
     },
     {
@@ -1357,8 +1323,7 @@ _SCHOOL = [
     {
         "title": "Professor Contact Information",
         "body": (
-            "Dr. Smith: jsmith@university.edu \nDr. Johnson:"
-            " sjohnson@university.edu"
+            "Dr. Smith: jsmith@university.edu \nDr. Johnson:" " sjohnson@university.edu"
         ),
     },
     {
@@ -1385,8 +1350,7 @@ _SCHOOL = [
     {
         "title": "Internship Opportunities - Summer 2024",
         "body": (
-            "Marketing internship at XYZ Company, Research internship at"
-            " ABC Lab"
+            "Marketing internship at XYZ Company, Research internship at" " ABC Lab"
         ),
     },
     {
@@ -1398,9 +1362,7 @@ _SCHOOL = [
     },
     {
         "title": "Study Abroad Programs - Fall 2024",
-        "body": (
-            "Programs available in Spain, France, Italy, Germany, and Japan."
-        ),
+        "body": ("Programs available in Spain, France, Italy, Germany, and Japan."),
     },
 ]
 
@@ -1424,8 +1386,7 @@ _HOME = [
     {
         "title": "Recipe - Chicken Noodle Soup",
         "body": (
-            "Ingredients: chicken, noodles, carrots, celery, onion, broth,"
-            " herbs."
+            "Ingredients: chicken, noodles, carrots, celery, onion, broth," " herbs."
         ),
     },
     {
@@ -1697,22 +1658,18 @@ _IDEAS = [
     },
     {
         "title": "Food Delivery Service for Dietary Restrictions",
-        "body": (
-            "Cater to people with allergies, intolerances, or specific diets."
-        ),
+        "body": ("Cater to people with allergies, intolerances, or specific diets."),
     },
     {
         "title": "Mental Health Support App",
         "body": (
-            "Provides resources, guided meditations, and online therapy"
-            " options."
+            "Provides resources, guided meditations, and online therapy" " options."
         ),
     },
     {
         "title": "AI-Powered Personalized Travel Itinerary Generator",
         "body": (
-            "Creates custom travel plans based on user preferences and"
-            " interests."
+            "Creates custom travel plans based on user preferences and" " interests."
         ),
     },
     {
@@ -1732,8 +1689,7 @@ _IDEAS = [
     {
         "title": "Online Platform for Local Artisans",
         "body": (
-            "Showcase and sell handmade crafts and artwork directly to"
-            " consumers."
+            "Showcase and sell handmade crafts and artwork directly to" " consumers."
         ),
     },
     {
@@ -1763,9 +1719,7 @@ _IDEAS = [
     },
     {
         "title": "Augmented Reality Furniture Shopping App",
-        "body": (
-            "Visualize how furniture would look in your home before buying."
-        ),
+        "body": ("Visualize how furniture would look in your home before buying."),
     },
     {
         "title": "Subscription Service for Sustainable Home Goods",
@@ -1784,8 +1738,7 @@ _IDEAS = [
     {
         "title": "Mobile App for Finding Local Volunteer Opportunities",
         "body": (
-            "Connect volunteers with organizations in need of their skills and"
-            " time."
+            "Connect volunteers with organizations in need of their skills and" " time."
         ),
     },
     {
@@ -1794,9 +1747,7 @@ _IDEAS = [
     },
     {
         "title": "Zero-Waste Grocery Store",
-        "body": (
-            "Sell bulk food items and package-free products to reduce waste."
-        ),
+        "body": ("Sell bulk food items and package-free products to reduce waste."),
     },
 ]
 
@@ -1811,8 +1762,7 @@ _HEALTH = [
     {
         "title": "Meal Plan - Week of May 6th",
         "body": (
-            "Breakfast, lunch, dinner, snacks for each day, grocery list,"
-            " recipes."
+            "Breakfast, lunch, dinner, snacks for each day, grocery list," " recipes."
         ),
     },
     {
@@ -2159,9 +2109,7 @@ _FINANCE = [
     },
     {
         "title": "Financial Advisor Contact Information",
-        "body": (
-            "Name, email address, phone number, website of financial advisor."
-        ),
+        "body": ("Name, email address, phone number, website of financial advisor."),
     },
     {
         "title": "Online Banking Login Details",

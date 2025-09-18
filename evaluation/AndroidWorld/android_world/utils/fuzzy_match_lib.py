@@ -23,29 +23,29 @@ _MIN_DIFF_SIMILARITY = 0.9
 
 
 def fuzzy_match(text1: str, text2: str, ignore_case: bool = True) -> bool:
-  """Compares two strings.
+    """Compares two strings.
 
-  Args:
-    text1: The first text.
-    text2: The second text.
-    ignore_case: Whether to ignore case during comparison.
+    Args:
+      text1: The first text.
+      text2: The second text.
+      ignore_case: Whether to ignore case during comparison.
 
-  Returns:
-    Whether the two strings are approximately equal.
-  """
-  if text1 is None or text2 is None:
-    return False
-  text1 = str(text1)
-  text2 = str(text2)
+    Returns:
+      Whether the two strings are approximately equal.
+    """
+    if text1 is None or text2 is None:
+        return False
+    text1 = str(text1)
+    text2 = str(text2)
 
-  def text_similarity(text1: str, text2: str, ignore_case: bool) -> float:
-    """Computes similiarity between two texts."""
-    if ignore_case:
-      text1 = text1.lower()
-      text2 = text2.lower()
+    def text_similarity(text1: str, text2: str, ignore_case: bool) -> float:
+        """Computes similiarity between two texts."""
+        if ignore_case:
+            text1 = text1.lower()
+            text2 = text2.lower()
 
-    return difflib.SequenceMatcher(None, text1, text2).ratio()
-  return (
-      text_similarity(text1, text2, ignore_case=ignore_case)
-      >= _MIN_DIFF_SIMILARITY
-  )
+        return difflib.SequenceMatcher(None, text1, text2).ratio()
+
+    return (
+        text_similarity(text1, text2, ignore_case=ignore_case) >= _MIN_DIFF_SIMILARITY
+    )

@@ -20,28 +20,28 @@ from android_world.utils import test_utils
 
 
 class TestAddContact(test_utils.AdbEvalTestBase):
-  """Tests for AddContact task evaluation."""
+    """Tests for AddContact task evaluation."""
 
-  def test_is_successful_when_contact_found(self):
-    self.mock_list_contacts.return_value = [
-        contacts_utils.Contact('Test Case', '1234'),
-    ]
+    def test_is_successful_when_contact_found(self):
+        self.mock_list_contacts.return_value = [
+            contacts_utils.Contact("Test Case", "1234"),
+        ]
 
-    env = mock.MagicMock()
-    params = {'name': 'Test Case', 'number': '1234'}
+        env = mock.MagicMock()
+        params = {"name": "Test Case", "number": "1234"}
 
-    task = contacts_validators.AddContact(params)
-    self.assertEqual(test_utils.perform_task(task, env), 1)
+        task = contacts_validators.AddContact(params)
+        self.assertEqual(test_utils.perform_task(task, env), 1)
 
-  def test_is_not_successful_when_contact_not_found(self):
-    self.mock_list_contacts.return_value = []
+    def test_is_not_successful_when_contact_not_found(self):
+        self.mock_list_contacts.return_value = []
 
-    env = mock.MagicMock()
-    params = {'name': 'Test Case', 'number': '1234'}
+        env = mock.MagicMock()
+        params = {"name": "Test Case", "number": "1234"}
 
-    task = contacts_validators.AddContact(params)
-    self.assertEqual(test_utils.perform_task(task, env), 0)
+        task = contacts_validators.AddContact(params)
+        self.assertEqual(test_utils.perform_task(task, env), 0)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

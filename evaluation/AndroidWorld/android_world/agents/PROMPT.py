@@ -1,5 +1,4 @@
-PROMPT_PREFIX = (
-    '''
+PROMPT_PREFIX = """
 You are an agent who can operate an Android phone on behalf of a user. Based on user's goal/request, you may
 - Answer back if the request/goal is a question (or a chat message), like user asks "What is my schedule for today?".
 - Complete some tasks described in the requests/goals by performing actions (step by step) on the phone.
@@ -17,11 +16,9 @@ When given a user request, you will try to complete it step by step. At each ste
 - Scroll the screen or a scrollable UI element in one of the four directions, use the same element description as above if you want to scroll a specific UI element, leave it empty when scrolling the whole screen: `{{"action_type": "scroll", "direction": <up, down, left, right>, "element": <optional description about the target element>}}`
 - Open an app (nothing will happen if the app is not installed. So always try this first if you want to open a certain app): `{{"action_type": "open_app", "app_name": <name>}}`
 - Wait for the screen to update: `{{"action_type": "wait"}}`
-'''
-)
+"""
 
-GUIDANCE = (
-    '''Here are some useful guidelines you must follow:
+GUIDANCE = """Here are some useful guidelines you must follow:
 General:
 - Make sure you understand the task goal to avoid wrong actions.
 - Make sure you carefully examine the the current screenshot. Sometimes the summarized history might not be reliable, over-claiming some effects.
@@ -44,53 +41,48 @@ Text Related Operations:
 - To delete some text: the most traditional way is to place the cursor at the right place and use the backspace button in the keyboard to delete the characters one by one (can long press the backspace to accelerate if there are many to delete). Another approach is to first select the text you want to delete, then click the backspace button in the keyboard.
 - To copy some text: first select the exact text you want to copy, which usually also brings up the text selection bar, then click the `copy` button in bar.
 - To paste text into a text box, first long press the text box, then usually the text selection bar will appear with a `paste` button in it.
-- When typing into a text field, sometimes an auto-complete dropdown list will appear. This usually indicating this is a enum field and you should try to select the best match by clicking the corresponding one in the list.'''
-)
+- When typing into a text field, sometimes an auto-complete dropdown list will appear. This usually indicating this is a enum field and you should try to select the best match by clicking the corresponding one in the list."""
 
-open_app_PROMPT_PREFIX = (
-    '''
+open_app_PROMPT_PREFIX = """
 You are an agent who can operate an Android phone on behalf of a user. Based on user's goal/request, you need to open app
 
 When given a user request, you will try to complete it step by step. At each step, you will be given the current screenshot and a history of what you have done (in text). Based on these pieces of information and the goal, you must choose to perform one of the actions in the following list (action description followed by the JSON format) by outputting the action in the JSON format.
 - Open an app (nothing will happen if the app is not installed. So always try this first if you want to open a certain app): `{{"action_type": "open_app", "app_name": <name>}}`
-'''
-)
+"""
 
-open_app_GUIDANCE = (
-    '''Here are some useful guidelines you must follow:
+open_app_GUIDANCE = """Here are some useful guidelines you must follow:
 General:
 - You must use open_app to open an app.
 - Make sure you understand the task goal to avoid wrong actions.
 
 Action Related:
-- ALWAYS Use the `open_app` action whenever you want to open an app (nothing will happen if the app is not installed)! Otherwise you may open a wrong app asked by the task! please do not use the app drawer to open an app unless all other ways have failed. The correct way to open app drawer is to SCROLL DOWN (NOT UP) on the home screen (Use this only if the 'open_app' operation fails).'''
-)
+- ALWAYS Use the `open_app` action whenever you want to open an app (nothing will happen if the app is not installed)! Otherwise you may open a wrong app asked by the task! please do not use the app drawer to open an app unless all other ways have failed. The correct way to open app drawer is to SCROLL DOWN (NOT UP) on the home screen (Use this only if the 'open_app' operation fails)."""
 
 ACTION_SELECTION_PROMPT_TEMPLATE_LOCATE = (
     PROMPT_PREFIX
-    + '''
+    + """
 The current user goal/request is: {goal}
 
 Here is a history of what you have done so far:
 {history}
 
 The current screenshot is also given to you.
-'''
+"""
     + GUIDANCE
-    + '{additional_guidelines}'
-    + '''
+    + "{additional_guidelines}"
+    + """
 Now output an action from the above list in the correct JSON format, following the reason why you do that. Your answer should look like:
 Reason: ...
 Action: {{"action_type":...}}
 
 Your Answer:
-'''
+"""
 )
 
 
 SUMMARY_PROMPT_TEMPLATE = (
     PROMPT_PREFIX
-    + '''
+    + """
 The (overall) user goal/request is: {goal}
 Now I want you to summarize the latest step.
 You will be given the screenshot before you performed the action (which has a text label "before" on the bottom right), the action you chose (together with the reason) and the screenshot after the action was performed (A red dot is added to the screenshot if the action involves a target element/position/area, showing the located position. Carefully examine whether the red dot is pointing to the target element.).
@@ -104,7 +96,7 @@ By comparing the two screenshots and the action performed, give a brief summary 
 - Given this summary will be added into action history, it can be used as memory to include information that needs to be remembered, or shared between different apps.
 - If the located position is wrong, that is not your fault. You should try using another description style for this element next time.
 
-Summary of this step: '''
+Summary of this step: """
 )
 
 
@@ -148,7 +140,6 @@ def long_press(x: float, y: float, duration: int = 1) -> None:
 - Avoid action(s) that would lead to invalid states.
 - The generated action(s) must exist within the defined action space.
 - The generated action(s) should be enclosed within <action></action> tags.'''
-
 
 
 android_system_prompt_navigation = '''You are an autonomous GUI agent operating on the **Android** platform(s). Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
@@ -321,13 +312,13 @@ def terminate(status: str = "success", info: str | None = None) -> None:
 - The generated action(s) must exist within the defined action space.
 - The reasoning process, operation and action(s) in your response should be enclosed within <think></think>, <operation></operation> and <action></action> tags, respectively.'''
 
-android_user_prompt = '''Please generate the next move according to the UI screenshot, the task and previous operations.
+android_user_prompt = """Please generate the next move according to the UI screenshot, the task and previous operations.
 
 Task:
 {instruction}
 
 Previous operations:
-{actions}'''
+{actions}"""
 
 UITars_MOBILE_USE = """You are a GUI agent. You are given a task and your action history, with screenshots. You need to perform the next action to complete the task. 
 ## Output Format
@@ -354,7 +345,7 @@ finished(content='xxx') # Use escape characters \\', \\", and \\n in content par
 
 ## User Instruction
 {instruction}
-""" 
+"""
 
 # Unified system prompt for the Android UI automation agent
 CLAUDE_SYSTEM_PROMPT01 = """
@@ -955,7 +946,9 @@ Valid examples (no extra characters):
 {"action_type":"status","goal_status":"complete"}
 """
 import textwrap
-Aguvis_sys_prompt = textwrap.dedent("""
+
+Aguvis_sys_prompt = textwrap.dedent(
+    """
     You are a GUI agent. You are given a task and a screenshot of the screen. You need to perform a series of pyautogui actions to complete the task.
                                 
     You have access to the following functions:
@@ -1019,16 +1012,19 @@ Aguvis_sys_prompt = textwrap.dedent("""
             "required": ["answer"]
         }
     }
-""")
+"""
+)
 
-Aguvis_user_prompt = textwrap.dedent("""
+Aguvis_user_prompt = textwrap.dedent(
+    """
 Please generate the next move according to the UI screenshot, task and previous operations.
 
 Instruction: {instruction}
 
 Previous operations: {previous_operations}
                                     
-""")
+"""
+)
 
 uitars_grounding = """You are a GUI agent. You are given a task and your action history, with screenshots. You need to perform the next action to complete the task. \n\n## Output Format\n\nAction: ...\n\n\n## Action Space\nclick(start_box='<|box_start|>(x1,y1)<|box_end|>')\n\n## User Instruction
 {instruction}"""

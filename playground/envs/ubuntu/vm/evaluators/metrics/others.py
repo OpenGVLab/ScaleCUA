@@ -23,16 +23,18 @@ def process_epub(filename: str) -> List[str]:
 
     try:
         with zipfile.ZipFile(filename, "r") as z_f:
-            with z_f.open("toc.ncx") as in_f \
-                    , open(os.path.join(base_dir, "toc.ncx"), "w") as out_f:
+            with z_f.open("toc.ncx") as in_f, open(
+                os.path.join(base_dir, "toc.ncx"), "w"
+            ) as out_f:
                 contents: str = in_f.read().decode()
                 contents = contents.splitlines()
                 for l in contents:
                     if "navPoint" not in l:
                         out_f.write(l + "\n")
             file_list.append(os.path.join(base_dir, "toc.ncx"))
-            with z_f.open("content.opf") as in_f \
-                    , open(os.path.join(base_dir, "content.opf"), "w") as out_f:
+            with z_f.open("content.opf") as in_f, open(
+                os.path.join(base_dir, "content.opf"), "w"
+            ) as out_f:
                 contents: str = in_f.read().decode()
                 contents = contents.splitlines()
                 for l in contents:
@@ -41,15 +43,22 @@ def process_epub(filename: str) -> List[str]:
             file_list.append(os.path.join(base_dir, "content.opf"))
             for f_n in z_f.namelist():
                 if f_n.endswith(".html"):
-                    with z_f.open(f_n) as in_f \
-                            , open(os.path.join(base_dir, f_n), "w") as out_f:
+                    with z_f.open(f_n) as in_f, open(
+                        os.path.join(base_dir, f_n), "w"
+                    ) as out_f:
                         html: HtmlElement = lxml.html.fromstring(
-                            ''.join(filter(lambda ch: ch != "\n" and ch != "\r"
-                                           , in_f.read().decode()
-                                           )
-                                    ).encode()
+                            "".join(
+                                filter(
+                                    lambda ch: ch != "\n" and ch != "\r",
+                                    in_f.read().decode(),
+                                )
+                            ).encode()
                         )
-                        out_f.write(lxml.html.tostring(html, pretty_print=True, encoding="unicode"))
+                        out_f.write(
+                            lxml.html.tostring(
+                                html, pretty_print=True, encoding="unicode"
+                            )
+                        )
                     file_list.append(os.path.join(base_dir, f_n))
         logger.debug("%s: %s", filename, file_list)
         return list(sorted(file_list))
@@ -59,11 +68,11 @@ def process_epub(filename: str) -> List[str]:
 
 def compare_epub(result: str, expected: str) -> float:
     if result is None:
-        return 0.
+        return 0.0
     result_files: List[str] = process_epub(result)
     expected_files: List[str] = process_epub(expected)
 
-    metric: float = 1.
+    metric: float = 1.0
     for f1, f2 in zip(result_files, expected_files):
         current_metric: float = diff_text_file(f1, f2)
         logger.debug("%s vs %s: %f", f1, f2, current_metric)
@@ -77,7 +86,7 @@ V = TypeVar("Value")
 def check_mp3_meta(result: str, meta: Dict[str, Dict[str, Union[str, V]]]) -> bool:
     # checks using _match_value_to_rule
     if result is None:
-        return 0.
+        return 0.0
 
     id3_dict = EasyID3(result)
     metric: bool = True

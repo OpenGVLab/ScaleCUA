@@ -135,6 +135,7 @@ Element section:
 
 """
 
+
 def build_user_msg_visual(query, window_title, text_rendering, candidates):
     msg = f"""\Inputs:
 

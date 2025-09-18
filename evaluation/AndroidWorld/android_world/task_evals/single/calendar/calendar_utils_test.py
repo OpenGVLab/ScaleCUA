@@ -19,21 +19,21 @@ from android_world.task_evals.single.calendar import calendar_utils
 
 class TestTimestampToLocalDatetime(parameterized.TestCase):
 
-  @parameterized.parameters([
-      ('Sunday', 7, 64),
-      ('Monday', 1, 1),
-      ('Tuesday', 2, 2),
-      ('Wednesday', 3, 4),
-      ('Thursday', 4, 8),
-      ('Friday', 5, 16),
-      ('Saturday', 6, 32),
-  ])
-  def test_valid_days(self, name: str, day_of_week: int, expected: int):
-    result = calendar_utils.generate_simple_calendar_weekly_repeat_rule(
-        day_of_week
+    @parameterized.parameters(
+        [
+            ("Sunday", 7, 64),
+            ("Monday", 1, 1),
+            ("Tuesday", 2, 2),
+            ("Wednesday", 3, 4),
+            ("Thursday", 4, 8),
+            ("Friday", 5, 16),
+            ("Saturday", 6, 32),
+        ]
     )
-    self.assertEqual(result, expected, f'Test failed for {name}')
+    def test_valid_days(self, name: str, day_of_week: int, expected: int):
+        result = calendar_utils.generate_simple_calendar_weekly_repeat_rule(day_of_week)
+        self.assertEqual(result, expected, f"Test failed for {name}")
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

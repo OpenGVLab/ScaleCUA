@@ -1,4 +1,5 @@
 """base class for evaluation"""
+
 import string
 import time
 from typing import Any, Optional, Tuple, Union, List, Dict
@@ -17,7 +18,7 @@ from env.web.webarena.evaluation.vab_helper_functions import (
     PseudoPage,
     llm_fuzzy_match,
     llm_ua_match,
-    generate_from_openai_chat_completion
+    generate_from_openai_chat_completion,
 )
 
 
@@ -27,10 +28,7 @@ class Evaluator(object):
 
     @beartype
     def __call__(
-        self,
-        action_list: List,
-        task_config: Dict,
-        page: Page | PseudoPage
+        self, action_list: List, task_config: Dict, page: Page | PseudoPage
     ) -> float:
         raise NotImplementedError
 
@@ -41,7 +39,11 @@ class Evaluator(object):
                 if action["name"] == "response":
                     return action["parameters"]["answer"]
             if action_list[-1]["name"] == "terminate":
-                return action_list[-1]["parameters"]["info"] if "info" in action_list[-1]["parameters"] else ""
+                return (
+                    action_list[-1]["parameters"]["info"]
+                    if "info" in action_list[-1]["parameters"]
+                    else ""
+                )
             else:
                 return ""
         except Exception:
@@ -136,8 +138,7 @@ class StringEvaluator(Evaluator):
         if isinstance(pred, int):
             pred = str(pred)
         return float(
-            StringEvaluator.clean_answer(pred)
-            == StringEvaluator.clean_answer(ref)
+            StringEvaluator.clean_answer(pred) == StringEvaluator.clean_answer(ref)
         )
 
     @staticmethod
@@ -169,7 +170,7 @@ class StringEvaluator(Evaluator):
         self,
         action_list: List,
         task_config: Dict,
-        page: Page | PseudoPage | None = None
+        page: Page | PseudoPage | None = None,
     ) -> float:
         pred = self.get_last_response_action(action_list)
         pred = self.clean_answer(pred)
@@ -191,9 +192,7 @@ class StringEvaluator(Evaluator):
                             value_or = v.split(" |OR| ")
                             score *= any(
                                 [
-                                    NumericEvaluator.compare_inequality(
-                                        pred, value
-                                    )
+                                    NumericEvaluator.compare_inequality(pred, value)
                                     for value in value_or
                                 ]
                             )
@@ -202,14 +201,14 @@ class StringEvaluator(Evaluator):
                     assert isinstance(value, list)
                     for must_value in value:
                         value_or = must_value.split(" |OR| ")
-                        score *= any([self.must_include(ref=v, pred=pred) for v in value_or])
+                        score *= any(
+                            [self.must_include(ref=v, pred=pred) for v in value_or]
+                        )
 
                 case "must_exclude":
                     assert isinstance(value, list)
                     for must_excl_value in value:
-                        score *= self.must_exclude(
-                            ref=must_excl_value, pred=pred
-                        )
+                        score *= self.must_exclude(ref=must_excl_value, pred=pred)
 
                 case "one_of":
                     assert isinstance(value, list)
@@ -237,7 +236,7 @@ class StringEvaluator(Evaluator):
                             )
                     else:
                         assert isinstance(value, list)
-                        reference = ', '.join(value)
+                        reference = ", ".join(value)
                         if pred != "":
                             score *= self.fuzzy_match(
                                 ref=reference, pred=pred, intent=intent
@@ -245,6 +244,7 @@ class StringEvaluator(Evaluator):
                         else:
                             score *= 0
         return score
+
 
 # @beartype
 # class StringSoftEvaluator(Evaluator):
@@ -256,7 +256,7 @@ class StringEvaluator(Evaluator):
 #         task_config: Dict,
 #         page: Page | PseudoPage | None = None
 #     ) -> float:
-        
+
 #         last_action = self.get_last_response_action(action_list)
 #         # 获取最后一个动作，但其实应该是倒数第二个动作
 #         pred = last_action["parameters"]["answer"]
@@ -272,10 +272,7 @@ class URLExactEvaluator(Evaluator):
     """Check whether the URL is exactly the same as of the reference URLs"""
 
     def __call__(
-        self,
-        action_list: List,
-        task_config: Dict,
-        page: Page | PseudoPage
+        self, action_list: List, task_config: Dict, page: Page | PseudoPage
     ) -> float:
 
         def clean_url(url: str) -> str:
@@ -287,10 +284,10 @@ class URLExactEvaluator(Evaluator):
             return url
 
         pred = clean_url(page.url)
-        print(f'Pred Url: {pred}')
+        print(f"Pred Url: {pred}")
         ref_urls = task_config["eval"]["reference_url"].split(" |OR| ")
         ref_urls = [clean_url(url) for url in ref_urls]
-        print(f'Ref Url: {ref_urls}')
+        print(f"Ref Url: {ref_urls}")
         matching_rule = task_config["eval"].get("url_note", "EXACT")
         if matching_rule == "EXACT":
             if pred in ref_urls:
@@ -316,10 +313,7 @@ class HTMLContentExactEvaluator(Evaluator):
         return llm_fuzzy_match(pred, ref, intent)
 
     def __call__(
-        self,
-        action_list: List,
-        task_config: Dict,
-        page: Page | PseudoPage
+        self, action_list: List, task_config: Dict, page: Page | PseudoPage
     ) -> float:
 
         targets = task_config["eval"]["program_html"]
@@ -343,9 +337,7 @@ class HTMLContentExactEvaluator(Evaluator):
             if not locator.strip():
                 selected_element = page.content()
             # use JS to select the element
-            elif locator.startswith("document.") or locator.startswith(
-                "[...document."
-            ):
+            elif locator.startswith("document.") or locator.startswith("[...document."):
                 if "prep_actions" in target:
                     try:
                         for prep_action in target["prep_actions"]:
@@ -408,14 +400,10 @@ class HTMLContentExactEvaluator(Evaluator):
                         content, pred=selected_element
                     )
             elif "required_values" in target["required_contents"]:
-                required_values = target["required_contents"][
-                    "required_values"
-                ]
+                required_values = target["required_contents"]["required_values"]
                 assert isinstance(required_values, list)
                 if isinstance(selected_element, str):
-                    selected_element = NumericEvaluator.str_2_int(
-                        selected_element
-                    )
+                    selected_element = NumericEvaluator.str_2_int(selected_element)
                 if selected_element is None:
                     score = 0.0
                 else:
@@ -432,9 +420,9 @@ class HTMLContentExactEvaluator(Evaluator):
             elif "fuzzy_match" in target["required_contents"]:
                 required_contents = target["required_contents"]["fuzzy_match"]
                 intent = task_config["intent"]
-                
+
                 assert isinstance(required_contents, list)
-                reference = ', '.join(required_contents)
+                reference = ", ".join(required_contents)
                 score *= self.fuzzy_match(
                     ref=reference, pred=selected_element, intent=intent
                 )
@@ -444,6 +432,7 @@ class HTMLContentExactEvaluator(Evaluator):
                 )
 
         return score
+
 
 def get_image_ssim(image_pixels, exact_match_pixels):
     """
@@ -459,7 +448,7 @@ def get_image_ssim(image_pixels, exact_match_pixels):
     # Convert both images to grayscale for SSIM comparison
     image1 = image_pixels.convert("L")
     image2 = exact_match_pixels.convert("L")
-    
+
     # Resize the images to the same size if they differ
     if image1.size != image2.size:
         image2 = image2.resize(image1.size)
@@ -472,6 +461,7 @@ def get_image_ssim(image_pixels, exact_match_pixels):
     ssim_value = ssim(image1_np, image2_np)
 
     return ssim_value
+
 
 @beartype
 class PageImageEvaluator(Evaluator):
@@ -530,7 +520,9 @@ class PageImageEvaluator(Evaluator):
                         "content": [
                             {
                                 "type": "image_url",
-                                "image_url": {"url": f"data:image/png;base64,{encoded_string}"},
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{encoded_string}"
+                                },
                             },
                             {
                                 "type": "text",
@@ -557,12 +549,12 @@ class PageImageEvaluator(Evaluator):
                 responses.append(f"[ERROR]: {str(e)}")
 
         return responses
-    
+
     def __call__(
         self,
         action_list: List,
         task_config: Dict,
-        page: Page | PseudoPage | None = None
+        page: Page | PseudoPage | None = None,
     ) -> float:
         score = 1.0
 
@@ -588,9 +580,7 @@ class PageImageEvaluator(Evaluator):
                 elements = page.query_selector_all(locator)
                 images = []
                 for element in elements:
-                    is_img = element.evaluate(
-                        'element => element.tagName === "IMG"'
-                    )
+                    is_img = element.evaluate('element => element.tagName === "IMG"')
                     if is_img:
                         images.append(element)
                     else:
@@ -606,13 +596,9 @@ class PageImageEvaluator(Evaluator):
                 try:
                     # Get image from URL.
                     image_url = image.get_attribute("src")
-                    if not image_url.startswith(
-                        ("http://", "https://", "www.")
-                    ):
+                    if not image_url.startswith(("http://", "https://", "www.")):
                         image_url = urljoin(page.url, image_url)
-                    image = Image.open(
-                        requests.get(image_url, stream=True).raw
-                    )
+                    image = Image.open(requests.get(image_url, stream=True).raw)
                     all_image_pixels.append(image)
                 except Exception as e:
                     print("[WARNING]: ", e)
@@ -632,18 +618,12 @@ class PageImageEvaluator(Evaluator):
                         all_image_pixels, [prompt] * len(all_image_pixels)
                     )
                     score *= float(
-                        any(
-                            [answer.lower() in ans.lower() for ans in pred_ans]
-                        )
+                        any([answer.lower() in ans.lower() for ans in pred_ans])
                     )
 
                 if "eval_fuzzy_image_match" in query:
-                    ssim_threshold = query.get(
-                        "ssim_threshold", self.ssim_threshold
-                    )
-                    exact_match_imgs = query["eval_fuzzy_image_match"].split(
-                        " |OR| "
-                    )
+                    ssim_threshold = query.get("ssim_threshold", self.ssim_threshold)
+                    exact_match_imgs = query["eval_fuzzy_image_match"].split(" |OR| ")
                     all_exact_match_pixels = []
 
                     for exact_match_img in exact_match_imgs:
@@ -659,9 +639,7 @@ class PageImageEvaluator(Evaluator):
                     found_exact_match = False
                     for exact_match_pixels in all_exact_match_pixels:
                         for image_pixels in all_image_pixels:
-                            ssim = get_image_ssim(
-                                image_pixels, exact_match_pixels
-                            )
+                            ssim = get_image_ssim(image_pixels, exact_match_pixels)
                             if ssim > ssim_threshold:
                                 found_exact_match = True
                                 break
@@ -675,10 +653,7 @@ class EvaluatorComb:
         self.evaluators = evaluators
 
     def __call__(
-        self,
-        action_list: List,
-        task_config: Dict,
-        page: Page | PseudoPage
+        self, action_list: List, task_config: Dict, page: Page | PseudoPage
     ) -> float:
 
         score = 1.0
@@ -690,9 +665,7 @@ class EvaluatorComb:
 
 
 @beartype
-def webarena_evaluator_router(
-    task_config: dict, captioning_fn=None
-) -> EvaluatorComb:
+def webarena_evaluator_router(task_config: dict, captioning_fn=None) -> EvaluatorComb:
     """Router to get the evaluator class"""
     eval_types = task_config["eval"]["eval_types"]
     evaluators: list[Evaluator] = []

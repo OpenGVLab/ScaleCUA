@@ -3,15 +3,25 @@ import os
 import backoff
 import numpy as np
 from anthropic import Anthropic
-from openai import APIConnectionError, APIError, AzureOpenAI, OpenAI, RateLimitError, DefaultHttpxClient
+from openai import (
+    APIConnectionError,
+    APIError,
+    AzureOpenAI,
+    OpenAI,
+    RateLimitError,
+    DefaultHttpxClient,
+)
 import httpx
+
 
 class LMMEngine:
     pass
 
 
 class LMMEngineOpenAI(LMMEngine):
-    def __init__(self, base_url = None, api_key=None, model=None, rate_limit=-1, **kwargs):
+    def __init__(
+        self, base_url=None, api_key=None, model=None, rate_limit=-1, **kwargs
+    ):
         assert model is not None, "model must be provided"
         self.model = model
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
@@ -23,9 +33,9 @@ class LMMEngineOpenAI(LMMEngine):
 
         self.api_key = api_key
         self.request_interval = 0 if rate_limit == -1 else 60.0 / rate_limit
-        if self.base_url is None: 
+        if self.base_url is None:
             self.base_url = "https://api.openai.com/v1"
-        
+
         self.llm_client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
     @backoff.on_exception(
@@ -34,17 +44,13 @@ class LMMEngineOpenAI(LMMEngine):
     def generate(self, messages, temperature=0.0, max_new_tokens=None, **kwargs):
         """Generate the next message based on previous messages"""
         result = self.llm_client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=max_new_tokens if max_new_tokens else 4096,
-                temperature=temperature,
-                **kwargs,
-            )
-        return (
-            result
-            .choices[0]
-            .message.content
+            model=self.model,
+            messages=messages,
+            max_tokens=max_new_tokens if max_new_tokens else 4096,
+            temperature=temperature,
+            **kwargs,
         )
+        return result.choices[0].message.content
 
 
 class LMMEngineAnthropic(LMMEngine):
@@ -140,12 +146,15 @@ class OpenAIEmbeddingEngine(LMMEngine):
     def get_embeddings(self, text: str) -> np.ndarray:
         self.base_url = os.getenv("OPENAI_BASE_URL")
         self.api_key = os.getenv("OPENAI_API_KEY")
-        if 'claudeshop' not in self.base_url:
-            client = OpenAI(api_key=self.api_key, 
-                            base_url = self.base_url,
-                            http_client = DefaultHttpxClient(
-                            proxies=os.getenv("API_PROXY"),
-                            transport=httpx.HTTPTransport(local_address="0.0.0.0")))
+        if "claudeshop" not in self.base_url:
+            client = OpenAI(
+                api_key=self.api_key,
+                base_url=self.base_url,
+                http_client=DefaultHttpxClient(
+                    proxies=os.getenv("API_PROXY"),
+                    transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+                ),
+            )
         else:
             client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         response = client.embeddings.create(model=self.model, input=text)

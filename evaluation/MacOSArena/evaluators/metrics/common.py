@@ -1,5 +1,6 @@
 from typing import List, Union
 
+
 def find_str(value: str, keyword: str) -> bool:
     """
     Checks if the keyword is a substring of the given value.
@@ -10,7 +11,10 @@ def find_str(value: str, keyword: str) -> bool:
     """
     return keyword in value
 
-def find_str_in_list(value: Union[str, List[str]], keyword: Union[str, List[str]]) -> bool:
+
+def find_str_in_list(
+    value: Union[str, List[str]], keyword: Union[str, List[str]]
+) -> bool:
     """
     Checks if any item in `value` contains the keyword(s).
 
@@ -31,7 +35,8 @@ def find_str_in_list(value: Union[str, List[str]], keyword: Union[str, List[str]
         return any(all(k in v for k in keyword) for v in value)
     else:
         raise TypeError("Keyword must be a string or a list of strings")
-    
+
+
 def find_str_in_list_ci(value: List[str], keyword: Union[str, List[str]]) -> bool:
     """
     Case-insensitive version of find_str_in_list:
@@ -93,6 +98,7 @@ def dict_equal(value: dict, expected: dict) -> bool:
         return False
     return value == expected
 
+
 def is_true(value) -> bool:
     """
     Checks if the value is explicitly True (boolean type).
@@ -102,6 +108,7 @@ def is_true(value) -> bool:
     """
     return value is True
 
+
 def is_false(value) -> bool:
     """
     Checks if the value is explicitly False (boolean type).
@@ -110,6 +117,7 @@ def is_false(value) -> bool:
     :return: True if value is False, else False.
     """
     return value is False
+
 
 def check_list_length(lst: list, op: str, number: int) -> bool:
     """
@@ -135,7 +143,8 @@ def check_list_length(lst: list, op: str, number: int) -> bool:
         return length != number
     else:
         raise ValueError(f"Unsupported operator: {op}")
-    
+
+
 def compare_numbers(a: float, op: str, b: float) -> bool:
     """
     Compares two numbers using a specified operator.
@@ -160,6 +169,7 @@ def compare_numbers(a: float, op: str, b: float) -> bool:
     else:
         raise ValueError(f"Unsupported operator: {op}")
 
+
 def contains_element(lst: list, element: str) -> bool:
     """
     Checks if a specific element exists in the list.
@@ -170,5 +180,8 @@ def contains_element(lst: list, element: str) -> bool:
     """
     return element in lst
 
-def check_list_length_and_contains_element(lst: list, op: str, number: int, element: str):
+
+def check_list_length_and_contains_element(
+    lst: list, op: str, number: int, element: str
+):
     return check_list_length(lst, op, number) and contains_element(lst, element)

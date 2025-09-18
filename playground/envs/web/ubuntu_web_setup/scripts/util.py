@@ -1,4 +1,5 @@
 """util.py"""
+
 from typing import Any, Optional, Tuple, Union, List, Dict
 import json
 from datetime import datetime, timezone
@@ -12,11 +13,14 @@ from beartype import beartype
 from beartype.typing import Dict, List
 from playwright.sync_api import Page
 import logging
+
 logger = logging.getLogger("logger")
+
 
 def get_site_comb_from_filepath(file_path: str) -> list[str]:
     comb = os.path.basename(file_path).rsplit("_", 1)[0].split(".")
     return comb
+
 
 KEYBOARD_KEYS = [
     "\t",
@@ -358,13 +362,14 @@ GITLAB = os.environ["GITLAB"]
 REDDIT = os.environ["REDDIT"]
 MAP = os.environ["MAP"]
 
+
 def extract_ports():
     urls = {
         "SHOPPING": SHOPPING,
         "SHOPPING_ADMIN": SHOPPING_ADMIN,
         "GITLAB": GITLAB,
         "REDDIT": REDDIT,
-        "MAP": MAP
+        "MAP": MAP,
     }
 
     ports = []
@@ -380,16 +385,18 @@ def extract_ports():
 
     return ports
 
+
 EXPLICITLY_ALLOWED_PORTS = extract_ports()
 
+
 def generate_from_openai_chat_completion(
-        messages: list[dict[str, str]],
-        model: str,
-        temperature: float,
-        max_tokens: int,
-        top_p: float,
-        context_length: int,
-        stop_token: str | None = None,
+    messages: list[dict[str, str]],
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    top_p: float,
+    context_length: int,
+    stop_token: str | None = None,
 ) -> str:
     max_attempt = 5
     cur_attempt = 0
@@ -399,7 +406,9 @@ def generate_from_openai_chat_completion(
             "OPENAI_API_KEY environment variable must be set when using OpenAI API."
         )
 
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], base_url=os.environ["OPENAI_BASE_URL"])
+    client = OpenAI(
+        api_key=os.environ["OPENAI_API_KEY"], base_url=os.environ["OPENAI_BASE_URL"]
+    )
     while cur_attempt < max_attempt:
         try:
             response = client.chat.completions.create(
@@ -463,9 +472,7 @@ def shopping_get_latest_order_url() -> str:
         "searchCriteria[pageSize]": "1",
     }
 
-    response = requests.get(
-        f"{SHOPPING}/rest/V1/orders", params=params, headers=header
-    )
+    response = requests.get(f"{SHOPPING}/rest/V1/orders", params=params, headers=header)
     assert response.status_code == 200
     response_obj = response.json()["items"][0]
     order_id = int(response_obj["increment_id"])
@@ -553,9 +560,7 @@ def shopping_get_sku_product_page_url(sku: str) -> str:
         "Authorization": f"Bearer {shopping_get_auth_token()}",
         "Content-Type": "application/json",
     }
-    response = requests.get(
-        f"{SHOPPING}/rest/V1/products/{sku}", headers=header
-    )
+    response = requests.get(f"{SHOPPING}/rest/V1/products/{sku}", headers=header)
     assert response.status_code == 200
     response_obj = response.json()
     if len(response_obj) == 0:
@@ -568,7 +573,7 @@ def shopping_get_sku_product_page_url(sku: str) -> str:
 
 @beartype
 def shopping_get_all_product_order(
-        page: Page ,
+    page: Page,
 ) -> List[Dict[str, str]]:
     """
     Get info of all product in a given order page.
@@ -634,7 +639,7 @@ def shopping_get_all_product_order(
 
 
 @beartype
-def shopping_get_order_product_name_list(page: Page ) -> str:
+def shopping_get_order_product_name_list(page: Page) -> str:
     try:
         products = shopping_get_all_product_order(page)
 
@@ -644,9 +649,7 @@ def shopping_get_order_product_name_list(page: Page ) -> str:
 
 
 @beartype
-def shopping_get_order_product_quantity(
-        page: Page , sku: str
-) -> int:
+def shopping_get_order_product_quantity(page: Page, sku: str) -> int:
     try:
         if "|OR|" in sku:
             skus = sku.split(" |OR| ")
@@ -664,9 +667,7 @@ def shopping_get_order_product_quantity(
 
 
 @beartype
-def shopping_get_order_product_option(
-        page: Page , sku: str, option_name: str
-) -> str:
+def shopping_get_order_product_option(page: Page, sku: str, option_name: str) -> str:
     try:
         products = shopping_get_all_product_order(page)
         for product in products:
@@ -679,9 +680,7 @@ def shopping_get_order_product_option(
 
 
 @beartype
-def shopping_get_product_attributes(
-        page: Page , attribute: str
-) -> str:
+def shopping_get_product_attributes(page: Page, attribute: str) -> str:
     # Get the values of all cells in the table for the given attribute
     try:
         result = page.evaluate(
@@ -716,7 +715,7 @@ def shopping_get_product_attributes(
 
 
 @beartype
-def shopping_get_product_price(page: Page ) -> Union[float, int]:
+def shopping_get_product_price(page: Page) -> Union[float, int]:
     """Get the price of the product on the shopping website."""
     try:
         result = page.evaluate(
@@ -735,7 +734,7 @@ def shopping_get_product_price(page: Page ) -> Union[float, int]:
 
 
 @beartype
-def shopping_get_num_reviews(page: Page ) -> int:
+def shopping_get_num_reviews(page: Page) -> int:
     """Get the price of the product on the shopping website."""
     try:
         result = page.evaluate(
@@ -754,7 +753,7 @@ def shopping_get_num_reviews(page: Page ) -> int:
 
 
 @beartype
-def shopping_get_rating_as_percentage(page: Page ) -> int:
+def shopping_get_rating_as_percentage(page: Page) -> int:
     """Get the rating of the product on the shopping website as a percentage out of 100."""
     try:
         rating = page.evaluate(
@@ -772,7 +771,7 @@ def shopping_get_rating_as_percentage(page: Page ) -> int:
 
 
 @beartype
-def get_query_text(page: Page , selector: str) -> str:
+def get_query_text(page: Page, selector: str) -> str:
     """Get the text content of the element matching the given selector.
 
     Note that this function DOES NOT perform downcasing.
@@ -796,7 +795,7 @@ def get_query_text(page: Page , selector: str) -> str:
 
 
 @beartype
-def get_query_text_lowercase(page: Page , selector: str) -> str:
+def get_query_text_lowercase(page: Page, selector: str) -> str:
     """Get the lowercase text content of the element matching the given selector."""
     return get_query_text(page, selector).lower()
 
@@ -849,7 +848,7 @@ def reddit_get_post_comment_tree(page: Page) -> Dict[str, Any]:
 
 @beartype
 def reddit_get_latest_comment_obj_by_username(
-        page: Page , username: str
+    page: Page, username: str
 ) -> Dict[str, Any]:
     try:
         comment_tree = reddit_get_post_comment_tree(page)
@@ -880,9 +879,7 @@ def reddit_get_latest_comment_obj_by_username(
 
 
 @beartype
-def reddit_get_latest_comment_content_by_username(
-        page: Page , username: str
-) -> str:
+def reddit_get_latest_comment_content_by_username(page: Page, username: str) -> str:
     try:
         comment = reddit_get_latest_comment_obj_by_username(page, username)
         content = comment["content"]
@@ -895,7 +892,7 @@ def reddit_get_latest_comment_content_by_username(
 
 @beartype
 def reddit_get_parent_comment_obj_of_latest_comment_by_username(
-        page: Page , username: str
+    page: Page, username: str
 ) -> Dict[str, Any]:
     try:
         comment_tree = reddit_get_post_comment_tree(page)
@@ -927,7 +924,7 @@ def reddit_get_parent_comment_obj_of_latest_comment_by_username(
 
 @beartype
 def reddit_get_parent_comment_username_of_latest_comment_by_username(
-        page: Page , username: str
+    page: Page, username: str
 ) -> str:
     try:
         comment = reddit_get_parent_comment_obj_of_latest_comment_by_username(
@@ -942,9 +939,7 @@ def reddit_get_parent_comment_username_of_latest_comment_by_username(
 
 
 @beartype
-def gitlab_get_project_memeber_role(
-        page: Page , account_name: str
-) -> str:
+def gitlab_get_project_memeber_role(page: Page, account_name: str) -> str:
     # get the account index
     try:
         account_idx = page.evaluate(
@@ -993,8 +988,8 @@ def llm_fuzzy_match(pred: str, reference: str, question: str) -> float:
         {"role": "user", "content": message},
     ]
 
-    logger.info(f'[R] {reference}')
-    logger.info(f'[P] {pred}')
+    logger.info(f"[R] {reference}")
+    logger.info(f"[P] {pred}")
 
     response = generate_from_openai_chat_completion(
         model="gpt-4o-2024-11-20",
@@ -1058,12 +1053,7 @@ class Evaluator(object):
         self.eval_tag = eval_tag
 
     @beartype
-    def __call__(
-            self,
-            action_list: List,
-            task_config: Dict,
-            page: Page 
-    ) -> float:
+    def __call__(self, action_list: List, task_config: Dict, page: Page) -> float:
         raise NotImplementedError
 
     @staticmethod
@@ -1073,7 +1063,11 @@ class Evaluator(object):
                 if action["name"] == "response":
                     return action["parameters"]["answer"]
             if action_list[-1]["name"] == "terminate":
-                return action_list[-1]["parameters"]["info"] if "info" in action_list[-1]["parameters"] else ""
+                return (
+                    action_list[-1]["parameters"]["info"]
+                    if "info" in action_list[-1]["parameters"]
+                    else ""
+                )
             else:
                 return ""
         except Exception:
@@ -1115,7 +1109,7 @@ class NumericEvaluator(Evaluator):
     @staticmethod
     @beartype
     def compare_inequality(
-            value: Union[int, float], inequality: str, tol: float = 1e-8
+        value: Union[int, float], inequality: str, tol: float = 1e-8
     ) -> bool:
         """
         Compare a value (int or float) against an inequality string.
@@ -1168,8 +1162,7 @@ class StringEvaluator(Evaluator):
         if isinstance(pred, int):
             pred = str(pred)
         return float(
-            StringEvaluator.clean_answer(pred)
-            == StringEvaluator.clean_answer(ref)
+            StringEvaluator.clean_answer(pred) == StringEvaluator.clean_answer(ref)
         )
 
     @staticmethod
@@ -1197,10 +1190,7 @@ class StringEvaluator(Evaluator):
         return llm_ua_match(pred, ref, intent)
 
     def __call__(
-            self,
-            action_list: List,
-            task_config: Dict,
-            page: Page  | None = None
+        self, action_list: List, task_config: Dict, page: Page | None = None
     ) -> float:
         pred = self.get_last_response_action(action_list)
         pred = self.clean_answer(pred)
@@ -1222,9 +1212,7 @@ class StringEvaluator(Evaluator):
                             value_or = v.split(" |OR| ")
                             score *= any(
                                 [
-                                    NumericEvaluator.compare_inequality(
-                                        pred, value
-                                    )
+                                    NumericEvaluator.compare_inequality(pred, value)
                                     for value in value_or
                                 ]
                             )
@@ -1233,14 +1221,14 @@ class StringEvaluator(Evaluator):
                     assert isinstance(value, list)
                     for must_value in value:
                         value_or = must_value.split(" |OR| ")
-                        score *= any([self.must_include(ref=v, pred=pred) for v in value_or])
+                        score *= any(
+                            [self.must_include(ref=v, pred=pred) for v in value_or]
+                        )
 
                 case "must_exclude":
                     assert isinstance(value, list)
                     for must_excl_value in value:
-                        score *= self.must_exclude(
-                            ref=must_excl_value, pred=pred
-                        )
+                        score *= self.must_exclude(ref=must_excl_value, pred=pred)
 
                 case "one_of":
                     assert isinstance(value, list)
@@ -1268,7 +1256,7 @@ class StringEvaluator(Evaluator):
                             )
                     else:
                         assert isinstance(value, list)
-                        reference = ', '.join(value)
+                        reference = ", ".join(value)
                         if pred != "":
                             score *= self.fuzzy_match(
                                 ref=reference, pred=pred, intent=intent
@@ -1282,12 +1270,7 @@ class StringEvaluator(Evaluator):
 class URLExactEvaluator(Evaluator):
     """Check whether the URL is exactly the same as of the reference URLs"""
 
-    def __call__(
-            self,
-            action_list: List,
-            task_config: Dict,
-            page: Page 
-    ) -> float:
+    def __call__(self, action_list: List, task_config: Dict, page: Page) -> float:
 
         def clean_url(url: str) -> str:
             url = str(url)
@@ -1298,10 +1281,10 @@ class URLExactEvaluator(Evaluator):
             return url
 
         pred = clean_url(page.url)
-        print(f'Pred Url: {pred}')
+        print(f"Pred Url: {pred}")
         ref_urls = task_config["eval"]["reference_url"].split(" |OR| ")
         ref_urls = [clean_url(url) for url in ref_urls]
-        print(f'Ref Url: {ref_urls}')
+        print(f"Ref Url: {ref_urls}")
         matching_rule = task_config["eval"].get("url_note", "EXACT")
         if matching_rule == "EXACT":
             if pred in ref_urls:
@@ -1326,12 +1309,7 @@ class HTMLContentExactEvaluator(Evaluator):
     def fuzzy_match(ref: str, pred: str, intent: str) -> float:
         return llm_fuzzy_match(pred, ref, intent)
 
-    def __call__(
-            self,
-            action_list: List,
-            task_config: Dict,
-            page: Page 
-    ) -> float:
+    def __call__(self, action_list: List, task_config: Dict, page: Page) -> float:
 
         targets = task_config["eval"]["program_html"]
 
@@ -1354,9 +1332,7 @@ class HTMLContentExactEvaluator(Evaluator):
             if not locator.strip():
                 selected_element = page.content()
             # use JS to select the element
-            elif locator.startswith("document.") or locator.startswith(
-                    "[...document."
-            ):
+            elif locator.startswith("document.") or locator.startswith("[...document."):
                 if "prep_actions" in target:
                     try:
                         for prep_action in target["prep_actions"]:
@@ -1419,14 +1395,10 @@ class HTMLContentExactEvaluator(Evaluator):
                         content, pred=selected_element
                     )
             elif "required_values" in target["required_contents"]:
-                required_values = target["required_contents"][
-                    "required_values"
-                ]
+                required_values = target["required_contents"]["required_values"]
                 assert isinstance(required_values, list)
                 if isinstance(selected_element, str):
-                    selected_element = NumericEvaluator.str_2_int(
-                        selected_element
-                    )
+                    selected_element = NumericEvaluator.str_2_int(selected_element)
                 if selected_element is None:
                     score = 0.0
                 else:
@@ -1445,7 +1417,7 @@ class HTMLContentExactEvaluator(Evaluator):
                 intent = task_config["intent"]
 
                 assert isinstance(required_contents, list)
-                reference = ', '.join(required_contents)
+                reference = ", ".join(required_contents)
                 score *= self.fuzzy_match(
                     ref=reference, pred=selected_element, intent=intent
                 )
@@ -1456,16 +1428,12 @@ class HTMLContentExactEvaluator(Evaluator):
 
         return score
 
+
 class EvaluatorComb:
     def __init__(self, evaluators: list[Evaluator]) -> None:
         self.evaluators = evaluators
 
-    def __call__(
-            self,
-            action_list: List,
-            task_config: Dict,
-            page: Page 
-    ) -> float:
+    def __call__(self, action_list: List, task_config: Dict, page: Page) -> float:
         score = 1.0
         for evaluator in self.evaluators:
             cur_score = evaluator(action_list, task_config, page)
@@ -1475,9 +1443,7 @@ class EvaluatorComb:
 
 
 @beartype
-def webarena_evaluator_router(
-        task_config: dict, captioning_fn=None
-) -> EvaluatorComb:
+def webarena_evaluator_router(task_config: dict, captioning_fn=None) -> EvaluatorComb:
     """Router to get the evaluator class"""
     eval_types = task_config["eval"]["eval_types"]
     evaluators: list[Evaluator] = []

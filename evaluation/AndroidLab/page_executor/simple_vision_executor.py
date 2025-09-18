@@ -20,20 +20,32 @@ def get_id_from_element(elem):
         elem_id = elem.attrib["resource-id"].replace(":", ".").replace("/", "_")
     else:
         elem_id = f"{elem.attrib['class']}_{elem_w}_{elem_h}"
-    if "content-desc" in elem.attrib and elem.attrib["content-desc"] and len(elem.attrib["content-desc"]) < 20:
-        content_desc = elem.attrib['content-desc'].replace("/", "_").replace(" ", "").replace(":", "_")
+    if (
+        "content-desc" in elem.attrib
+        and elem.attrib["content-desc"]
+        and len(elem.attrib["content-desc"]) < 20
+    ):
+        content_desc = (
+            elem.attrib["content-desc"]
+            .replace("/", "_")
+            .replace(" ", "")
+            .replace(":", "_")
+        )
         elem_id += f"_{content_desc}"
     return elem_id
 
 
 def traverse_tree(xml_path, elem_list, attrib, add_index=False):
     path = []
-    for event, elem in ET.iterparse(xml_path, ['start', 'end']):
-        if event == 'start':
+    for event, elem in ET.iterparse(xml_path, ["start", "end"]):
+        if event == "start":
             path.append(elem)
             if attrib in elem.attrib:
                 if elem.attrib[attrib] != "true":
-                    if elem.attrib["text"].strip() == "" and elem.attrib["content-desc"].strip() == "":
+                    if (
+                        elem.attrib["text"].strip() == ""
+                        and elem.attrib["content-desc"].strip() == ""
+                    ):
                         continue
                 parent_prefix = ""
                 if len(path) > 1:
@@ -50,15 +62,22 @@ def traverse_tree(xml_path, elem_list, attrib, add_index=False):
                 close = False
                 for e in elem_list:
                     bbox = e.bbox
-                    center_ = (bbox[0][0] + bbox[1][0]) // 2, (bbox[0][1] + bbox[1][1]) // 2
-                    dist = (abs(center[0] - center_[0]) ** 2 + abs(center[1] - center_[1]) ** 2) ** 0.5
+                    center_ = (bbox[0][0] + bbox[1][0]) // 2, (
+                        bbox[0][1] + bbox[1][1]
+                    ) // 2
+                    dist = (
+                        abs(center[0] - center_[0]) ** 2
+                        + abs(center[1] - center_[1]) ** 2
+                    ) ** 0.5
                     if dist <= 5:
                         close = True
                         break
                 if not close:
-                    elem_list.append(AndroidElement(elem_id, ((x1, y1), (x2, y2)), attrib))
+                    elem_list.append(
+                        AndroidElement(elem_id, ((x1, y1), (x2, y2)), attrib)
+                    )
 
-        if event == 'end':
+        if event == "end":
             path.pop()
 
 
@@ -97,7 +116,9 @@ class VisionExecutor(TextOnlyExecutor):
             for e in clickable_list:
                 bbox = e.bbox
                 center_ = (bbox[0][0] + bbox[1][0]) // 2, (bbox[0][1] + bbox[1][1]) // 2
-                dist = (abs(center[0] - center_[0]) ** 2 + abs(center[1] - center_[1]) ** 2) ** 0.5
+                dist = (
+                    abs(center[0] - center_[0]) ** 2 + abs(center[1] - center_[1]) ** 2
+                ) ** 0.5
                 if dist <= 10:  # configs["MIN_DIST"]
                     close = True
                     break
@@ -110,51 +131,82 @@ class VisionExecutor(TextOnlyExecutor):
         tl, br = self.elem_list[index - 1].bbox
         x, y = (tl[0] + br[0]) // 2, (tl[1] + br[1]) // 2
         ret = self.controller.tap(x, y)
-        self.current_return = {"operation": "do", "action": 'Tap', "kwargs": {"element": (x, y)}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Tap",
+            "kwargs": {"element": (x, y)},
+        }
 
     def text(self, input_str):
         self.controller.text(input_str)
-        self.current_return = {"operation": "do", "action": 'Type', "kwargs": {"text": input_str}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Type",
+            "kwargs": {"text": input_str},
+        }
 
     def type(self, input_str):
         self.controller.text(input_str)
-        self.current_return = {"operation": "do", "action": 'Type', "kwargs": {"text": input_str}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Type",
+            "kwargs": {"text": input_str},
+        }
 
     def long_press(self, index):
         tl, br = self.elem_list[index - 1].bbox
         x, y = (tl[0] + br[0]) // 2, (tl[1] + br[1]) // 2
         ret = self.controller.long_press(x, y)
-        self.current_return = {"operation": "do", "action": 'Long Press', "kwargs": {"element": (x, y)}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Long Press",
+            "kwargs": {"element": (x, y)},
+        }
 
     def swipe(self, index, direction, dist):
         tl, br = self.elem_list[index - 1].bbox
         x, y = (tl[0] + br[0]) // 2, (tl[1] + br[1]) // 2
         ret = self.controller.swipe(x, y, direction, dist)
-        self.current_return = {"operation": "do", "action": 'Swipe',
-                               "kwargs": {"element": (x, y), "direction": direction, "dist": dist}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Swipe",
+            "kwargs": {"element": (x, y), "direction": direction, "dist": dist},
+        }
 
     def back(self):
         self.controller.back()
-        self.current_return = {"operation": "do", "action": 'Back', "kwargs": {}}
+        self.current_return = {"operation": "do", "action": "Back", "kwargs": {}}
 
     def home(self):
         self.controller.home()
-        self.current_return = {"operation": "do", "action": 'Home', "kwargs": {}}
+        self.current_return = {"operation": "do", "action": "Home", "kwargs": {}}
 
     def wait(self, interval=5):
         if interval < 0 or interval > 10:
             interval = 5
         time.sleep(interval)
-        self.current_return = {"operation": "do", "action": 'Wait', "kwargs": {"interval": interval}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Wait",
+            "kwargs": {"interval": interval},
+        }
 
     def enter(self):
         self.controller.enter()
-        self.current_return = {"operation": "do", "action": 'Enter', "kwargs": {}}
+        self.current_return = {"operation": "do", "action": "Enter", "kwargs": {}}
 
     def launch(self, app_name):
         self.controller.launch(app_name)
-        self.current_return = {"operation": "do", "action": 'Launch', "kwargs": {"app_name": app_name}}
+        self.current_return = {
+            "operation": "do",
+            "action": "Launch",
+            "kwargs": {"app_name": app_name},
+        }
 
     def finish(self, message=None):
         self.is_finish = True
-        self.current_return = {"operation": "finish", "action": 'finish', "kwargs": {"message": message}}
+        self.current_return = {
+            "operation": "finish",
+            "action": "finish",
+            "kwargs": {"message": message},
+        }

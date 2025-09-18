@@ -1,6 +1,8 @@
 """Script to automatically login each website"""
+
 import sys
 import os
+
 sys.path.append(os.getenv("PWD"))
 import argparse
 import glob
@@ -37,9 +39,9 @@ def is_expired(
         args=[
             "--allow-running-insecure-content",
             "--disable-web-security",
-            f"--explicitly-allowed-ports={','.join(str(p) for p in EXPLICITLY_ALLOWED_PORTS)}"
+            f"--explicitly-allowed-ports={','.join(str(p) for p in EXPLICITLY_ALLOWED_PORTS)}",
         ],
-        slow_mo=SLOW_MO
+        slow_mo=SLOW_MO,
     )
     context = browser.new_context(storage_state=storage_state)
     page = context.new_page()
@@ -65,8 +67,8 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         args=[
             "--allow-running-insecure-content",
             "--disable-web-security",
-             f"--explicitly-allowed-ports={','.join(str(p) for p in EXPLICITLY_ALLOWED_PORTS)}"
-        ]
+            f"--explicitly-allowed-ports={','.join(str(p) for p in EXPLICITLY_ALLOWED_PORTS)}",
+        ],
     )
     context = browser.new_context()
     page = context.new_page()
@@ -99,7 +101,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_test_id("password-field").fill(password)
         page.get_by_test_id("sign-in-button").click()
         print(f"Gitlab re-login")
-    
+
     if "shopping" in comb:
         username = ACCOUNTS["shopping"]["username"]
         password = ACCOUNTS["shopping"]["password"]
@@ -107,7 +109,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_label("Email", exact=True).fill(username)
         page.get_by_label("Password", exact=True).fill(password)
         page.get_by_role("button", name="Sign In").click()
-        print(f'Shopping re-login')
+        print(f"Shopping re-login")
 
     context.storage_state(path=f"{auth_folder}/{'.'.join(comb)}_state.json")
     context_manager.__exit__()
@@ -135,9 +137,7 @@ def main(auth_folder: str = "./.auth") -> None:
                 url = URLS[SITES.index(cur_site)]
                 keyword = KEYWORDS[SITES.index(cur_site)]
                 match = EXACT_MATCH[SITES.index(cur_site)]
-                future = executor.submit(
-                    is_expired, Path(c_file), url, keyword, match
-                )
+                future = executor.submit(is_expired, Path(c_file), url, keyword, match)
                 futures.append(future)
 
     for i, future in enumerate(futures):

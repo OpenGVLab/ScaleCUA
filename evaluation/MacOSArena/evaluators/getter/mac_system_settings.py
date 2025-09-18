@@ -15,20 +15,19 @@ script_dir = Path(__file__).resolve().parent.parent
 logger = ProjectLogger(log_dir=script_dir / "logs")
 
 
+# tell application "System Settings"
+#     activate
+#     reveal anchor "Siri" of pane id "com.apple.Siri-Settings.extension"
+# end tell
 
-    # tell application "System Settings"
-    #     activate
-    #     reveal anchor "Siri" of pane id "com.apple.Siri-Settings.extension"
-    # end tell
 
-
-    # tell application "System Events"
-    #     tell application process "System Settings"
-    #         set selected_name to name of (first UI element of group 1 of row 1 of outline 1 of scroll area 1 of splitter group 1 of group 1 of window 1 whose selected is true)
-    #         return selected_name -- e.g., "Appearance"
-    #     end tell
-    # end tell
-    # delay 2
+# tell application "System Events"
+#     tell application process "System Settings"
+#         set selected_name to name of (first UI element of group 1 of row 1 of outline 1 of scroll area 1 of splitter group 1 of group 1 of window 1 whose selected is true)
+#         return selected_name -- e.g., "Appearance"
+#     end tell
+# end tell
+# delay 2
 def settings_ally_debug(env, expected_voice="British (Voice 4)") -> bool:
     """
     Check if Siri is enabled and the selected Siri voice is set correctly.
@@ -38,7 +37,7 @@ def settings_ally_debug(env, expected_voice="British (Voice 4)") -> bool:
     :return: True if both Siri is enabled and voice matches, False otherwise
     """
     env.connect_ssh()
-# set all_elems to every UI element of group 2 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
+    # set all_elems to every UI element of group 2 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
     apple_script = """
     set output to ""
 
@@ -96,16 +95,16 @@ def settings_ally_debug(env, expected_voice="British (Voice 4)") -> bool:
 
     return output
     """.strip()
-    
+
     #          click button 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
-    
-                # click button 1 of group 2 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
-    
-        #     try
-        #     repeat with sub_elem in UI elements of elem
-        #         set local_output to local_output & my get_info_of(sub_elem, level + 1)
-        #     end repeat
-        # end try
+
+    # click button 1 of group 2 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
+
+    #     try
+    #     repeat with sub_elem in UI elements of elem
+    #         set local_output to local_output & my get_info_of(sub_elem, level + 1)
+    #     end repeat
+    # end try
 
     try:
         command = f"osascript -e '{apple_script}'"
@@ -113,7 +112,11 @@ def settings_ally_debug(env, expected_voice="British (Voice 4)") -> bool:
         stdout, stderr = env.run_command(command)
         logger.info(stdout)
         logger.info(stderr)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
 
         if "||" not in output:
             return False
@@ -126,23 +129,25 @@ def settings_ally_debug(env, expected_voice="British (Voice 4)") -> bool:
         env.logger.error(f"Failed to check Siri settings: {e}")
         return False
 
+
 def force_close_system_settings(env: MacOSEnv):
     env.connect_ssh()
     cmds = [
         "sudo pkill -9 'System Settings'",
         "sudo pkill -9 'System Settings.app'",
         "sudo pkill -9 'System Preferences'",
-        "sudo pkill -9 securityagent"
+        "sudo pkill -9 securityagent",
     ]
     for cmd in cmds:
         env.run_command(f"{cmd}")
-        
+
+
 def settings_reset_window_status(env: MacOSEnv):
-    send_esc_script = '''
+    send_esc_script = """
     tell application "System Events"
         key code 53 -- Esc key
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{send_esc_script.strip()}'")
     time.sleep(0.5)
     env.connect_ssh()
@@ -165,7 +170,7 @@ def setting_get_siri_status_and_voice(env: MacOSEnv) -> dict:
     """
     env.connect_ssh()
     force_close_system_settings(env)
-    
+
     open_script = """
     tell application "System Settings"
         if it is running then quit
@@ -180,7 +185,7 @@ def setting_get_siri_status_and_voice(env: MacOSEnv) -> dict:
 
     time.sleep(5)
 
-    apple_script = '''
+    apple_script = """
     tell application "System Events"
         tell application process "System Settings"
             try
@@ -198,28 +203,26 @@ def setting_get_siri_status_and_voice(env: MacOSEnv) -> dict:
             return "Siri Enabled: " & siri_enabled & " | Voice: " & voice_info
         end tell
     end tell
-    '''
+    """
 
     try:
         stdout, stderr = env.run_command(f"osascript -e '{apple_script}'")
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(f"[setting_check_siri_status] Raw output: {output}")
 
         enabled = "Siri Enabled: 1" in output
         voice = output.split("Voice: ")[-1] if "Voice: " in output else "Unknown"
 
-        return {
-            "enabled": enabled,
-            "voice": voice
-        }
+        return {"enabled": enabled, "voice": voice}
     except Exception as e:
         logger.error(f"Failed to check Siri setting: {e}")
-        return {
-            "enabled": False,
-            "voice": "Error"
-        }
+        return {"enabled": False, "voice": "Error"}
 
-    
+
 def setting_dump_siri_panel(env):
     """
     Return all visible static texts and UI elements from the Siri & Spotlight panel in System Settings.
@@ -235,9 +238,10 @@ def setting_dump_siri_panel(env):
     env.run_command(f"osascript -e '{open_script.strip()}'")
 
     import time
-    time.sleep(2)  
 
-    dump_script = '''
+    time.sleep(2)
+
+    dump_script = """
     tell application "System Events"
         tell application process "System Settings"
             set ui_texts to ""
@@ -251,17 +255,22 @@ def setting_dump_siri_panel(env):
         end tell
     end tell
     return ui_texts
-    '''
+    """
     try:
         stdout, stderr = env.run_command(f"osascript -e '{dump_script.strip()}'")
         logger.info(stdout)
         logger.info(stderr)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         return output.splitlines()
     except Exception as e:
         env.logger.error(f"Failed to dump Siri panel UI: {e}")
         return []
-    
+
+
 def settings_check_purple_and_tinting_off(env) -> bool:
     """
     Check if accent color is set to purple and 'Allow wallpaper tinting in windows' is disabled.
@@ -275,11 +284,15 @@ def settings_check_purple_and_tinting_off(env) -> bool:
         # 1. Check accent color via defaults
         cmd_accent = "defaults read -g AppleAccentColor || echo -1"
         stdout, _ = env.run_command(cmd_accent)
-        accent_str = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        accent_str = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         accent_ok = accent_str == "5"
 
         # 2. Navigate to Appearance via View menu
-        nav_script = '''
+        nav_script = """
         tell application "System Settings" to activate
         delay 1
         tell application "System Events"
@@ -288,30 +301,37 @@ def settings_check_purple_and_tinting_off(env) -> bool:
             end tell
         end tell
         delay 2
-        '''
+        """
         env.run_command(f"osascript -e '{nav_script}'")
 
         # 3. Read checkbox value for 'Allow wallpaper tinting'
-        tint_script = '''
+        tint_script = """
         tell application "System Events"
             tell application process "System Settings"
                 set checkbox_val to value of checkbox 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
                 return checkbox_val as string
             end tell
         end tell
-        '''
+        """
         stdout, _ = env.run_command(f"osascript -e '{tint_script}'")
-        checkbox_val = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        checkbox_val = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         tinting_ok = checkbox_val == "0"
 
-        logger.info(f"[Accent] {accent_str} (purple? {accent_ok}) | [Wallpaper Tinting] {checkbox_val} (disabled? {tinting_ok})")
+        logger.info(
+            f"[Accent] {accent_str} (purple? {accent_ok}) | [Wallpaper Tinting] {checkbox_val} (disabled? {tinting_ok})"
+        )
 
         return accent_ok and tinting_ok
 
     except Exception as e:
         logger.error(f"Failed to check appearance settings: {e}")
         return False
-    
+
+
 def settings_set_desktop_wallpaper(env: MacOSEnv) -> str:
     """
     Return the filename of the current desktop wallpaper.
@@ -322,8 +342,14 @@ def settings_set_desktop_wallpaper(env: MacOSEnv) -> str:
     env.connect_ssh()
 
     try:
-        stdout, stderr = env.run_command("osascript -e 'tell app \"finder\" to get posix path of (get desktop picture as alias)'")
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        stdout, stderr = env.run_command(
+            "osascript -e 'tell app \"finder\" to get posix path of (get desktop picture as alias)'"
+        )
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(stderr)
         logger.info(f"[settings_set_desktop_wallpaper] Wallpaper filename: {output}")
         return output
@@ -331,7 +357,8 @@ def settings_set_desktop_wallpaper(env: MacOSEnv) -> str:
     except Exception as e:
         logger.error(f"Failed to get wallpaper filename: {e}")
         return "Error"
-    
+
+
 def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
     """
     Check if 'Allow repeated calls' is enabled in Do Not Disturb settings (macOS Sonoma+).
@@ -342,7 +369,7 @@ def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
     env.connect_ssh()
     force_close_system_settings(env)
 
-    open_focus_script = '''
+    open_focus_script = """
     tell application "System Settings" to activate
     delay 1
     tell application "System Events"
@@ -350,11 +377,11 @@ def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
             click menu item "Focus" of menu "View" of menu bar 1
         end tell
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{open_focus_script.strip()}'")
     time.sleep(2)
 
-    click_dnd_script = '''
+    click_dnd_script = """
     tell application "System Events"
         tell process "System Settings"
             try
@@ -367,11 +394,11 @@ def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
             end try
         end tell
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{click_dnd_script.strip()}'")
     time.sleep(1)
 
-    read_checkbox_script = '''
+    read_checkbox_script = """
     tell application "System Events"
         tell process "System Settings"
             try
@@ -382,10 +409,12 @@ def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
             end try
         end tell
     end tell
-    '''
+    """
     stdout, stderr = env.run_command(f"osascript -e '{read_checkbox_script.strip()}'")
     logger.info(stderr)
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     logger.info(f"[settings_check_dnd_repeated_calls_enabled] Raw output: {output}")
 
     return output == "1"
@@ -394,7 +423,7 @@ def settings_check_dnd_repeated_calls_enabled(env: MacOSEnv) -> bool:
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
     value = settings_ally_debug(macos_env)
@@ -402,5 +431,6 @@ if __name__ == "__main__":
     # value = settings_get_display_brightness(macos_env)
     # logger.info(value)
     import time
+
     time.sleep(3)
     macos_env.close_connection()

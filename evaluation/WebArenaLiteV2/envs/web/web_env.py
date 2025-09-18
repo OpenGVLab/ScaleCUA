@@ -20,11 +20,7 @@ class WebEnv(BaseEnv):
     Provides a interface for web automation tasks.
     """
 
-    def __init__(
-            self,
-            server_path: Optional[str] = None,
-            **kwargs
-    ) -> None:
+    def __init__(self, server_path: Optional[str] = None, **kwargs) -> None:
         """
         Initialize the web environment.
 
@@ -41,12 +37,22 @@ class WebEnv(BaseEnv):
         self.task_config = {}
 
         explicitly_allowed_ports = kwargs.get("explicitly_allowed_ports", [])
-        browser_args = ['--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage', '--disable-logging',
-                        '--ignore-certificate-errors', '--disable-dev-shm-usage', '--disable-application-cache',
-                        '--media-cache-size=0', '--disk-cache-size=0', '--log-level=3', '--silent',
-                        '--allow-running-insecure-content',
-                        '--disable-web-security',
-                        f"--explicitly-allowed-ports={','.join(str(p) for p in explicitly_allowed_ports)}"]
+        browser_args = [
+            "--disable-gpu",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-logging",
+            "--ignore-certificate-errors",
+            "--disable-dev-shm-usage",
+            "--disable-application-cache",
+            "--media-cache-size=0",
+            "--disk-cache-size=0",
+            "--log-level=3",
+            "--silent",
+            "--allow-running-insecure-content",
+            "--disable-web-security",
+            f"--explicitly-allowed-ports={','.join(str(p) for p in explicitly_allowed_ports)}",
+        ]
 
         # Proxy configuration
         proxy = kwargs.get("web_proxy", None)
@@ -59,26 +65,28 @@ class WebEnv(BaseEnv):
             proxy_settings = {
                 "server": proxy_server,
                 "username": proxy_username,
-                "password": proxy_password
+                "password": proxy_password,
             }
         else:
             proxy_settings = None
 
         self.browser = self.browser_type.launch(
-            headless=True,
-            args=browser_args,
-            proxy=proxy_settings
+            headless=True, args=browser_args, proxy=proxy_settings
         )
 
         # Create context, set viewport size
         self.screen_size = (kwargs.get("width", 1280), kwargs.get("height", 720))
         self.dpr = kwargs.get("dpr", 1)
-        self.css_width, self.css_height = int(self.screen_size[0] // self.dpr), int(self.screen_size[1] // self.dpr)
+        self.css_width, self.css_height = int(self.screen_size[0] // self.dpr), int(
+            self.screen_size[1] // self.dpr
+        )
         self.context = None
         self.timeout = kwargs.get("wait_timeout", 5) * 1000
         self._initialize_context(enable_recording=False, start_url="about:blank")
-        print(f'Initializing WebEnv, browser type: {self.browser_type.name}, proxy settings: {proxy_settings}, viewport size: {self.screen_size}, DPR: {self.dpr}, timeout: {self.timeout}s')
-        print(f'WebEnv initialization successful!')
+        print(
+            f"Initializing WebEnv, browser type: {self.browser_type.name}, proxy settings: {proxy_settings}, viewport size: {self.screen_size}, DPR: {self.dpr}, timeout: {self.timeout}s"
+        )
+        print(f"WebEnv initialization successful!")
 
     def start_recording(self) -> None:
         """
@@ -111,14 +119,22 @@ class WebEnv(BaseEnv):
             # Wait for video file to appear
             latest_video_path = None
             while time.time() - start_time < max_wait:
-                video_files = [f for f in os.listdir(self.temp_video_dir.name) if f.endswith('.webm')]
+                video_files = [
+                    f
+                    for f in os.listdir(self.temp_video_dir.name)
+                    if f.endswith(".webm")
+                ]
                 if video_files:
                     # Sort by modification time, get most recent video file
                     video_files.sort(
-                        key=lambda f: os.path.getmtime(os.path.join(self.temp_video_dir.name, f)),
-                        reverse=True
+                        key=lambda f: os.path.getmtime(
+                            os.path.join(self.temp_video_dir.name, f)
+                        ),
+                        reverse=True,
                     )
-                    latest_video_path = os.path.join(self.temp_video_dir.name, video_files[0])
+                    latest_video_path = os.path.join(
+                        self.temp_video_dir.name, video_files[0]
+                    )
                     if os.path.getsize(latest_video_path) > 0:
                         break
                 time.sleep(0.5)
@@ -143,8 +159,8 @@ class WebEnv(BaseEnv):
                       task_config: Info to set up the task, includes the instruction, storage, start_url and the evaluation function
                       benchmark: The benchmark name, default is 'vab_webarena_lite'
         """
-        if "task_config" in kwargs and kwargs['benchmark'] in ["vab_webarena_lite"]:
-            with open(kwargs['task_config']['file_path'], 'r', encoding='utf-8') as f:
+        if "task_config" in kwargs and kwargs["benchmark"] in ["vab_webarena_lite"]:
+            with open(kwargs["task_config"]["file_path"], "r", encoding="utf-8") as f:
                 self.task_config = json.load(f)
 
             # Automatically login
@@ -159,15 +175,15 @@ class WebEnv(BaseEnv):
 
                 try:
                     subprocess.run(
-                    [
-                                python_path,
-                                "env/web/webarena/utils/auto_login.py",
-                                "--auth_folder",
-                                temp_dir,
-                                "--site_list",
-                                *comb,
+                        [
+                            python_path,
+                            "env/web/webarena/utils/auto_login.py",
+                            "--auth_folder",
+                            temp_dir,
+                            "--site_list",
+                            *comb,
                         ],
-                        check=True
+                        check=True,
                     )
                 except subprocess.CalledProcessError as e:
                     print(f"Error during auto login: {e}")
@@ -180,10 +196,16 @@ class WebEnv(BaseEnv):
                 self.task_config["storage_state"] = f"{temp_dir}/{cookie_file_name}"
                 assert os.path.exists(self.task_config["storage_state"])
 
-        start_url = kwargs.get('url', None) or self.task_config.get('start_url', None) or "http://bing.com"
+        start_url = (
+            kwargs.get("url", None)
+            or self.task_config.get("start_url", None)
+            or "http://bing.com"
+        )
 
         # Set up browser env
-        self._initialize_context(enable_recording=self.should_record, start_url=start_url)
+        self._initialize_context(
+            enable_recording=self.should_record, start_url=start_url
+        )
 
     def evaluate_webarena(self, **kwargs) -> float:
         """
@@ -199,12 +221,9 @@ class WebEnv(BaseEnv):
         action_list = kwargs["actions"]
         evaluator = webarena_evaluator_router(self.task_config)
         score = evaluator(
-            action_list=action_list,
-            task_config=self.task_config,
-            page=self.page
+            action_list=action_list, task_config=self.task_config, page=self.page
         )
         return score
-
 
     def evaluate_demo(self, **kwargs) -> float:
         """
@@ -232,12 +251,14 @@ class WebEnv(BaseEnv):
         """
         evaluate_dict = {
             "vab_webarena_lite": self.evaluate_webarena,
-            "demo": self.evaluate_demo
+            "demo": self.evaluate_demo,
         }
-        score = evaluate_dict[kwargs['benchmark']](**kwargs)
+        score = evaluate_dict[kwargs["benchmark"]](**kwargs)
         return score
 
-    def _initialize_context(self, enable_recording: bool = False, start_url: Optional[str] = None) -> None:
+    def _initialize_context(
+        self, enable_recording: bool = False, start_url: Optional[str] = None
+    ) -> None:
         """
         Initialize or reinitialize browser context and page.
 
@@ -258,14 +279,17 @@ class WebEnv(BaseEnv):
             "viewport": {"width": self.css_width, "height": self.css_height},
             "device_scale_factor": self.dpr,
             "is_mobile": False,
-            "storage_state": storage_state
+            "storage_state": storage_state,
         }
 
         # Add video recording configuration if needed
         if enable_recording:
             self.temp_video_dir = tempfile.TemporaryDirectory()
             context_options["record_video_dir"] = self.temp_video_dir.name
-            context_options["record_video_size"] = {"width": self.css_width, "height": self.css_height}
+            context_options["record_video_size"] = {
+                "width": self.css_width,
+                "height": self.css_height,
+            }
 
         # Create new context and page
         self.context = self.browser.new_context(**context_options)
@@ -314,11 +338,25 @@ class WebEnv(BaseEnv):
             List of dictionaries containing information about clickable elements
         """
         try:
-            all_clickable_elements_info = self.page.evaluate(find_clickable_elements_js_code)
+            all_clickable_elements_info = self.page.evaluate(
+                find_clickable_elements_js_code
+            )
 
             # Normalize returned coordinates[0~1]
-            return [{**ele, 'bbox': [coord / self.css_width if i % 2 == 0 else coord / self.css_height
-                                     for i, coord in enumerate(ele['bbox'])]} for ele in all_clickable_elements_info]
+            return [
+                {
+                    **ele,
+                    "bbox": [
+                        (
+                            coord / self.css_width
+                            if i % 2 == 0
+                            else coord / self.css_height
+                        )
+                        for i, coord in enumerate(ele["bbox"])
+                    ],
+                }
+                for ele in all_clickable_elements_info
+            ]
 
         except Exception as e:
             print(str(e))
@@ -383,7 +421,9 @@ class WebEnv(BaseEnv):
                 # Immediately handle native dialog - accept all dialogs by default
                 dialog_type = dialog.type
                 dialog_message = dialog.message
-                dialog_default_value = dialog.default_value if dialog_type == 'prompt' else ''
+                dialog_default_value = (
+                    dialog.default_value if dialog_type == "prompt" else ""
+                )
 
                 # Immediately handle the native dialog
                 if dialog_type == "prompt":
@@ -395,7 +435,8 @@ class WebEnv(BaseEnv):
                 dialog_id = f"mock-dialog-{int(time.time() * 1000)}"
 
                 # Inject mock dialog into DOM
-                self.page.evaluate("""
+                self.page.evaluate(
+                    """
                     ({ type, message, defaultValue, dialogId }) => {
                         // Clean up existing mock popups
                         const existingMock = document.getElementById('mock-dialog-container');
@@ -532,11 +573,19 @@ class WebEnv(BaseEnv):
                             container.remove();
                         });
                     }
-                """, {"type": dialog_type, "message": dialog_message, "defaultValue": dialog_default_value,
-                      "dialogId": dialog_id})
+                """,
+                    {
+                        "type": dialog_type,
+                        "message": dialog_message,
+                        "defaultValue": dialog_default_value,
+                        "dialogId": dialog_id,
+                    },
+                )
 
                 # Log dialog information
-                print(f"Dialog intercepted and handled: {dialog_type} - {dialog_message}")
+                print(
+                    f"Dialog intercepted and handled: {dialog_type} - {dialog_message}"
+                )
 
             except Exception as e:
                 print(f"Error handling dialog: {str(e)}")
@@ -562,7 +611,8 @@ class WebEnv(BaseEnv):
             str: Element type (tag name)
         """
         if "x" in parameters and "y" in parameters:
-            return self.page.evaluate("""
+            return self.page.evaluate(
+                """
                 ({x, y}) => {
                     const element = document.elementFromPoint(x, y);
                     if (!element) return 'none';
@@ -579,9 +629,11 @@ class WebEnv(BaseEnv):
 
                     return element.tagName.toLowerCase();
                 }
-                """, {"x": parameters['x'], "y": parameters['y']})
+                """,
+                {"x": parameters["x"], "y": parameters["y"]},
+            )
         else:
-            return 'unknown'
+            return "unknown"
 
     def _execute_click_select(self, parameters: Dict[str, Any]) -> None:
         """
@@ -592,7 +644,8 @@ class WebEnv(BaseEnv):
         """
         element_type = self.get_element_type(parameters)
         if element_type == "select":
-            self.page.evaluate("""
+            self.page.evaluate(
+                """
                 ({x, y}) => {
                     const select = document.elementFromPoint(x, y);
                     if (select && select.tagName.toLowerCase() === 'select') {
@@ -701,7 +754,9 @@ class WebEnv(BaseEnv):
                         }, 0);
                     }
                 }
-            """, {"x": parameters['x'], "y": parameters['y']})
+            """,
+                {"x": parameters["x"], "y": parameters["y"]},
+            )
 
     def execute_single_action(self, action: Dict[str, Any]) -> bool:
         """
@@ -734,10 +789,18 @@ class WebEnv(BaseEnv):
                 parameters["x"] = parameters["x"] / self.dpr
             if "y" in parameters and parameters["y"] is not None:
                 parameters["y"] = parameters["y"] / self.dpr
-            if "from_coord" in parameters and parameters["from_coord"][0] is not None and parameters["from_coord"][1] is not None:
+            if (
+                "from_coord" in parameters
+                and parameters["from_coord"][0] is not None
+                and parameters["from_coord"][1] is not None
+            ):
                 parameters["from_coord"][0] = parameters["from_coord"][0] / self.dpr
                 parameters["from_coord"][1] = parameters["from_coord"][1] / self.dpr
-            if "to_coord" in parameters and parameters["to_coord"][0] is not None and parameters["to_coord"][1] is not None:
+            if (
+                "to_coord" in parameters
+                and parameters["to_coord"][0] is not None
+                and parameters["to_coord"][1] is not None
+            ):
                 parameters["to_coord"][0] = parameters["to_coord"][0] / self.dpr
                 parameters["to_coord"][1] = parameters["to_coord"][1] / self.dpr
 
@@ -757,14 +820,14 @@ class WebEnv(BaseEnv):
                 "hotkey": self._execute_hotkey,
                 "swipe": self._execute_swipe,
                 "keyup": self._execute_keyup,
-                "keydown": self._execute_keydown
+                "keydown": self._execute_keydown,
             }
 
             # Get corresponding handler and execute
             handler = action_handlers.get(action_type)
             if handler:
                 success = handler(parameters)
-                print(f'{action_type} is done')
+                print(f"{action_type} is done")
                 return success
             else:
                 return False
@@ -954,7 +1017,7 @@ class WebEnv(BaseEnv):
         Returns:
             bool: Whether the action was executed successfully
         """
-        parameters['button'] = 'right'
+        parameters["button"] = "right"
         self._execute_click(parameters)
         return True
 
@@ -1045,10 +1108,18 @@ class WebEnv(BaseEnv):
         else:
             # Keep custom logic here
             if direction in ["up", "down"]:
-                distance = self.css_height * amount if direction == "up" else - self.css_height * amount
+                distance = (
+                    self.css_height * amount
+                    if direction == "up"
+                    else -self.css_height * amount
+                )
                 delta_x, delta_y = 0, distance
             else:  # direction in ["left", "right"]
-                distance = self.css_width * amount if direction == "left" else - self.css_width * amount
+                distance = (
+                    self.css_width * amount
+                    if direction == "left"
+                    else -self.css_width * amount
+                )
                 delta_x, delta_y = distance, 0
 
         # If from_coord coordinates provided, move mouse to specified position, otherwise move global page

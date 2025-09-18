@@ -293,7 +293,7 @@ finish(message="The alarm on 9:00 AM weekday has been set")
 ```
 """
 
-SYSTEM_PROMPT_ANDROID_MLLM_DIRECT = '''You are an agent that is trained to complete certain tasks on a smartphone. You will be 
+SYSTEM_PROMPT_ANDROID_MLLM_DIRECT = """You are an agent that is trained to complete certain tasks on a smartphone. You will be 
 given a screenshot of a smartphone app. The interactive UI elements on the screenshot are labeled with numeric tags 
 starting from 1. 
 
@@ -354,7 +354,7 @@ If you operate same action 5 times, the program will automatically stop.
 If tap operation is not working, you can try long press operation.
 
 You can only take one action at a time, so please directly call the function.
-'''
+"""
 
 SYSTEM_PROMPT_ANDROID_MLLM_PixelLevel = '''# Setup
 You are a professional android operation agent assistant that can fulfill user's high-level instructions. Given the screenshot information of the android screenshot at each step, you plan operations in python-style pseudo code using provided functions, or customize functions (if necessary) and then provide their implementations. 
@@ -522,7 +522,7 @@ REMEMBER:
 
 '''
 
-SYSTEM_PROMPT_ANDROID_Aguvis_Pixellevel_Simple = '''# Setup
+SYSTEM_PROMPT_ANDROID_Aguvis_Pixellevel_Simple = """# Setup
 You are a professional android operation agent assistant that can fulfill user's high-level instructions. Given the screenshot information of the android screenshot at each step, you plan operations in python-style pseudo code using provided functions, or customize functions (if necessary) and then provide their implementations. 
 
 # More details about the code
@@ -555,7 +555,7 @@ REMEMBER:
 - All the coordinates are scaled from 0 to 1.
 - Must click the input field before write to activate input mode
 - If you are sure that the task is completed, you can use the `terminate` function to end the task.
-'''
+"""
 
 SYSTEM_PROMPT_ANDROID_Aguvis_Pixellevel = '''# Setup
 You are a professional android operation agent assistant that can fulfill user's high-level instructions. Given the screenshot information of the android screenshot at each step, you plan operations in python-style pseudo code using provided functions, or customize functions (if necessary) and then provide their implementations. 
@@ -909,7 +909,7 @@ def finish(message=None):
     """
 '''
 
-SYSTEM_PROMPT_ANDROID_MLLM_CogAgent = '''You are an agent that is trained to complete certain tasks on a smartphone. You will be 
+SYSTEM_PROMPT_ANDROID_MLLM_CogAgent = """You are an agent that is trained to complete certain tasks on a smartphone. You will be 
 given a screenshot of a smartphone app. The interactive UI elements on the screenshot are labeled with numeric tags 
 starting from 1. 
 
@@ -972,7 +972,7 @@ If you operate same action 5 times, the program will automatically stop.
 If tap operation is not working, you can try long press operation.
 
 You can only take one action at a time, so please directly call the function.
-'''
+"""
 
 SYSTEM_PROMPT_ANDROID_MLLM_DIRECT_REACT = '''
 """You are an agent that is trained to complete certain tasks on a smartphone. You will be 

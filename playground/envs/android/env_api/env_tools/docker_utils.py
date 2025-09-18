@@ -27,7 +27,7 @@ def create_docker_container(docker_image_name, docker_port, docker_local_port):
 
 
 def execute_command_in_container(container_id, command):
-    full_command = f"docker exec -d {container_id} /bin/bash -c \"{command}\""
+    full_command = f'docker exec -d {container_id} /bin/bash -c "{command}"'
     returncode, stdout, stderr = run_docker_command(full_command)
     if returncode == 0:
         return stdout
@@ -67,41 +67,47 @@ def cp_docker(local_path, docker_path, container_id, local_to_docker=True):
             raise Exception(f"Error copying file: {stderr}")
 
 
-def send_post_request(url, headers, data, max_attempts=10, retry_interval=3, timeout=6000):
+def send_post_request(
+    url, headers, data, max_attempts=10, retry_interval=3, timeout=6000
+):
     attempts = 0
     while attempts < max_attempts:
         try:
-            response = requests.post(url, headers=headers, data=json.dumps(data), timeout=timeout)
+            response = requests.post(
+                url, headers=headers, data=json.dumps(data), timeout=timeout
+            )
             return response.json()
         except Exception as e:
             print(f"Error occurred: {e}")
             attempts += 1
             if attempts < max_attempts:
-                print(f"Timeout occurred. Retrying... Attempt {attempts}/{max_attempts}")
+                print(
+                    f"Timeout occurred. Retrying... Attempt {attempts}/{max_attempts}"
+                )
                 print(data)
                 time.sleep(retry_interval)
             else:
-                return {'error': f'Timeout occurred after {max_attempts} attempts'}
+                return {"error": f"Timeout occurred after {max_attempts} attempts"}
 
 
 def start_avd(port, avd_name):
     print(f"Starting AVD: {avd_name}")
-    url = f'http://localhost:{port}/start'
-    headers = {'Content-Type': 'application/json'}
-    data = {'avd_name': avd_name}
+    url = f"http://localhost:{port}/start"
+    headers = {"Content-Type": "application/json"}
+    data = {"avd_name": avd_name}
     return send_post_request(url, headers, data)
 
 
 def execute_adb_command(port, command):
     # print(f"Executing ADB command: {command}")
-    url = f'http://localhost:{port}/execute'
-    headers = {'Content-Type': 'application/json'}
-    data = {'command': command}
+    url = f"http://localhost:{port}/execute"
+    headers = {"Content-Type": "application/json"}
+    data = {"command": command}
     return send_post_request(url, headers, data)
 
 
 def stop_avd(port, avd_name):
-    url = f'http://localhost:{port}/stop'
-    headers = {'Content-Type': 'application/json'}
-    data = {'avd_name': avd_name}
+    url = f"http://localhost:{port}/stop"
+    headers = {"Content-Type": "application/json"}
+    data = {"avd_name": avd_name}
     return send_post_request(url, headers, data)

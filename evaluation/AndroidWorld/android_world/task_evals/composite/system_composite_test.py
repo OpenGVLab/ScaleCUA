@@ -23,128 +23,118 @@ from android_world.utils import fake_adb_responses
 
 class TurnOnWifiAndOpenAppTest(absltest.TestCase):
 
-  def setUp(self):
-    super().setUp()
-    self.mock_restore_snapshot = self.enter_context(
-        mock.patch.object(app_snapshot, "restore_snapshot").start()
-    )
+    def setUp(self):
+        super().setUp()
+        self.mock_restore_snapshot = self.enter_context(
+            mock.patch.object(app_snapshot, "restore_snapshot").start()
+        )
 
-  def test_generate_random_params(self):
-    params = system.TurnOnWifiAndOpenApp.generate_random_params()
+    def test_generate_random_params(self):
+        params = system.TurnOnWifiAndOpenApp.generate_random_params()
 
-    self.assertIn(
-        params["app_name"], single_system._APP_NAME_TO_PACKAGE_NAME.keys()
-    )
+        self.assertIn(
+            params["app_name"], single_system._APP_NAME_TO_PACKAGE_NAME.keys()
+        )
 
-  def test_is_successful_returns_0_if_wifi_off_and_incorrect_app_is_open(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOnWifiAndOpenApp({"app_name": "clock"})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
-        fake_adb_responses.create_get_activity_response(
-            "com.google.android.apps.maps/.Inbox"
-        ),
-    ]
+    def test_is_successful_returns_0_if_wifi_off_and_incorrect_app_is_open(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOnWifiAndOpenApp({"app_name": "clock"})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
+            fake_adb_responses.create_get_activity_response(
+                "com.google.android.apps.maps/.Inbox"
+            ),
+        ]
 
-    self.assertEqual(eval_task.is_successful(env), 0)
+        self.assertEqual(eval_task.is_successful(env), 0)
 
-  def test_is_successful_returns_0_5_if_wifi_is_off(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
-        fake_adb_responses.create_get_activity_response(
-            "com.android.settings/com.android.settings.Settings"
-        ),
-    ]
+    def test_is_successful_returns_0_5_if_wifi_is_off(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
+            fake_adb_responses.create_get_activity_response(
+                "com.android.settings/com.android.settings.Settings"
+            ),
+        ]
 
-    self.assertEqual(eval_task.is_successful(env), 0.5)
+        self.assertEqual(eval_task.is_successful(env), 0.5)
 
-  def test_is_successful_returns_0_5_if_incorrect_app_is_open(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
-        fake_adb_responses.create_get_activity_response(
-            "com.google.page1/.Page1"
-        ),
-    ]
+    def test_is_successful_returns_0_5_if_incorrect_app_is_open(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
+            fake_adb_responses.create_get_activity_response("com.google.page1/.Page1"),
+        ]
 
-    self.assertEqual(eval_task.is_successful(env), 0.5)
+        self.assertEqual(eval_task.is_successful(env), 0.5)
 
-  def test_is_successful_returns_1_if_wifi_is_on_and_app_is_open(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
-        fake_adb_responses.create_get_activity_response(
-            "com.android.settings/com.android.settings.Settings"
-        ),
-    ]
+    def test_is_successful_returns_1_if_wifi_is_on_and_app_is_open(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOnWifiAndOpenApp({"app_name": "settings"})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
+            fake_adb_responses.create_get_activity_response(
+                "com.android.settings/com.android.settings.Settings"
+            ),
+        ]
 
-    self.assertEqual(eval_task.is_successful(env), 1.0)
+        self.assertEqual(eval_task.is_successful(env), 1.0)
 
 
 class TurnOffWifiAndTurnOnBluetoothTest(absltest.TestCase):
 
-  def setUp(self):
-    super().setUp()
-    self.mock_restore_snapshot = self.enter_context(
-        mock.patch.object(app_snapshot, "restore_snapshot")
-    )
+    def setUp(self):
+        super().setUp()
+        self.mock_restore_snapshot = self.enter_context(
+            mock.patch.object(app_snapshot, "restore_snapshot")
+        )
 
-  def test_is_successful_returns_0_if_wifi_is_on_and_bluetooth_is_off(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
-        fake_adb_responses.create_get_bluetooth_enabled_response(
-            is_enabled=False
-        ),
-    ]
-    self.assertEqual(eval_task.is_successful(env), 0.0)
+    def test_is_successful_returns_0_if_wifi_is_on_and_bluetooth_is_off(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
+            fake_adb_responses.create_get_bluetooth_enabled_response(is_enabled=False),
+        ]
+        self.assertEqual(eval_task.is_successful(env), 0.0)
 
-  def test_is_successful_returns_0_5_if_wifi_is_off_and_bluetooth_is_on(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
-        fake_adb_responses.create_get_bluetooth_enabled_response(
-            is_enabled=True
-        ),
-    ]
-    self.assertEqual(eval_task.is_successful(env), 0.5)
+    def test_is_successful_returns_0_5_if_wifi_is_off_and_bluetooth_is_on(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=True),
+            fake_adb_responses.create_get_bluetooth_enabled_response(is_enabled=True),
+        ]
+        self.assertEqual(eval_task.is_successful(env), 0.5)
 
-  def test_is_successful_returns_0_5_if_wifi_is_on_and_bluetooth_is_off(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
-        fake_adb_responses.create_get_bluetooth_enabled_response(
-            is_enabled=False
-        ),
-    ]
-    self.assertEqual(eval_task.is_successful(env), 0.5)
+    def test_is_successful_returns_0_5_if_wifi_is_on_and_bluetooth_is_off(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
+            fake_adb_responses.create_get_bluetooth_enabled_response(is_enabled=False),
+        ]
+        self.assertEqual(eval_task.is_successful(env), 0.5)
 
-  def test_is_successful_returns_1_if_wifi_is_off_and_bluetooth_is_on(self):
-    env = mock.create_autospec(interface.AsyncEnv)
-    eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
-    eval_task.initialize_task(env)
-    env.controller.execute_adb_call.side_effect = [
-        fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
-        fake_adb_responses.create_get_bluetooth_enabled_response(
-            is_enabled=True
-        ),
-    ]
-    self.assertEqual(eval_task.is_successful(env), 1.0)
+    def test_is_successful_returns_1_if_wifi_is_off_and_bluetooth_is_on(self):
+        env = mock.create_autospec(interface.AsyncEnv)
+        eval_task = system.TurnOffWifiAndTurnOnBluetooth({})
+        eval_task.initialize_task(env)
+        env.controller.execute_adb_call.side_effect = [
+            fake_adb_responses.create_get_wifi_enabled_response(is_enabled=False),
+            fake_adb_responses.create_get_bluetooth_enabled_response(is_enabled=True),
+        ]
+        self.assertEqual(eval_task.is_successful(env), 1.0)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

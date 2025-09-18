@@ -6,13 +6,13 @@ import requests
 # Latest run on 2024.1.4
 def download_csv(url, file_path):
     response = requests.get(url)
-    with open(file_path, 'w', newline='', encoding='utf-8') as file:
+    with open(file_path, "w", newline="", encoding="utf-8") as file:
         file.write(response.text)
 
 
 def read_csv(file_path):
     urls = []
-    with open(file_path, newline='', encoding='utf-8') as csvfile:
+    with open(file_path, newline="", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # Skip the header
         for row in reader:
@@ -21,8 +21,8 @@ def read_csv(file_path):
 
 
 def main():
-    url = 'http://downloads.majestic.com/majestic_million.csv'
-    file_path = 'majestic_million.csv'
+    url = "http://downloads.majestic.com/majestic_million.csv"
+    file_path = "majestic_million.csv"
 
     print("Downloading Majestic Million CSV...")
     download_csv(url, file_path)

@@ -8,10 +8,15 @@ from typing import Optional, Tuple
 import torch
 from flash_attn import __version__ as flash_attn_version
 from flash_attn.bert_padding import pad_input, unpad_input
-from flash_attn.flash_attn_interface import (flash_attn_func,
-                                             flash_attn_varlen_kvpacked_func)
-from transformers.models.llama.modeling_llama import (LlamaAttention,
-                                                      LlamaModel, rotate_half)
+from flash_attn.flash_attn_interface import (
+    flash_attn_func,
+    flash_attn_varlen_kvpacked_func,
+)
+from transformers.models.llama.modeling_llama import (
+    LlamaAttention,
+    LlamaModel,
+    rotate_half,
+)
 
 
 def apply_rotary_pos_emb(q, k, cos_sin, position_ids):
@@ -40,11 +45,11 @@ def forward(
 ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
     if output_attentions:
         warnings.warn(
-            'Output attentions is not supported for patched `LlamaAttention`, returning `None` instead.'
+            "Output attentions is not supported for patched `LlamaAttention`, returning `None` instead."
         )
 
     bsz, q_len, _ = hidden_states.size()
-    kv_heads = getattr(self, 'num_key_value_heads', self.num_heads)
+    kv_heads = getattr(self, "num_key_value_heads", self.num_heads)
 
     q, k, v = (
         op(hidden_states).view(bsz, q_len, nh, self.head_dim)
@@ -67,8 +72,8 @@ def forward(
 
     if past_key_value is not None:
         assert (
-            flash_attn_version >= '2.1.0'
-        ), 'past_key_value support requires flash-attn >= 2.1.0'
+            flash_attn_version >= "2.1.0"
+        ), "past_key_value support requires flash-attn >= 2.1.0"
         # reuse k, v
         k = torch.cat([past_key_value[0].transpose(1, 2), k], dim=1)
         v = torch.cat([past_key_value[1].transpose(1, 2), v], dim=1)
@@ -132,8 +137,8 @@ def replace_llama2_attn_with_flash_attn():
     cuda_major, cuda_minor = torch.cuda.get_device_capability()
     if cuda_major < 8:
         warnings.warn(
-            'Flash attention is only supported on A100 or H100 GPU during training due to head dim > 64 backward.'
-            'ref: https://github.com/HazyResearch/flash-attention/issues/190#issuecomment-1523359593'
+            "Flash attention is only supported on A100 or H100 GPU during training due to head dim > 64 backward."
+            "ref: https://github.com/HazyResearch/flash-attention/issues/190#issuecomment-1523359593"
         )
 
     LlamaModel._prepare_decoder_attention_mask = _prepare_decoder_attention_mask
@@ -141,8 +146,7 @@ def replace_llama2_attn_with_flash_attn():
 
 
 def test():
-    from fastchat.train.llama_flash_attn_monkey_patch import \
-        forward as fastchat_forward
+    from fastchat.train.llama_flash_attn_monkey_patch import forward as fastchat_forward
     from transformers.models.llama.configuration_llama import LlamaConfig
 
     config = LlamaConfig(
@@ -152,7 +156,7 @@ def test():
         num_attention_heads=8,
         max_position_embeddings=16,
     )
-    device = torch.device('cuda')
+    device = torch.device("cuda")
     model = LlamaModel(config)
     attn = LlamaAttention(config).to(device).half()
     bsz, hs, seqlen = 2, config.hidden_size, config.max_position_embeddings
@@ -183,11 +187,11 @@ def test():
             attn, hidden, attention_mask=lmask, position_ids=position_ids
         )
 
-        print(f'Mean(abs(ref)) = {torch.mean(torch.abs(ref))}')
-        print(f'Mean(abs(ref - fast)) = {torch.mean(torch.abs(ref - fast))}')
-        print(f'Mean(abs(ref - test)) = {torch.mean(torch.abs(ref - test))}')
-        print(f'Mean(abs(fast - test)) = {torch.mean(torch.abs(fast - test))}')
-        print(f'allclose(fast, test) = {torch.allclose(fast, test)}')
+        print(f"Mean(abs(ref)) = {torch.mean(torch.abs(ref))}")
+        print(f"Mean(abs(ref - fast)) = {torch.mean(torch.abs(ref - fast))}")
+        print(f"Mean(abs(ref - test)) = {torch.mean(torch.abs(ref - test))}")
+        print(f"Mean(abs(fast - test)) = {torch.mean(torch.abs(fast - test))}")
+        print(f"allclose(fast, test) = {torch.allclose(fast, test)}")
 
     with torch.no_grad():
         # Also check that past_kv is handled properly
@@ -227,12 +231,12 @@ def test():
             past_kv_len = past_kv[0].shape[2]
 
         print(
-            f'allclose(oneshot[:, 0], parts[0]) = {torch.allclose(oneshot[:, :part_len], parts[0])}'
+            f"allclose(oneshot[:, 0], parts[0]) = {torch.allclose(oneshot[:, :part_len], parts[0])}"
         )
         print(
-            f'allclose(oneshot, parts) = {torch.allclose(oneshot, torch.cat(parts, dim=1))}'
+            f"allclose(oneshot, parts) = {torch.allclose(oneshot, torch.cat(parts, dim=1))}"
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()

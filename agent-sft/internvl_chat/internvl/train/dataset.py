@@ -945,22 +945,24 @@ def format_human_input(input_text):
 
     if instruction == "":
         return input_text
-    
+
     if actions == "":
         actions = None
     # 构建目标格式
     new_header = "Please generate the next move according to the UI screenshot, the task and previous operations.\n\n"
-    target_format = new_header + f"Task:\n{instruction}\n\nPrevious operations:\n{actions}"
+    target_format = (
+        new_header + f"Task:\n{instruction}\n\nPrevious operations:\n{actions}"
+    )
     return image_ref + "\n" + target_format
-    
+
 
 def extract_image_references(text):
     # 匹配两种模式：
     # 1. 多个图像引用（如 Image-1: <image>\nImage-2: <image>）
     # 2. 单个图像引用（如 <image>）
-    pattern = r'((?:Image-\d+: <image>\n?)+)|(<image>)'
+    pattern = r"((?:Image-\d+: <image>\n?)+)|(<image>)"
     matches = re.findall(pattern, text)
-    
+
     # 提取匹配结果并去除空匹配
     results = []
     for group1, group2 in matches:
@@ -970,13 +972,13 @@ def extract_image_references(text):
         elif group2:
             # 处理单个图像引用情况
             results.append(group2.strip())
-            
+
     if not results:
         return ""
-    
+
     return results[0]
 
-    
+
 def preprocess_gui_conv(
     template_name,
     sources,
@@ -991,7 +993,7 @@ def preprocess_gui_conv(
     """
     Add the system prompt to the first conversation.
     """
-    
+
     return preprocess_internvl2_5(
         template_name,
         sources,

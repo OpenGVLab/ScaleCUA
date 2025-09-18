@@ -7,11 +7,11 @@ import ast
 import astor
 
 
-
 # script_dir = Path(__file__).resolve().parent
 
 # Logger setup
 logger = ProjectLogger()
+
 
 # for debug only
 def fetch_screenshot(env, local_save_path: str = "./screenshot.png"):
@@ -37,8 +37,8 @@ def fetch_screenshot(env, local_save_path: str = "./screenshot.png"):
         logger.info("Screenshot successfully captured and saved.")
     except Exception as e:
         logger.error(f"Screenshot capture failed: {e}")
-        
-        
+
+
 class ActionTransformer(ast.NodeTransformer):
     def visit_Expr(self, node):
         if isinstance(node.value, ast.Call):
@@ -67,17 +67,19 @@ class ActionTransformer(ast.NodeTransformer):
         if message_expr is None and node.args:
             message_expr = node.args[0]
         if message_expr is None:
-            return node  
+            return node
 
-        return ast.Expr(value=ast.Call(
-            func=ast.Attribute(
-                value=ast.Name(id="keyboard", ctx=ast.Load()),
-                attr="write",
-                ctx=ast.Load()
-            ),
-            args=[message_expr],
-            keywords=[ast.keyword(arg="delay", value=ast.Constant(value=0.1))]
-        ))
+        return ast.Expr(
+            value=ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id="keyboard", ctx=ast.Load()),
+                    attr="write",
+                    ctx=ast.Load(),
+                ),
+                args=[message_expr],
+                keywords=[ast.keyword(arg="delay", value=ast.Constant(value=0.1))],
+            )
+        )
 
     def transform_doubleclick(self, node):
         x = y = None
@@ -94,56 +96,61 @@ class ActionTransformer(ast.NodeTransformer):
         new_nodes = []
 
         if x and y:
-            move_expr = ast.Expr(value=ast.Call(
-                func=ast.Attribute(
-                    value=ast.Name(id="pyautogui", ctx=ast.Load()),
-                    attr="moveTo",
-                    ctx=ast.Load()
-                ),
-                args=[x, y],
-                keywords=[]
-            ))
-            new_nodes.append(move_expr)
-
-        click_expr = ast.Expr(value=ast.Call(
-            func=ast.Attribute(
+            move_expr = ast.Expr(
                 value=ast.Call(
                     func=ast.Attribute(
-                        value=ast.Attribute(
-                            value=ast.Name(id="pynput", ctx=ast.Load()),
-                            attr="mouse",
-                            ctx=ast.Load()
-                        ),
-                        attr="Controller",
-                        ctx=ast.Load()
+                        value=ast.Name(id="pyautogui", ctx=ast.Load()),
+                        attr="moveTo",
+                        ctx=ast.Load(),
                     ),
-                    args=[],
-                    keywords=[]
-                ),
-                attr="click",
-                ctx=ast.Load()
-            ),
-            args=[],
-            keywords=[
-                ast.keyword(
-                    arg="button",
-                    value=ast.Attribute(
-                        value=ast.Attribute(
-                            value=ast.Name(id="pynput", ctx=ast.Load()),
-                            attr="mouse",
-                            ctx=ast.Load()
+                    args=[x, y],
+                    keywords=[],
+                )
+            )
+            new_nodes.append(move_expr)
+
+        click_expr = ast.Expr(
+            value=ast.Call(
+                func=ast.Attribute(
+                    value=ast.Call(
+                        func=ast.Attribute(
+                            value=ast.Attribute(
+                                value=ast.Name(id="pynput", ctx=ast.Load()),
+                                attr="mouse",
+                                ctx=ast.Load(),
+                            ),
+                            attr="Controller",
+                            ctx=ast.Load(),
                         ),
-                        attr="Button.left",
-                        ctx=ast.Load()
-                    )
+                        args=[],
+                        keywords=[],
+                    ),
+                    attr="click",
+                    ctx=ast.Load(),
                 ),
-                ast.keyword(arg="count", value=ast.Constant(value=2))
-            ]
-        ))
+                args=[],
+                keywords=[
+                    ast.keyword(
+                        arg="button",
+                        value=ast.Attribute(
+                            value=ast.Attribute(
+                                value=ast.Name(id="pynput", ctx=ast.Load()),
+                                attr="mouse",
+                                ctx=ast.Load(),
+                            ),
+                            attr="Button.left",
+                            ctx=ast.Load(),
+                        ),
+                    ),
+                    ast.keyword(arg="count", value=ast.Constant(value=2)),
+                ],
+            )
+        )
 
         new_nodes.append(click_expr)
 
         return new_nodes
+
 
 def transform_pyautogui_line(line):
     try:
@@ -154,18 +161,23 @@ def transform_pyautogui_line(line):
             return "\n".join(astor.to_source(stmt).rstrip() for stmt in new_tree)
         return astor.to_source(new_tree).rstrip()
     except Exception:
-        return line  
+        return line
+
 
 def reset_applications(env, application_list: List[str]):
     # Add application reset logic if required by the evaluation strategy.
     # Some evaluation tasks may depend on a clean or known initial application state.
-    from evaluators.getter import clock_reset_window_status, settings_reset_window_status, terminal_reset_window_status
+    from evaluators.getter import (
+        clock_reset_window_status,
+        settings_reset_window_status,
+        terminal_reset_window_status,
+    )
 
-    if 'terminal' in application_list:
+    if "terminal" in application_list:
         terminal_reset_window_status(env)
-    if 'mac_system_settings' in application_list: # should strictly be the last one 
+    if "mac_system_settings" in application_list:  # should strictly be the last one
         settings_reset_window_status(env)
-    if 'clock' in application_list: # should strictly be the last one 
+    if "clock" in application_list:  # should strictly be the last one
         clock_reset_window_status(env)
     # TODO: deal with the situations that both clock and settings in application_list
     pass

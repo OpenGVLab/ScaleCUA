@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urlunparse
 
+
 def compare_urls(url1, url2):
     if url1 is None or url2 is None:
         return url1 == url2
@@ -9,15 +10,16 @@ def compare_urls(url1, url2):
         parsed_url = urlparse(url)
 
         # If no scheme is present, assume 'http'
-        scheme = parsed_url.scheme if parsed_url.scheme else 'http'
+        scheme = parsed_url.scheme if parsed_url.scheme else "http"
 
         # Lowercase the scheme and netloc, remove 'www.', and handle trailing slash
         normalized_netloc = parsed_url.netloc.lower().replace("www.", "")
-        normalized_path = parsed_url.path if parsed_url.path != '/' else ''
+        normalized_path = parsed_url.path if parsed_url.path != "/" else ""
 
         # Reassemble the URL with normalized components
-        normalized_parsed_url = parsed_url._replace(scheme=scheme.lower(), netloc=normalized_netloc,
-                                                    path=normalized_path)
+        normalized_parsed_url = parsed_url._replace(
+            scheme=scheme.lower(), netloc=normalized_netloc, path=normalized_path
+        )
         normalized_url = urlunparse(normalized_parsed_url)
 
         return normalized_url

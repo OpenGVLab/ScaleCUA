@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" PyTorch Phi-3 model."""
+"""PyTorch Phi-3 model."""
 
 import inspect
 import math
@@ -26,19 +26,23 @@ from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache
-from transformers.modeling_attn_mask_utils import \
-    _prepare_4d_causal_attention_mask
-from transformers.modeling_outputs import (BaseModelOutputWithPast,
-                                           CausalLMOutputWithPast,
-                                           SequenceClassifierOutputWithPast,
-                                           TokenClassifierOutput)
+from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask
+from transformers.modeling_outputs import (
+    BaseModelOutputWithPast,
+    CausalLMOutputWithPast,
+    SequenceClassifierOutputWithPast,
+    TokenClassifierOutput,
+)
 from transformers.modeling_utils import PreTrainedModel
-from transformers.utils import (add_code_sample_docstrings,
-                                add_start_docstrings,
-                                add_start_docstrings_to_model_forward,
-                                is_flash_attn_2_available,
-                                is_flash_attn_greater_or_equal_2_10, logging,
-                                replace_return_docstrings)
+from transformers.utils import (
+    add_code_sample_docstrings,
+    add_start_docstrings,
+    add_start_docstrings_to_model_forward,
+    is_flash_attn_2_available,
+    is_flash_attn_greater_or_equal_2_10,
+    logging,
+    replace_return_docstrings,
+)
 
 from .configuration_phi3 import Phi3Config
 
@@ -49,14 +53,15 @@ logger = logging.get_logger(__name__)
 _flash_supports_window_size = False
 try:
     from flash_attn import flash_attn_func, flash_attn_varlen_func
-    from flash_attn.bert_padding import (index_first_axis, pad_input,  # noqa
-                                         unpad_input)
+    from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
 
-    _flash_supports_window_size = 'window_size' in list(inspect.signature(flash_attn_func).parameters)
+    _flash_supports_window_size = "window_size" in list(
+        inspect.signature(flash_attn_func).parameters
+    )
     has_flash_attn = True
 except ImportError as error:
     logger.warning(
-        f'`flash-attention` package not found, consider installing for better performance: {error}.'
+        f"`flash-attention` package not found, consider installing for better performance: {error}."
     )
     if not _flash_supports_window_size:
         logger.warning(
@@ -64,12 +69,12 @@ except ImportError as error:
         )
     has_flash_attn = False
 
-_CHECKPOINT_FOR_DOC = 'microsoft/Phi-3-mini-4k-instruct'
-_CONFIG_FOR_DOC = 'Phi3Config'
+_CHECKPOINT_FOR_DOC = "microsoft/Phi-3-mini-4k-instruct"
+_CONFIG_FOR_DOC = "Phi3Config"
 
 PHI3_PRETRAINED_MODEL_ARCHIVE_LIST = [
-    'microsoft/Phi-3-mini-4k-instruct',
-    'microsoft/Phi-3-mini-128k-instruct',
+    "microsoft/Phi-3-mini-4k-instruct",
+    "microsoft/Phi-3-mini-128k-instruct",
     # See all Phi-3 models at https://huggingface.co/models?filter=Phi-3
 ]
 
@@ -113,23 +118,37 @@ class Phi3RotaryEmbedding(nn.Module):
         self.dim = dim
         self.max_position_embeddings = max_position_embeddings
         self.base = base
-        self.register_buffer('inv_freq', None, persistent=False)
+        self.register_buffer("inv_freq", None, persistent=False)
 
     @torch.no_grad()
     def forward(self, x, position_ids, seq_len=None):
         # x: [bs, num_attention_heads, seq_len, head_size]
         if self.inv_freq is None:
             self.inv_freq = 1.0 / (
-                self.base ** (torch.arange(0, self.dim, 2, dtype=torch.int64, device=x.device).float() / self.dim)
+                self.base
+                ** (
+                    torch.arange(
+                        0, self.dim, 2, dtype=torch.int64, device=x.device
+                    ).float()
+                    / self.dim
+                )
             )
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        inv_freq_expanded = (
+            self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        )
         position_ids_expanded = position_ids[:, None, :].float()
         # Force float32 since bfloat16 loses precision on long contexts
         # See https://github.com/huggingface/transformers/pull/29285
         device_type = x.device.type
-        device_type = device_type if isinstance(device_type, str) and device_type != 'mps' else 'cpu'
+        device_type = (
+            device_type
+            if isinstance(device_type, str) and device_type != "mps"
+            else "cpu"
+        )
         with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
+            freqs = (
+                inv_freq_expanded.float() @ position_ids_expanded.float()
+            ).transpose(1, 2)
             emb = torch.cat((freqs, freqs), dim=-1)
             cos = emb.cos()
             sin = emb.sin()
@@ -140,37 +159,55 @@ class Phi3SuScaledRotaryEmbedding(Phi3RotaryEmbedding):
     def __init__(self, dim, config, device=None):
         super().__init__(dim, config.max_position_embeddings, config.rope_theta, device)
 
-        self.short_factor = config.rope_scaling['short_factor']
-        self.long_factor = config.rope_scaling['long_factor']
+        self.short_factor = config.rope_scaling["short_factor"]
+        self.long_factor = config.rope_scaling["long_factor"]
         self.original_max_position_embeddings = config.original_max_position_embeddings
 
     @torch.no_grad()
     def forward(self, x, position_ids, seq_len=None):
         seq_len = torch.max(position_ids) + 1
         if seq_len > self.original_max_position_embeddings:
-            ext_factors = torch.tensor(self.long_factor, dtype=torch.float32, device=x.device)
+            ext_factors = torch.tensor(
+                self.long_factor, dtype=torch.float32, device=x.device
+            )
         else:
-            ext_factors = torch.tensor(self.short_factor, dtype=torch.float32, device=x.device)
+            ext_factors = torch.tensor(
+                self.short_factor, dtype=torch.float32, device=x.device
+            )
 
-        inv_freq_shape = torch.arange(0, self.dim, 2, dtype=torch.int64, device=x.device).float() / self.dim
+        inv_freq_shape = (
+            torch.arange(0, self.dim, 2, dtype=torch.int64, device=x.device).float()
+            / self.dim
+        )
         self.inv_freq = 1.0 / (ext_factors * self.base**inv_freq_shape)
 
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        inv_freq_expanded = (
+            self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        )
         position_ids_expanded = position_ids[:, None, :].float()
 
         # Force float32 since bfloat16 loses precision on long contexts
         # See https://github.com/huggingface/transformers/pull/29285
         device_type = x.device.type
-        device_type = device_type if isinstance(device_type, str) and device_type != 'mps' else 'cpu'
+        device_type = (
+            device_type
+            if isinstance(device_type, str) and device_type != "mps"
+            else "cpu"
+        )
         with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
+            freqs = (
+                inv_freq_expanded.float() @ position_ids_expanded.float()
+            ).transpose(1, 2)
             emb = torch.cat((freqs, freqs), dim=-1)
 
             scale = self.max_position_embeddings / self.original_max_position_embeddings
             if scale <= 1.0:
                 scaling_factor = 1.0
             else:
-                scaling_factor = math.sqrt(1 + math.log(scale) / math.log(self.original_max_position_embeddings))
+                scaling_factor = math.sqrt(
+                    1
+                    + math.log(scale) / math.log(self.original_max_position_embeddings)
+                )
 
             cos = emb.cos() * scaling_factor
             sin = emb.sin() * scaling_factor
@@ -181,30 +218,45 @@ class Phi3YarnScaledRotaryEmbedding(Phi3RotaryEmbedding):
     def __init__(self, dim, config, device=None):
         super().__init__(dim, config.max_position_embeddings, config.rope_theta, device)
 
-        self.short_factor = config.rope_scaling['short_factor']
-        self.long_factor = config.rope_scaling['long_factor']
+        self.short_factor = config.rope_scaling["short_factor"]
+        self.long_factor = config.rope_scaling["long_factor"]
         self.original_max_position_embeddings = config.original_max_position_embeddings
 
     @torch.no_grad()
     def forward(self, x, position_ids, seq_len=None):
         seq_len = torch.max(position_ids) + 1
         if seq_len > self.original_max_position_embeddings:
-            ext_factors = torch.tensor(self.long_factor, dtype=torch.float32, device=x.device)
+            ext_factors = torch.tensor(
+                self.long_factor, dtype=torch.float32, device=x.device
+            )
         else:
-            ext_factors = torch.tensor(self.short_factor, dtype=torch.float32, device=x.device)
+            ext_factors = torch.tensor(
+                self.short_factor, dtype=torch.float32, device=x.device
+            )
 
-        inv_freq_shape = torch.arange(0, self.dim, 2, dtype=torch.int64, device=x.device).float() / self.dim
+        inv_freq_shape = (
+            torch.arange(0, self.dim, 2, dtype=torch.int64, device=x.device).float()
+            / self.dim
+        )
         self.inv_freq = 1.0 / (ext_factors * self.base**inv_freq_shape)
 
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        inv_freq_expanded = (
+            self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        )
         position_ids_expanded = position_ids[:, None, :].float()
 
         # Force float32 since bfloat16 loses precision on long contexts
         # See https://github.com/huggingface/transformers/pull/29285
         device_type = x.device.type
-        device_type = device_type if isinstance(device_type, str) and device_type != 'mps' else 'cpu'
+        device_type = (
+            device_type
+            if isinstance(device_type, str) and device_type != "mps"
+            else "cpu"
+        )
         with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
+            freqs = (
+                inv_freq_expanded.float() @ position_ids_expanded.float()
+            ).transpose(1, 2)
             emb = torch.cat((freqs, freqs), dim=-1)
 
             scale = self.max_position_embeddings / self.original_max_position_embeddings
@@ -259,8 +311,12 @@ class Phi3MLP(nn.Module):
         super().__init__()
 
         self.config = config
-        self.gate_up_proj = nn.Linear(config.hidden_size, 2 * config.intermediate_size, bias=False)
-        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size, bias=False)
+        self.gate_up_proj = nn.Linear(
+            config.hidden_size, 2 * config.intermediate_size, bias=False
+        )
+        self.down_proj = nn.Linear(
+            config.intermediate_size, config.hidden_size, bias=False
+        )
 
         self.activation_fn = ACT2FN[config.hidden_act]
 
@@ -282,7 +338,9 @@ def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     batch, num_key_value_heads, slen, head_dim = hidden_states.shape
     if n_rep == 1:
         return hidden_states
-    hidden_states = hidden_states[:, :, None, :, :].expand(batch, num_key_value_heads, n_rep, slen, head_dim)
+    hidden_states = hidden_states[:, :, None, :, :].expand(
+        batch, num_key_value_heads, n_rep, slen, head_dim
+    )
     return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
 
 
@@ -295,9 +353,9 @@ class Phi3Attention(nn.Module):
         self.layer_idx = layer_idx
         if layer_idx is None:
             logger.warning_once(
-                f'Instantiating {self.__class__.__name__} without passing a `layer_idx` is not recommended and will '
-                'lead to errors during the forward call if caching is used. Please make sure to provide a `layer_idx` '
-                'when creating this class.'
+                f"Instantiating {self.__class__.__name__} without passing a `layer_idx` is not recommended and will "
+                "lead to errors during the forward call if caching is used. Please make sure to provide a `layer_idx` "
+                "when creating this class."
             )
 
         self.attention_dropout = config.attention_dropout
@@ -314,12 +372,16 @@ class Phi3Attention(nn.Module):
 
         if (self.head_dim * self.num_heads) != self.hidden_size:
             raise ValueError(
-                f'hidden_size must be divisible by num_heads (got `hidden_size`: {self.hidden_size}'
-                f' and `num_heads`: {self.num_heads}).'
+                f"hidden_size must be divisible by num_heads (got `hidden_size`: {self.hidden_size}"
+                f" and `num_heads`: {self.num_heads})."
             )
 
-        op_size = self.num_heads * self.head_dim + 2 * (self.num_key_value_heads * self.head_dim)
-        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=False)
+        op_size = self.num_heads * self.head_dim + 2 * (
+            self.num_key_value_heads * self.head_dim
+        )
+        self.o_proj = nn.Linear(
+            self.num_heads * self.head_dim, self.hidden_size, bias=False
+        )
         self.qkv_proj = nn.Linear(self.hidden_size, op_size, bias=False)
         self._init_rope()
 
@@ -331,13 +393,17 @@ class Phi3Attention(nn.Module):
                 base=self.rope_theta,
             )
         else:
-            scaling_type = self.config.rope_scaling['type']
-            if scaling_type == 'su':
-                self.rotary_emb = Phi3SuScaledRotaryEmbedding(self.head_dim, self.config)
-            elif scaling_type == 'yarn':
-                self.rotary_emb = Phi3YarnScaledRotaryEmbedding(self.head_dim, self.config)
+            scaling_type = self.config.rope_scaling["type"]
+            if scaling_type == "su":
+                self.rotary_emb = Phi3SuScaledRotaryEmbedding(
+                    self.head_dim, self.config
+                )
+            elif scaling_type == "yarn":
+                self.rotary_emb = Phi3YarnScaledRotaryEmbedding(
+                    self.head_dim, self.config
+                )
             else:
-                raise ValueError(f'Unknown RoPE scaling type {scaling_type}')
+                raise ValueError(f"Unknown RoPE scaling type {scaling_type}")
 
     def forward(
         self,
@@ -348,66 +414,86 @@ class Phi3Attention(nn.Module):
         output_attentions: bool = False,
         use_cache: bool = False,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
-        logger.warning_once('You are not running the flash-attention implementation, expect numerical differences.')
+        logger.warning_once(
+            "You are not running the flash-attention implementation, expect numerical differences."
+        )
 
         bsz, q_len, _ = hidden_states.size()
 
         qkv = self.qkv_proj(hidden_states)
         query_pos = self.num_heads * self.head_dim
         query_states = qkv[..., :query_pos]
-        key_states = qkv[..., query_pos : query_pos + self.num_key_value_heads * self.head_dim]
+        key_states = qkv[
+            ..., query_pos : query_pos + self.num_key_value_heads * self.head_dim
+        ]
         value_states = qkv[..., query_pos + self.num_key_value_heads * self.head_dim :]
 
-        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        query_states = query_states.view(
+            bsz, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        key_states = key_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
+        value_states = value_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
 
         kv_seq_len = key_states.shape[-2]
         if past_key_value is not None:
             if self.layer_idx is None:
                 raise ValueError(
-                    f'The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} '
-                    'for auto-regressive decoding with k/v caching, please make sure to initialize the attention class '
-                    'with a layer index.'
+                    f"The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} "
+                    "for auto-regressive decoding with k/v caching, please make sure to initialize the attention class "
+                    "with a layer index."
                 )
             kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
         cos, sin = self.rotary_emb(value_states, position_ids, seq_len=kv_seq_len)
 
-        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+        query_states, key_states = apply_rotary_pos_emb(
+            query_states, key_states, cos, sin, position_ids
+        )
 
         if past_key_value is not None:
-            cache_kwargs = {'sin': sin, 'cos': cos}  # Specific to RoPE models
-            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+            cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
+            key_states, value_states = past_key_value.update(
+                key_states, value_states, self.layer_idx, cache_kwargs
+            )
 
         # repeat k/v heads if n_kv_heads < n_heads
         key_states = repeat_kv(key_states, self.num_key_value_groups)
         value_states = repeat_kv(value_states, self.num_key_value_groups)
 
-        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+        attn_weights = torch.matmul(
+            query_states, key_states.transpose(2, 3)
+        ) / math.sqrt(self.head_dim)
 
         if attn_weights.size() != (bsz, self.num_heads, q_len, kv_seq_len):
             raise ValueError(
-                f'Attention weights should be of size {(bsz, self.num_heads, q_len, kv_seq_len)}, but is'
-                f' {attn_weights.size()}'
+                f"Attention weights should be of size {(bsz, self.num_heads, q_len, kv_seq_len)}, but is"
+                f" {attn_weights.size()}"
             )
 
         if attention_mask is not None:
             if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
                 raise ValueError(
-                    f'Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}'
+                    f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
                 )
             attn_weights = attn_weights + attention_mask
 
         # upcast attention to fp32
-        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(value_states.dtype)
-        attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)
+        attn_weights = nn.functional.softmax(
+            attn_weights, dim=-1, dtype=torch.float32
+        ).to(value_states.dtype)
+        attn_weights = nn.functional.dropout(
+            attn_weights, p=self.attention_dropout, training=self.training
+        )
 
         attn_output = torch.matmul(attn_weights, value_states)
 
         if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
             raise ValueError(
-                f'`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is'
-                f' {attn_output.size()}'
+                f"`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is"
+                f" {attn_output.size()}"
             )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
@@ -453,40 +539,50 @@ class Phi3FlashAttention2(Phi3Attention):
             logger.warning_once(
                 "The current flash attention version does not support sliding window attention. Please use `attn_implementation='eager'` or upgrade flash-attn library."
             )
-            raise ValueError('The current flash attention version does not support sliding window attention.')
+            raise ValueError(
+                "The current flash attention version does not support sliding window attention."
+            )
 
         output_attentions = False
 
-        if 'padding_mask' in kwargs:
+        if "padding_mask" in kwargs:
             warnings.warn(
-                'Passing `padding_mask` is deprecated and will be removed in v4.37. Please make sure use `attention_mask` instead.`'
+                "Passing `padding_mask` is deprecated and will be removed in v4.37. Please make sure use `attention_mask` instead.`"
             )
 
             # overwrite attention_mask with padding_mask
-            attention_mask = kwargs.pop('padding_mask')
+            attention_mask = kwargs.pop("padding_mask")
 
         bsz, q_len, _ = hidden_states.size()
 
         qkv = self.qkv_proj(hidden_states)
         query_pos = self.num_heads * self.head_dim
         query_states = qkv[..., :query_pos]
-        key_states = qkv[..., query_pos : query_pos + self.num_key_value_heads * self.head_dim]
+        key_states = qkv[
+            ..., query_pos : query_pos + self.num_key_value_heads * self.head_dim
+        ]
         value_states = qkv[..., query_pos + self.num_key_value_heads * self.head_dim :]
 
         # Flash attention requires the input to have the shape
         # batch_size x seq_length x head_dim x hidden_dim
         # therefore we just need to keep the original shape
-        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        query_states = query_states.view(
+            bsz, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        key_states = key_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
+        value_states = value_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
 
         kv_seq_len = key_states.shape[-2]
         if past_key_value is not None:
             if self.layer_idx is None:
                 raise ValueError(
-                    f'The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} '
-                    'for auto-regressive decoding with k/v caching, please make sure to initialize the attention class '
-                    'with a layer index.'
+                    f"The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} "
+                    "for auto-regressive decoding with k/v caching, please make sure to initialize the attention class "
+                    "with a layer index."
                 )
             kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
 
@@ -494,11 +590,13 @@ class Phi3FlashAttention2(Phi3Attention):
         rotary_seq_len = max(kv_seq_len, position_ids[:, -1].max().item()) + 1
         cos, sin = self.rotary_emb(value_states, position_ids, seq_len=rotary_seq_len)
 
-        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+        query_states, key_states = apply_rotary_pos_emb(
+            query_states, key_states, cos, sin, position_ids
+        )
 
         use_sliding_windows = (
             _flash_supports_window_size
-            and getattr(self.config, 'sliding_window', None) is not None
+            and getattr(self.config, "sliding_window", None) is not None
             and kv_seq_len > self.config.sliding_window
         )
 
@@ -506,7 +604,7 @@ class Phi3FlashAttention2(Phi3Attention):
             # Activate slicing cache only if the config has a value `sliding_windows` attribute
             cache_has_contents = past_key_value.get_seq_length(self.layer_idx) > 0
             if (
-                getattr(self.config, 'sliding_window', None) is not None
+                getattr(self.config, "sliding_window", None) is not None
                 and kv_seq_len > self.config.sliding_window
                 and cache_has_contents
             ):
@@ -520,16 +618,21 @@ class Phi3FlashAttention2(Phi3Attention):
 
                 if past_key.shape[-2] != self.config.sliding_window - 1:
                     raise ValueError(
-                        f'past key must have a shape of (`batch_size, num_heads, self.config.sliding_window-1, head_dim`), got'
-                        f' {past_key.shape}'
+                        f"past key must have a shape of (`batch_size, num_heads, self.config.sliding_window-1, head_dim`), got"
+                        f" {past_key.shape}"
                     )
 
                 if attention_mask is not None:
                     attention_mask = attention_mask[:, slicing_tokens:]
-                    attention_mask = torch.cat([attention_mask, torch.ones_like(attention_mask[:, -1:])], dim=-1)
+                    attention_mask = torch.cat(
+                        [attention_mask, torch.ones_like(attention_mask[:, -1:])],
+                        dim=-1,
+                    )
 
-            cache_kwargs = {'sin': sin, 'cos': cos}  # Specific to RoPE models
-            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+            cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
+            key_states, value_states = past_key_value.update(
+                key_states, value_states, self.layer_idx, cache_kwargs
+            )
 
         # repeat k/v heads if n_kv_heads < n_heads
         key_states = repeat_kv(key_states, self.num_key_value_groups)
@@ -547,15 +650,15 @@ class Phi3FlashAttention2(Phi3Attention):
             if torch.is_autocast_enabled():
                 target_dtype = torch.get_autocast_gpu_dtype()
             # Handle the case where the model is quantized
-            elif hasattr(self.config, '_pre_quantization_dtype'):
+            elif hasattr(self.config, "_pre_quantization_dtype"):
                 target_dtype = self.config._pre_quantization_dtype
             else:
                 target_dtype = self.qkv_proj.weight.dtype
 
             logger.warning_once(
-                f'The input hidden states seems to be silently casted in float32, this might be related to'
-                f' the fact you have upcasted embedding or layer norm layers in float32. We will cast back the input in'
-                f' {target_dtype}.'
+                f"The input hidden states seems to be silently casted in float32, this might be related to"
+                f" the fact you have upcasted embedding or layer norm layers in float32. We will cast back the input in"
+                f" {target_dtype}."
             )
 
             query_states = query_states.to(target_dtype)
@@ -627,7 +730,14 @@ class Phi3FlashAttention2(Phi3Attention):
         # Contains at least one padding token in the sequence
         if attention_mask is not None:
             batch_size = query_states.shape[0]
-            query_states, key_states, value_states, indices_q, cu_seq_lens, max_seq_lens = self._upad_input(
+            (
+                query_states,
+                key_states,
+                value_states,
+                indices_q,
+                cu_seq_lens,
+                max_seq_lens,
+            ) = self._upad_input(
                 query_states, key_states, value_states, attention_mask, query_length
             )
 
@@ -659,10 +769,15 @@ class Phi3FlashAttention2(Phi3Attention):
                     dropout_p=dropout,
                     softmax_scale=softmax_scale,
                     causal=causal,
-                    window_size=(self.config.sliding_window, self.config.sliding_window),
+                    window_size=(
+                        self.config.sliding_window,
+                        self.config.sliding_window,
+                    ),
                 )
 
-            attn_output = pad_input(attn_output_unpad, indices_q, batch_size, query_length)
+            attn_output = pad_input(
+                attn_output_unpad, indices_q, batch_size, query_length
+            )
         else:
             if not use_sliding_windows:
                 attn_output = flash_attn_func(
@@ -681,13 +796,18 @@ class Phi3FlashAttention2(Phi3Attention):
                     dropout,
                     softmax_scale=softmax_scale,
                     causal=causal,
-                    window_size=(self.config.sliding_window, self.config.sliding_window),
+                    window_size=(
+                        self.config.sliding_window,
+                        self.config.sliding_window,
+                    ),
                 )
 
         return attn_output
 
     # Copied from transformers.models.mistral.modeling_mistral.MistralFlashAttention2._upad_input
-    def _upad_input(self, query_layer, key_layer, value_layer, attention_mask, query_length):
+    def _upad_input(
+        self, query_layer, key_layer, value_layer, attention_mask, query_length
+    ):
         batch_size, kv_seq_len, num_heads, head_dim = key_layer.shape
 
         # On the first iteration we need to properly re-create the padding mask
@@ -698,12 +818,17 @@ class Phi3FlashAttention2(Phi3Attention):
 
         indices_k, cu_seqlens_k, max_seqlen_in_batch_k = _get_unpad_data(attention_mask)
 
-        key_layer = index_first_axis(key_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim), indices_k)
-        value_layer = index_first_axis(value_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim), indices_k)
+        key_layer = index_first_axis(
+            key_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim), indices_k
+        )
+        value_layer = index_first_axis(
+            value_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim), indices_k
+        )
 
         if query_length == kv_seq_len:
             query_layer = index_first_axis(
-                query_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim), indices_k
+                query_layer.reshape(batch_size * kv_seq_len, num_heads, head_dim),
+                indices_k,
             )
             cu_seqlens_q = cu_seqlens_k
             max_seqlen_in_batch_q = max_seqlen_in_batch_k
@@ -718,7 +843,9 @@ class Phi3FlashAttention2(Phi3Attention):
         else:
             # The -q_len: slice assumes left padding.
             attention_mask = attention_mask[:, -query_length:]
-            query_layer, indices_q, cu_seqlens_q, max_seqlen_in_batch_q = unpad_input(query_layer, attention_mask)
+            query_layer, indices_q, cu_seqlens_q, max_seqlen_in_batch_q = unpad_input(
+                query_layer, attention_mask
+            )
 
         return (
             query_layer,
@@ -752,7 +879,7 @@ class Phi3SdpaAttention(Phi3Attention):
         if output_attentions:
             # TODO: Improve this warning with e.g. `model.config.attn_implementation = "manual"` once this is implemented.
             logger.warning_once(
-                'Phi3Model is using Phi3SdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, '
+                "Phi3Model is using Phi3SdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, "
                 'but specifying the manual implementation will be required from Transformers version v5.0.0 onwards. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.'
             )
             return super().forward(
@@ -769,23 +896,35 @@ class Phi3SdpaAttention(Phi3Attention):
         qkv = self.qkv_proj(hidden_states)
         query_pos = self.num_heads * self.head_dim
         query_states = qkv[..., :query_pos]
-        key_states = qkv[..., query_pos : query_pos + self.num_key_value_heads * self.head_dim]
+        key_states = qkv[
+            ..., query_pos : query_pos + self.num_key_value_heads * self.head_dim
+        ]
         value_states = qkv[..., query_pos + self.num_key_value_heads * self.head_dim :]
 
-        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        query_states = query_states.view(
+            bsz, q_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        key_states = key_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
+        value_states = value_states.view(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(1, 2)
 
         kv_seq_len = key_states.shape[-2]
         if past_key_value is not None:
             kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
         cos, sin = self.rotary_emb(value_states, position_ids, seq_len=kv_seq_len)
 
-        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+        query_states, key_states = apply_rotary_pos_emb(
+            query_states, key_states, cos, sin, position_ids
+        )
 
         if past_key_value is not None:
-            cache_kwargs = {'sin': sin, 'cos': cos}  # Specific to RoPE models
-            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+            cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
+            key_states, value_states = past_key_value.update(
+                key_states, value_states, self.layer_idx, cache_kwargs
+            )
 
         key_states = repeat_kv(key_states, self.num_key_value_groups)
         value_states = repeat_kv(value_states, self.num_key_value_groups)
@@ -793,12 +932,12 @@ class Phi3SdpaAttention(Phi3Attention):
         if attention_mask is not None:
             if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
                 raise ValueError(
-                    f'Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}'
+                    f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
                 )
 
         # SDPA with memory-efficient backend is currently (torch==2.1.2) bugged with non-contiguous inputs with custom attn_mask,
         # Reference: https://github.com/pytorch/pytorch/issues/112577.
-        if query_states.device.type == 'cuda' and attention_mask is not None:
+        if query_states.device.type == "cuda" and attention_mask is not None:
             query_states = query_states.contiguous()
             key_states = key_states.contiguous()
             value_states = value_states.contiguous()
@@ -822,9 +961,9 @@ class Phi3SdpaAttention(Phi3Attention):
 
 
 PHI3_ATTENTION_CLASSES = {
-    'eager': Phi3Attention,
-    'flash_attention_2': Phi3FlashAttention2,
-    'sdpa': Phi3SdpaAttention,
+    "eager": Phi3Attention,
+    "flash_attention_2": Phi3FlashAttention2,
+    "sdpa": Phi3SdpaAttention,
 }
 
 
@@ -833,14 +972,18 @@ class Phi3DecoderLayer(nn.Module):
         super().__init__()
 
         self.config = config
-        self.self_attn = PHI3_ATTENTION_CLASSES[config._attn_implementation](config, layer_idx=layer_idx)
+        self.self_attn = PHI3_ATTENTION_CLASSES[config._attn_implementation](
+            config, layer_idx=layer_idx
+        )
 
         self.mlp = Phi3MLP(config)
         self.input_layernorm = Phi3RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
 
         self.resid_attn_dropout = nn.Dropout(config.resid_pdrop)
         self.resid_mlp_dropout = nn.Dropout(config.resid_pdrop)
-        self.post_attention_layernorm = Phi3RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.post_attention_layernorm = Phi3RMSNorm(
+            config.hidden_size, eps=config.rms_norm_eps
+        )
 
     def forward(
         self,
@@ -851,10 +994,12 @@ class Phi3DecoderLayer(nn.Module):
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = False,
         **kwargs,
-    ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]]:
-        if 'padding_mask' in kwargs:
+    ) -> Tuple[
+        torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]
+    ]:
+        if "padding_mask" in kwargs:
             warnings.warn(
-                'Passing `padding_mask` is deprecated and will be removed in v4.37. Please make sure use `attention_mask` instead.`'
+                "Passing `padding_mask` is deprecated and will be removed in v4.37. Please make sure use `attention_mask` instead.`"
             )
         """
         Args:
@@ -924,25 +1069,27 @@ PHI3_START_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    'The bare Phi-3 model outputting raw hidden-states without any specific head on top.',
+    "The bare Phi-3 model outputting raw hidden-states without any specific head on top.",
     PHI3_START_DOCSTRING,
 )
 class Phi3PreTrainedModel(PreTrainedModel):
     config_class = Phi3Config
-    base_model_prefix = 'model'
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
-    _no_split_modules = ['Phi3DecoderLayer']
-    _skip_keys_device_placement = 'past_key_values'
+    _no_split_modules = ["Phi3DecoderLayer"]
+    _skip_keys_device_placement = "past_key_values"
     _supports_flash_attn_2 = True
     _supports_sdpa = False
     _supports_cache_class = True
 
-    _version = '0.0.5'
+    _version = "0.0.5"
 
     def __init__(self, config: Phi3Config):
         if not has_flash_attn:
-            config._attn_implementation = 'eager'
-            print('Warning: Flash attention is not available, using eager attention instead.')
+            config._attn_implementation = "eager"
+            print(
+                "Warning: Flash attention is not available, using eager attention instead."
+            )
         super().__init__(config)
 
     def _init_weights(self, module):
@@ -1028,7 +1175,7 @@ PHI3_INPUTS_DOCSTRING = r"""
 
 
 @add_start_docstrings(
-    'The bare Phi-3 model outputting raw hidden-states without any specific head on top.',
+    "The bare Phi-3 model outputting raw hidden-states without any specific head on top.",
     PHI3_START_DOCSTRING,
 )
 class Phi3Model(Phi3PreTrainedModel):
@@ -1044,10 +1191,15 @@ class Phi3Model(Phi3PreTrainedModel):
         self.padding_idx = config.pad_token_id
         self.vocab_size = config.vocab_size
 
-        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)
+        self.embed_tokens = nn.Embedding(
+            config.vocab_size, config.hidden_size, self.padding_idx
+        )
         self.embed_dropout = nn.Dropout(config.embd_pdrop)
         self.layers = nn.ModuleList(
-            [Phi3DecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+            [
+                Phi3DecoderLayer(config, layer_idx)
+                for layer_idx in range(config.num_hidden_layers)
+            ]
         )
         self._attn_implementation = config._attn_implementation
 
@@ -1076,30 +1228,40 @@ class Phi3Model(Phi3PreTrainedModel):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
     ) -> Union[Tuple, BaseModelOutputWithPast]:
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
+        output_attentions = (
+            output_attentions
+            if output_attentions is not None
+            else self.config.output_attentions
+        )
         output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
         )
         use_cache = use_cache if use_cache is not None else self.config.use_cache
 
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         # retrieve input_ids and inputs_embeds
         if input_ids is not None and inputs_embeds is not None:
-            raise ValueError('You cannot specify both input_ids and inputs_embeds at the same time')
+            raise ValueError(
+                "You cannot specify both input_ids and inputs_embeds at the same time"
+            )
         elif input_ids is not None:
             batch_size, seq_length = input_ids.shape[:2]
         elif inputs_embeds is not None:
             batch_size, seq_length = inputs_embeds.shape[:2]
         else:
-            raise ValueError('You have to specify either input_ids or inputs_embeds')
+            raise ValueError("You have to specify either input_ids or inputs_embeds")
 
         past_key_values_length = 0
 
         if self.gradient_checkpointing and self.training:
             if use_cache:
                 logger.warning_once(
-                    '`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...'
+                    "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
                 )
                 use_cache = False
 
@@ -1112,7 +1274,10 @@ class Phi3Model(Phi3PreTrainedModel):
         if position_ids is None:
             device = input_ids.device if input_ids is not None else inputs_embeds.device
             position_ids = torch.arange(
-                past_key_values_length, seq_length + past_key_values_length, dtype=torch.long, device=device
+                past_key_values_length,
+                seq_length + past_key_values_length,
+                dtype=torch.long,
+                device=device,
             )
             position_ids = position_ids.unsqueeze(0).view(-1, seq_length)
         else:
@@ -1121,18 +1286,26 @@ class Phi3Model(Phi3PreTrainedModel):
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids)
 
-        if attention_mask is not None and self._attn_implementation == 'flash_attention_2' and use_cache:
+        if (
+            attention_mask is not None
+            and self._attn_implementation == "flash_attention_2"
+            and use_cache
+        ):
             is_padding_right = attention_mask[:, -1].sum().item() != batch_size
             if is_padding_right:
                 raise ValueError(
                     "You are attempting to perform batched generation with padding_side='right'"
-                    ' this may lead to unexpected behaviour for Flash Attention version of Phi3. Make sure to '
+                    " this may lead to unexpected behaviour for Flash Attention version of Phi3. Make sure to "
                     " call `tokenizer.padding_side  = 'left'` before tokenizing the input. "
                 )
 
-        if self._attn_implementation == 'flash_attention_2':
+        if self._attn_implementation == "flash_attention_2":
             # 2d mask is passed through the layers
-            attention_mask = attention_mask if (attention_mask is not None and 0 in attention_mask) else None
+            attention_mask = (
+                attention_mask
+                if (attention_mask is not None and 0 in attention_mask)
+                else None
+            )
         else:
             # 4d mask is passed through the layers
             attention_mask = _prepare_4d_causal_attention_mask(
@@ -1190,9 +1363,17 @@ class Phi3Model(Phi3PreTrainedModel):
 
         next_cache = None
         if use_cache:
-            next_cache = next_decoder_cache.to_legacy_cache() if use_legacy_cache else next_decoder_cache
+            next_cache = (
+                next_decoder_cache.to_legacy_cache()
+                if use_legacy_cache
+                else next_decoder_cache
+            )
         if not return_dict:
-            return tuple(v for v in [hidden_states, next_cache, all_hidden_states, all_self_attns] if v is not None)
+            return tuple(
+                v
+                for v in [hidden_states, next_cache, all_hidden_states, all_self_attns]
+                if v is not None
+            )
         return BaseModelOutputWithPast(
             last_hidden_state=hidden_states,
             past_key_values=next_cache,
@@ -1202,7 +1383,7 @@ class Phi3Model(Phi3PreTrainedModel):
 
 
 class Phi3ForCausalLM(Phi3PreTrainedModel):
-    _tied_weights_keys = ['lm_head.weight']
+    _tied_weights_keys = ["lm_head.weight"]
 
     # Copied from transformers.models.llama.modeling_llama.LlamaForCausalLM.__init__ with Llama->Phi3
     def __init__(self, config):
@@ -1240,7 +1421,9 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
 
     # Ignore copy
     @add_start_docstrings_to_model_forward(PHI3_INPUTS_DOCSTRING)
-    @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
+    @replace_return_docstrings(
+        output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC
+    )
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -1280,11 +1463,19 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
         'This is an example script .\n Certainly! Below is a sample script that demonstrates a simple task, such as calculating the sum'
         ```"""
 
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        output_attentions = (
+            output_attentions
+            if output_attentions is not None
+            else self.config.output_attentions
         )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        output_hidden_states = (
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
+        )
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
         outputs = self.model(
@@ -1330,7 +1521,12 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
 
     # Copied from transformers.models.persimmon.modeling_persimmon.PersimmonForCausalLM.prepare_inputs_for_generation
     def prepare_inputs_for_generation(
-        self, input_ids, past_key_values=None, attention_mask=None, inputs_embeds=None, **kwargs
+        self,
+        input_ids,
+        past_key_values=None,
+        attention_mask=None,
+        inputs_embeds=None,
+        **kwargs,
     ):
         if past_key_values is not None:
             if isinstance(past_key_values, Cache):
@@ -1345,7 +1541,10 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
             # 1 - If the length of the attention_mask exceeds the length of input_ids, then we are in a setting where
             # some of the inputs are exclusively passed as part of the cache (e.g. when passing input_embeds as
             # input)
-            if attention_mask is not None and attention_mask.shape[1] > input_ids.shape[1]:
+            if (
+                attention_mask is not None
+                and attention_mask.shape[1] > input_ids.shape[1]
+            ):
                 input_ids = input_ids[:, -(attention_mask.shape[1] - past_length) :]
             # 2 - If the past_length is smaller than input_ids', then input_ids holds all input tokens. We can discard
             # input_ids based on the past_length.
@@ -1361,7 +1560,7 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
             ):
                 attention_mask = attention_mask[:, -max_cache_length:]
 
-        position_ids = kwargs.get('position_ids', None)
+        position_ids = kwargs.get("position_ids", None)
         if attention_mask is not None and position_ids is None:
             # create position_ids on the fly for batch generation
             position_ids = attention_mask.long().cumsum(-1) - 1
@@ -1370,17 +1569,19 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
                 position_ids = position_ids[:, -input_ids.shape[1] :]
 
         # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
-        if (inputs_embeds is not None and past_key_values is None) or (inputs_embeds is not None and len(past_key_values) == 0):
-            model_inputs = {'inputs_embeds': inputs_embeds}
+        if (inputs_embeds is not None and past_key_values is None) or (
+            inputs_embeds is not None and len(past_key_values) == 0
+        ):
+            model_inputs = {"inputs_embeds": inputs_embeds}
         else:
-            model_inputs = {'input_ids': input_ids}
+            model_inputs = {"input_ids": input_ids}
 
         model_inputs.update(
             {
-                'position_ids': position_ids,
-                'past_key_values': past_key_values,
-                'use_cache': kwargs.get('use_cache'),
-                'attention_mask': attention_mask,
+                "position_ids": position_ids,
+                "past_key_values": past_key_values,
+                "use_cache": kwargs.get("use_cache"),
+                "attention_mask": attention_mask,
             }
         )
         return model_inputs
@@ -1391,7 +1592,10 @@ class Phi3ForCausalLM(Phi3PreTrainedModel):
         reordered_past = ()
         for layer_past in past_key_values:
             reordered_past += (
-                tuple(past_state.index_select(0, beam_idx.to(past_state.device)) for past_state in layer_past),
+                tuple(
+                    past_state.index_select(0, beam_idx.to(past_state.device))
+                    for past_state in layer_past
+                ),
             )
         return reordered_past
 
@@ -1448,7 +1652,9 @@ class Phi3ForSequenceClassification(Phi3PreTrainedModel):
             config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
             `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
         """
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         model_outputs = self.model(
             input_ids,
@@ -1470,41 +1676,51 @@ class Phi3ForSequenceClassification(Phi3PreTrainedModel):
             batch_size = inputs_embeds.shape[0]
 
         if self.config.pad_token_id is None and batch_size != 1:
-            raise ValueError('Cannot handle batch sizes > 1 if no padding token is defined.')
+            raise ValueError(
+                "Cannot handle batch sizes > 1 if no padding token is defined."
+            )
         if self.config.pad_token_id is None:
             sequence_lengths = -1
         else:
             if input_ids is not None:
                 # if no pad token found, use modulo instead of reverse indexing for ONNX compatibility
-                sequence_lengths = torch.eq(input_ids, self.config.pad_token_id).int().argmax(-1) - 1
+                sequence_lengths = (
+                    torch.eq(input_ids, self.config.pad_token_id).int().argmax(-1) - 1
+                )
                 sequence_lengths = sequence_lengths % input_ids.shape[-1]
                 sequence_lengths = sequence_lengths.to(logits.device)
             else:
                 sequence_lengths = -1
 
-        pooled_logits = logits[torch.arange(batch_size, device=logits.device), sequence_lengths]
+        pooled_logits = logits[
+            torch.arange(batch_size, device=logits.device), sequence_lengths
+        ]
 
         loss = None
         if labels is not None:
             labels = labels.to(logits.device)
             if self.config.problem_type is None:
                 if self.num_labels == 1:
-                    self.config.problem_type = 'regression'
-                elif self.num_labels > 1 and (labels.dtype == torch.long or labels.dtype == torch.int):
-                    self.config.problem_type = 'single_label_classification'
+                    self.config.problem_type = "regression"
+                elif self.num_labels > 1 and (
+                    labels.dtype == torch.long or labels.dtype == torch.int
+                ):
+                    self.config.problem_type = "single_label_classification"
                 else:
-                    self.config.problem_type = 'multi_label_classification'
+                    self.config.problem_type = "multi_label_classification"
 
-            if self.config.problem_type == 'regression':
+            if self.config.problem_type == "regression":
                 loss_fct = MSELoss()
                 if self.num_labels == 1:
                     loss = loss_fct(pooled_logits.squeeze(), labels.squeeze())
                 else:
                     loss = loss_fct(pooled_logits, labels)
-            elif self.config.problem_type == 'single_label_classification':
+            elif self.config.problem_type == "single_label_classification":
                 loss_fct = CrossEntropyLoss()
-                loss = loss_fct(pooled_logits.view(-1, self.num_labels), labels.view(-1))
-            elif self.config.problem_type == 'multi_label_classification':
+                loss = loss_fct(
+                    pooled_logits.view(-1, self.num_labels), labels.view(-1)
+                )
+            elif self.config.problem_type == "multi_label_classification":
                 loss_fct = BCEWithLogitsLoss()
                 loss = loss_fct(pooled_logits, labels)
         if not return_dict:
@@ -1534,9 +1750,12 @@ class Phi3ForTokenClassification(Phi3PreTrainedModel):
         self.num_labels = config.num_labels
 
         self.model = Phi3Model(config)
-        if hasattr(config, 'classifier_dropout') and config.classifier_dropout is not None:
+        if (
+            hasattr(config, "classifier_dropout")
+            and config.classifier_dropout is not None
+        ):
             classifier_dropout = config.classifier_dropout
-        elif hasattr(config, 'hidden_dropout') and config.hidden_dropout is not None:
+        elif hasattr(config, "hidden_dropout") and config.hidden_dropout is not None:
             classifier_dropout = config.hidden_dropout
         else:
             classifier_dropout = 0.1
@@ -1571,7 +1790,9 @@ class Phi3ForTokenClassification(Phi3PreTrainedModel):
             config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If
             `config.num_labels > 1` a classification loss is computed (Cross-Entropy).
         """
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         model_outputs = self.model(
             input_ids,
@@ -1595,7 +1816,8 @@ class Phi3ForTokenClassification(Phi3PreTrainedModel):
             batch_size, seq_length = labels.shape
             loss_fct = CrossEntropyLoss()
             loss = loss_fct(
-                logits.view(batch_size * seq_length, self.num_labels), labels.view(batch_size * seq_length)
+                logits.view(batch_size * seq_length, self.num_labels),
+                labels.view(batch_size * seq_length),
             )
 
         if not return_dict:

@@ -135,7 +135,13 @@ class SingleTask_Contacts_5(SingleTask):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
 
-        outcome = {"judge_page": True, "1": False, "2": False, "3": False, "complete": False}
+        outcome = {
+            "judge_page": True,
+            "1": False,
+            "2": False,
+            "3": False,
+            "complete": False,
+        }
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "work • ")
 
         for out in outs:
@@ -240,7 +246,9 @@ class SingleTask_Contacts_8(SingleTask):
 class SingleTask_Contacts_9(SingleTask):
 
     def judge_page(self, xml_compressed_tree):
-        if not find_subtrees_of_parents_with_key(xml_compressed_tree, "Texting with ABC"):
+        if not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Texting with ABC"
+        ):
             return False
         return True
 
@@ -254,7 +262,9 @@ class SingleTask_Contacts_9(SingleTask):
 
         if find_subtrees_of_parents_with_key(xml_compressed_tree, "Texting with ABC"):
             key_1 = True
-            if find_subtrees_of_parents_with_key(xml_compressed_tree, "Nice to meet you"):
+            if find_subtrees_of_parents_with_key(
+                xml_compressed_tree, "Nice to meet you"
+            ):
                 key_2 = True
 
         outcome["1"] = key_1
@@ -291,7 +301,9 @@ class SingleTask_Contacts_11(SingleTask):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
 
-        judge_key = not find_subtrees_of_parents_with_key(xml_compressed_tree, "AAA AAA ")
+        judge_key = not find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "AAA AAA "
+        )
 
         return {"judge_page": True, "1": judge_key, "complete": judge_key}
 
@@ -362,7 +374,9 @@ class SingleTask_Contacts_16(SingleTask):
         if not self.judge_page(xml_compressed_tree):
             return {"judge_page": False}
 
-        outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "Search contacts ")
+        outs = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Search contacts "
+        )
         if len(outs) == 0:
             return {"judge_page": True, "1": False, "complete": False}
 

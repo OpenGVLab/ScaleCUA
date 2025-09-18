@@ -70,13 +70,13 @@ recording_process = None  # fixme: this is a temporary solution for recording, n
 recording_path = "/tmp/recording.mp4"
 
 
-@app.route('/setup/execute', methods=['POST'])
-@app.route('/execute', methods=['POST'])
+@app.route("/setup/execute", methods=["POST"])
+@app.route("/execute", methods=["POST"])
 def execute_command():
     data = request.json
     # The 'command' key in the JSON request should contain the command to be executed.
-    shell = data.get('shell', False)
-    command = data.get('command', "" if shell else [])
+    shell = data.get("shell", False)
+    command = data.get("command", "" if shell else [])
 
     if isinstance(command, str) and not shell:
         command = shlex.split(command)
@@ -101,32 +101,39 @@ def execute_command():
             timeout=120,
             creationflags=flags,
         )
-        return jsonify({
-            'status': 'success',
-            'output': result.stdout,
-            'error': result.stderr,
-            'returncode': result.returncode
-        })
+        return jsonify(
+            {
+                "status": "success",
+                "output": result.stdout,
+                "error": result.stderr,
+                "returncode": result.returncode,
+            }
+        )
     except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 def _get_machine_architecture() -> str:
-    """ Get the machine architecture, e.g., x86_64, arm64, aarch64, i386, etc.
-    """
+    """Get the machine architecture, e.g., x86_64, arm64, aarch64, i386, etc."""
     architecture = platform.machine().lower()
-    if architecture in ['amd32', 'amd64', 'x86', 'x86_64', 'x86-64', 'x64', 'i386', 'i686']:
-        return 'amd'
-    elif architecture in ['arm64', 'aarch64', 'aarch32']:
-        return 'arm'
+    if architecture in [
+        "amd32",
+        "amd64",
+        "x86",
+        "x86_64",
+        "x86-64",
+        "x64",
+        "i386",
+        "i686",
+    ]:
+        return "amd"
+    elif architecture in ["arm64", "aarch64", "aarch32"]:
+        return "arm"
     else:
-        return 'unknown'
+        return "unknown"
 
 
-@app.route('/setup/launch', methods=["POST"])
+@app.route("/setup/launch", methods=["POST"])
 def launch_app():
     data = request.json
     shell = data.get("shell", False)
@@ -141,16 +148,20 @@ def launch_app():
             command[i] = os.path.expanduser(arg)
 
     try:
-        if 'google-chrome' in command and _get_machine_architecture() == 'arm':
-            index = command.index('google-chrome')
-            command[index] = 'chromium'  # arm64 chrome is not available yet, can only use chromium
+        if "google-chrome" in command and _get_machine_architecture() == "arm":
+            index = command.index("google-chrome")
+            command[index] = (
+                "chromium"  # arm64 chrome is not available yet, can only use chromium
+            )
         subprocess.Popen(command, shell=shell)
-        return "{:} launched successfully".format(command if shell else " ".join(command))
+        return "{:} launched successfully".format(
+            command if shell else " ".join(command)
+        )
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-@app.route('/screenshot', methods=['GET'])
+@app.route("/screenshot", methods=["GET"])
 def capture_screen_with_cursor():
     # fixme: when running on virtual machines, the cursor is not captured, don't know why
 
@@ -162,6 +173,7 @@ def capture_screen_with_cursor():
 
     # fixme: This is a temporary fix for the cursor not being captured on Windows and Linux
     if user_platform == "Windows":
+
         def get_cursor():
             hcursor = win32gui.GetCursorInfo()[1]
             hdc = win32ui.CreateDCFromHandle(win32gui.GetDC(0))
@@ -169,11 +181,19 @@ def capture_screen_with_cursor():
             hbmp.CreateCompatibleBitmap(hdc, 36, 36)
             hdc = hdc.CreateCompatibleDC()
             hdc.SelectObject(hbmp)
-            hdc.DrawIcon((0,0), hcursor)
+            hdc.DrawIcon((0, 0), hcursor)
 
             bmpinfo = hbmp.GetInfo()
             bmpstr = hbmp.GetBitmapBits(True)
-            cursor = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1).convert("RGBA")
+            cursor = Image.frombuffer(
+                "RGB",
+                (bmpinfo["bmWidth"], bmpinfo["bmHeight"]),
+                bmpstr,
+                "raw",
+                "BGRX",
+                0,
+                1,
+            ).convert("RGBA")
 
             win32gui.DestroyIcon(hcursor)
             win32gui.DeleteObject(hbmp.GetHandle())
@@ -199,7 +219,10 @@ def capture_screen_with_cursor():
             cursor, (hotspotx, hotspoty) = get_cursor()
 
             pos_win = win32gui.GetCursorPos()
-            pos = (round(pos_win[0]*ratio - hotspotx), round(pos_win[1]*ratio - hotspoty))
+            pos = (
+                round(pos_win[0] * ratio - hotspotx),
+                round(pos_win[1] * ratio - hotspoty),
+            )
 
             img.paste(cursor, pos, cursor)
         except:
@@ -218,23 +241,26 @@ def capture_screen_with_cursor():
         # Use the screencapture utility to capture the screen with the cursor
         subprocess.run(["screencapture", "-C", file_path])
     else:
-        logger.warning(f"The platform you're using ({user_platform}) is not currently supported")
+        logger.warning(
+            f"The platform you're using ({user_platform}) is not currently supported"
+        )
 
-    return send_file(file_path, mimetype='image/png')
+    return send_file(file_path, mimetype="image/png")
 
 
 def _has_active_terminal(desktop: Accessible) -> bool:
-    """ A quick check whether the terminal window is open and active.
-    """
+    """A quick check whether the terminal window is open and active."""
     for app in desktop:
         if app.getRoleName() == "application" and app.name == "gnome-terminal-server":
             for frame in app:
-                if frame.getRoleName() == "frame" and frame.getState().contains(pyatspi.STATE_ACTIVE):
+                if frame.getRoleName() == "frame" and frame.getState().contains(
+                    pyatspi.STATE_ACTIVE
+                ):
                     return True
     return False
 
 
-@app.route('/terminal', methods=['GET'])
+@app.route("/terminal", methods=["GET"])
 def get_terminal_output():
     user_platform = platform.system()
     output: Optional[str] = None
@@ -246,11 +272,18 @@ def get_terminal_output():
                 # 1. the terminal window (frame of application is st:active) is open and active
                 # 2. the terminal tab (terminal status is st:focused) is focused
                 xpath = '//application[@name="gnome-terminal-server"]/frame[@st:active="true"]//terminal[@st:focused="true"]'
-                terminals: List[_Element] = desktop_xml.xpath(xpath, namespaces=_accessibility_ns_map_ubuntu)
+                terminals: List[_Element] = desktop_xml.xpath(
+                    xpath, namespaces=_accessibility_ns_map_ubuntu
+                )
                 output = terminals[0].text.rstrip() if len(terminals) == 1 else None
         else:  # windows and macos platform is not implemented currently
             # raise NotImplementedError
-            return "Currently not implemented for platform {:}.".format(platform.platform()), 500
+            return (
+                "Currently not implemented for platform {:}.".format(
+                    platform.platform()
+                ),
+                500,
+            )
         return jsonify({"output": output, "status": "success"})
     except Exception as e:
         logger.error("Failed to get terminal output. Error: %s", e)
@@ -277,7 +310,7 @@ _accessibility_ns_map = {
         "txt": "https://accessibility.windows.example.org/ns/text",
         "val": "https://accessibility.windows.example.org/ns/value",
         "act": "https://accessibility.windows.example.org/ns/action",
-        "class": "https://accessibility.windows.example.org/ns/class"
+        "class": "https://accessibility.windows.example.org/ns/class",
     },
     "macos": {
         "st": "https://accessibility.macos.example.org/ns/state",
@@ -288,13 +321,12 @@ _accessibility_ns_map = {
         "val": "https://accessibility.macos.example.org/ns/value",
         "act": "https://accessibility.macos.example.org/ns/action",
         "role": "https://accessibility.macos.example.org/ns/role",
-    }
-
+    },
 }
 
-_accessibility_ns_map_ubuntu = _accessibility_ns_map['ubuntu']
-_accessibility_ns_map_windows = _accessibility_ns_map['windows']
-_accessibility_ns_map_macos = _accessibility_ns_map['macos']
+_accessibility_ns_map_ubuntu = _accessibility_ns_map["ubuntu"]
+_accessibility_ns_map_windows = _accessibility_ns_map["windows"]
+_accessibility_ns_map_macos = _accessibility_ns_map["macos"]
 
 # A11y tree getter for Ubuntu
 libreoffice_version_tuple: Optional[Tuple[int, ...]] = None
@@ -305,12 +337,18 @@ MAX_CALLS = 5000
 
 def _get_libreoffice_version() -> Tuple[int, ...]:
     """Function to get the LibreOffice version as a tuple of integers."""
-    result = subprocess.run("libreoffice --version", shell=True, text=True, stdout=subprocess.PIPE)
-    version_str = result.stdout.split()[1]  # Assuming version is the second word in the command output
+    result = subprocess.run(
+        "libreoffice --version", shell=True, text=True, stdout=subprocess.PIPE
+    )
+    version_str = result.stdout.split()[
+        1
+    ]  # Assuming version is the second word in the command output
     return tuple(map(int, version_str.split(".")))
 
 
-def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = None) -> _Element:
+def _create_atspi_node(
+    node: Accessible, depth: int = 0, flag: Optional[str] = None
+) -> _Element:
     node_name = node.name
     attribute_dict: Dict[str, Any] = {"name": node_name}
 
@@ -321,27 +359,42 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
         state_name: str = state_name.split("_", maxsplit=1)[1].lower()
         if len(state_name) == 0:
             continue
-        attribute_dict["{{{:}}}{:}".format(_accessibility_ns_map_ubuntu["st"], state_name)] = "true"
+        attribute_dict[
+            "{{{:}}}{:}".format(_accessibility_ns_map_ubuntu["st"], state_name)
+        ] = "true"
 
     #  Attributes
     attributes: Dict[str, str] = node.get_attributes()
     for attribute_name, attribute_value in attributes.items():
         if len(attribute_name) == 0:
             continue
-        attribute_dict["{{{:}}}{:}".format(_accessibility_ns_map_ubuntu["attr"], attribute_name)] = attribute_value
+        attribute_dict[
+            "{{{:}}}{:}".format(_accessibility_ns_map_ubuntu["attr"], attribute_name)
+        ] = attribute_value
 
     #  Component
-    if attribute_dict.get("{{{:}}}visible".format(_accessibility_ns_map_ubuntu["st"]), "false") == "true" \
-            and attribute_dict.get("{{{:}}}showing".format(_accessibility_ns_map_ubuntu["st"]), "false") == "true":
+    if (
+        attribute_dict.get(
+            "{{{:}}}visible".format(_accessibility_ns_map_ubuntu["st"]), "false"
+        )
+        == "true"
+        and attribute_dict.get(
+            "{{{:}}}showing".format(_accessibility_ns_map_ubuntu["st"]), "false"
+        )
+        == "true"
+    ):
         try:
             component: Component = node.queryComponent()
         except NotImplementedError:
             pass
         else:
             bbox: Sequence[int] = component.getExtents(pyatspi.XY_SCREEN)
-            attribute_dict["{{{:}}}screencoord".format(_accessibility_ns_map_ubuntu["cp"])] = \
-                str(tuple(bbox[0:2]))
-            attribute_dict["{{{:}}}size".format(_accessibility_ns_map_ubuntu["cp"])] = str(tuple(bbox[2:]))
+            attribute_dict[
+                "{{{:}}}screencoord".format(_accessibility_ns_map_ubuntu["cp"])
+            ] = str(tuple(bbox[0:2]))
+            attribute_dict["{{{:}}}size".format(_accessibility_ns_map_ubuntu["cp"])] = (
+                str(tuple(bbox[2:]))
+            )
 
     text = ""
     #  Text
@@ -380,7 +433,7 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
             ("value", lambda: value.currentValue),
             ("min", lambda: value.minimumValue),
             ("max", lambda: value.maximumValue),
-            ("step", lambda: value.minimumIncrement)
+            ("step", lambda: value.minimumIncrement),
         ]:
             try:
                 attribute_dict[f"{value_key}{attr_name}"] = str(attr_func())
@@ -394,10 +447,13 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
         for i in range(action.nActions):
             action_name: str = action.getName(i).replace(" ", "-")
             attribute_dict[
-                "{{{:}}}{:}_desc".format(_accessibility_ns_map_ubuntu["act"], action_name)] = action.getDescription(
-                i)
+                "{{{:}}}{:}_desc".format(
+                    _accessibility_ns_map_ubuntu["act"], action_name
+                )
+            ] = action.getDescription(i)
             attribute_dict[
-                "{{{:}}}{:}_kb".format(_accessibility_ns_map_ubuntu["act"], action_name)] = action.getKeyBinding(i)
+                "{{{:}}}{:}_kb".format(_accessibility_ns_map_ubuntu["act"], action_name)
+            ] = action.getKeyBinding(i)
     except NotImplementedError:
         pass
 
@@ -413,9 +469,7 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
             flag = "thunderbird"
 
     xml_node = lxml.etree.Element(
-        node_role_name,
-        attrib=attribute_dict,
-        nsmap=_accessibility_ns_map_ubuntu
+        node_role_name, attrib=attribute_dict, nsmap=_accessibility_ns_map_ubuntu
     )
 
     if len(text) > 0:
@@ -442,7 +496,9 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
                 child_node: Accessible = node[index_base + clm]
                 showing: bool = child_node.getState().contains(STATE_SHOWING)
                 if showing:
-                    child_node: _Element = _create_atspi_node(child_node, depth + 1, flag)
+                    child_node: _Element = _create_atspi_node(
+                        child_node, depth + 1, flag
+                    )
                     if not first_showing:
                         column_base = clm
                         first_showing = True
@@ -461,13 +517,17 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
                     break
                 xml_node.append(_create_atspi_node(ch, depth + 1, flag))
         except:
-            logger.warning("Error occurred during children traversing. Has Ignored. Node: %s",
-                           lxml.etree.tostring(xml_node, encoding="unicode"))
+            logger.warning(
+                "Error occurred during children traversing. Has Ignored. Node: %s",
+                lxml.etree.tostring(xml_node, encoding="unicode"),
+            )
         return xml_node
 
 
 # A11y tree getter for Windows
-def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = None) -> _Element:
+def _create_pywinauto_node(
+    node, nodes, depth: int = 0, flag: Optional[str] = None
+) -> _Element:
     nodes = nodes or set()
     if node in nodes:
         return
@@ -478,9 +538,12 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
     base_properties = {}
     try:
         base_properties.update(
-            node.get_properties())  # get all writable/not writable properties, but have bugs when landing on chrome and it's slower!
+            node.get_properties()
+        )  # get all writable/not writable properties, but have bugs when landing on chrome and it's slower!
     except:
-        logger.debug("Failed to call get_properties(), trying to get writable properites")
+        logger.debug(
+            "Failed to call get_properties(), trying to get writable properites"
+        )
         try:
             _element_class = node.__class__
 
@@ -502,21 +565,26 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
     # Count-cnt
     for attr_name in ["control_count", "button_count", "item_count", "column_count"]:
         try:
-            attribute_dict[f"{{{_accessibility_ns_map_windows['cnt']}}}{attr_name}"] = base_properties[
-                attr_name].lower()
+            attribute_dict[f"{{{_accessibility_ns_map_windows['cnt']}}}{attr_name}"] = (
+                base_properties[attr_name].lower()
+            )
         except:
             pass
 
     # Columns-cols
     try:
-        attribute_dict[f"{{{_accessibility_ns_map_windows['cols']}}}columns"] = base_properties["columns"].lower()
+        attribute_dict[f"{{{_accessibility_ns_map_windows['cols']}}}columns"] = (
+            base_properties["columns"].lower()
+        )
     except:
         pass
 
     # Id-id
     for attr_name in ["control_id", "automation_id", "window_id"]:
         try:
-            attribute_dict[f"{{{_accessibility_ns_map_windows['id']}}}{attr_name}"] = base_properties[attr_name].lower()
+            attribute_dict[f"{{{_accessibility_ns_map_windows['id']}}}{attr_name}"] = (
+                base_properties[attr_name].lower()
+            )
         except:
             pass
 
@@ -545,17 +613,21 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
         ("is_keyboard_focusable", lambda: node.is_keyboard_focusable()),
     ]:
         try:
-            attribute_dict[f"{{{_accessibility_ns_map_windows['st']}}}{attr_name}"] = str(attr_func()).lower()
+            attribute_dict[f"{{{_accessibility_ns_map_windows['st']}}}{attr_name}"] = (
+                str(attr_func()).lower()
+            )
         except:
             pass
 
     #  Component
     try:
         rectangle = node.rectangle()
-        attribute_dict["{{{:}}}screencoord".format(_accessibility_ns_map_windows["cp"])] = \
-            "({:d}, {:d})".format(rectangle.left, rectangle.top)
-        attribute_dict["{{{:}}}size".format(_accessibility_ns_map_windows["cp"])] = \
+        attribute_dict[
+            "{{{:}}}screencoord".format(_accessibility_ns_map_windows["cp"])
+        ] = "({:d}, {:d})".format(rectangle.left, rectangle.top)
+        attribute_dict["{{{:}}}size".format(_accessibility_ns_map_windows["cp"])] = (
             "({:d}, {:d})".format(rectangle.width(), rectangle.height())
+        )
 
     except Exception as e:
         logger.error("Error accessing rectangle: ", e)
@@ -572,31 +644,49 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
     # Value
     for attr_name, attr_funcs in [
         ("step", [lambda: node.get_step()]),
-        ("value", [lambda: node.value(), lambda: node.get_value(), lambda: node.get_position()]),
+        (
+            "value",
+            [
+                lambda: node.value(),
+                lambda: node.get_value(),
+                lambda: node.get_position(),
+            ],
+        ),
         ("min", [lambda: node.min_value(), lambda: node.get_range_min()]),
-        ("max", [lambda: node.max_value(), lambda: node.get_range_max()])
+        ("max", [lambda: node.max_value(), lambda: node.get_range_max()]),
     ]:
         for attr_func in attr_funcs:
             if hasattr(node, attr_func.__name__):
                 try:
-                    attribute_dict[f"{{{_accessibility_ns_map_windows['val']}}}{attr_name}"] = str(attr_func())
+                    attribute_dict[
+                        f"{{{_accessibility_ns_map_windows['val']}}}{attr_name}"
+                    ] = str(attr_func())
                     break  # exit once the attribute is set successfully
                 except:
                     pass
 
-    attribute_dict["{{{:}}}class".format(_accessibility_ns_map_windows["class"])] = str(type(node))
+    attribute_dict["{{{:}}}class".format(_accessibility_ns_map_windows["class"])] = str(
+        type(node)
+    )
 
     # class_name
     for attr_name in ["class_name", "friendly_class_name"]:
         try:
-            attribute_dict[f"{{{_accessibility_ns_map_windows['class']}}}{attr_name}"] = base_properties[
-                attr_name].lower()
+            attribute_dict[
+                f"{{{_accessibility_ns_map_windows['class']}}}{attr_name}"
+            ] = base_properties[attr_name].lower()
         except:
             pass
 
     node_role_name: str = node.class_name().lower().replace(" ", "-")
     node_role_name = "".join(
-        map(lambda _ch: _ch if _ch.isidentifier() or _ch in {"-"} or _ch.isalnum() else "-", node_role_name))
+        map(
+            lambda _ch: (
+                _ch if _ch.isidentifier() or _ch in {"-"} or _ch.isalnum() else "-"
+            ),
+            node_role_name,
+        )
+    )
 
     if node_role_name.strip() == "":
         node_role_name = "unknown"
@@ -604,9 +694,7 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
         node_role_name = "tag" + node_role_name
 
     xml_node = lxml.etree.Element(
-        node_role_name,
-        attrib=attribute_dict,
-        nsmap=_accessibility_ns_map_windows
+        node_role_name, attrib=attribute_dict, nsmap=_accessibility_ns_map_windows
     )
 
     if text is not None and len(text) > 0 and text != attribute_dict["name"]:
@@ -620,16 +708,24 @@ def _create_pywinauto_node(node, nodes, depth: int = 0, flag: Optional[str] = No
     children = node.children()
     if children:
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_to_child = [executor.submit(_create_pywinauto_node, ch, nodes, depth + 1, flag) for ch in
-                               children[:MAX_WIDTH]]
+            future_to_child = [
+                executor.submit(_create_pywinauto_node, ch, nodes, depth + 1, flag)
+                for ch in children[:MAX_WIDTH]
+            ]
         try:
-            xml_node.extend([future.result() for future in concurrent.futures.as_completed(future_to_child)])
+            xml_node.extend(
+                [
+                    future.result()
+                    for future in concurrent.futures.as_completed(future_to_child)
+                ]
+            )
         except Exception as e:
             logger.error(f"Exception occurred: {e}")
     return xml_node
 
 
 # A11y tree getter for macOS
+
 
 def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = None):
     nodes = nodes or set()
@@ -665,21 +761,30 @@ def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = Non
             node["kCGWindowBounds"]["X"],
             node["kCGWindowBounds"]["Y"],
             node["kCGWindowBounds"]["X"] + node["kCGWindowBounds"]["Width"],
-            node["kCGWindowBounds"]["Y"] + node["kCGWindowBounds"]["Height"]
+            node["kCGWindowBounds"]["Y"] + node["kCGWindowBounds"]["Height"],
         )
-        app_ref = ApplicationServices.AXUIElementCreateApplication(node["kCGWindowOwnerPID"])
+        app_ref = ApplicationServices.AXUIElementCreateApplication(
+            node["kCGWindowOwnerPID"]
+        )
 
         attribute_dict["name"] = node["kCGWindowOwnerName"]
         if attribute_dict["name"] != "Dock":
-            error_code, app_wins_ref = ApplicationServices.AXUIElementCopyAttributeValue(
-                app_ref, "AXWindows", None)
+            error_code, app_wins_ref = (
+                ApplicationServices.AXUIElementCopyAttributeValue(
+                    app_ref, "AXWindows", None
+                )
+            )
             if error_code:
-                logger.error("MacOS parsing %s encountered Error code: %d", app_ref, error_code)
+                logger.error(
+                    "MacOS parsing %s encountered Error code: %d", app_ref, error_code
+                )
         else:
             app_wins_ref = [app_ref]
         node = app_wins_ref[0]
 
-    error_code, attr_names = ApplicationServices.AXUIElementCopyAttributeNames(node, None)
+    error_code, attr_names = ApplicationServices.AXUIElementCopyAttributeNames(
+        node, None
+    )
 
     if error_code:
         # -25202: AXError.invalidUIElement
@@ -689,7 +794,9 @@ def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = Non
     value = None
 
     if "AXFrame" in attr_names:
-        error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(node, "AXFrame", None)
+        error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(
+            node, "AXFrame", None
+        )
         rep = repr(attr_val)
         x_value = re.search(r"x:(-?[\d.]+)", rep)
         y_value = re.search(r"y:(-?[\d.]+)", rep)
@@ -724,13 +831,17 @@ def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = Non
         if value and attr_name == "AXFrame":
             bb = value
             if not any(v is None for v in bb.values()):
-                attribute_dict["{{{:}}}screencoord".format(_accessibility_ns_map_macos["cp"])] = \
-                    "({:d}, {:d})".format(int(bb["x"]), int(bb["y"]))
-                attribute_dict["{{{:}}}size".format(_accessibility_ns_map_macos["cp"])] = \
-                    "({:d}, {:d})".format(int(bb["w"]), int(bb["h"]))
+                attribute_dict[
+                    "{{{:}}}screencoord".format(_accessibility_ns_map_macos["cp"])
+                ] = "({:d}, {:d})".format(int(bb["x"]), int(bb["y"]))
+                attribute_dict[
+                    "{{{:}}}size".format(_accessibility_ns_map_macos["cp"])
+                ] = "({:d}, {:d})".format(int(bb["w"]), int(bb["h"]))
             continue
 
-        error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(node, attr_name, None)
+        error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(
+            node, attr_name, None
+        )
 
         full_attr_name = f"{{{_accessibility_ns_map_macos[ns_key]}}}{attr_name}"
 
@@ -743,17 +854,17 @@ def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = Non
             continue
 
         # Set the attribute_dict
-        if not (isinstance(attr_val, ApplicationServices.AXUIElementRef)
-                or isinstance(attr_val, (AppKit.NSArray, list))):
+        if not (
+            isinstance(attr_val, ApplicationServices.AXUIElementRef)
+            or isinstance(attr_val, (AppKit.NSArray, list))
+        ):
             if attr_val is not None:
                 attribute_dict[full_attr_name] = str(attr_val)
 
     node_role_name = role.lower().replace(" ", "_") if role else "unknown_role"
 
     xml_node = lxml.etree.Element(
-        node_role_name,
-        attrib=attribute_dict,
-        nsmap=_accessibility_ns_map_macos
+        node_role_name, attrib=attribute_dict, nsmap=_accessibility_ns_map_macos
     )
 
     if text is not None and len(text) > 0:
@@ -770,13 +881,21 @@ def _create_axui_node(node, nodes: set = None, depth: int = 0, bbox: tuple = Non
             if attr_name not in attr_names:
                 continue
 
-            error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(node, attr_name, None)
+            error_code, attr_val = ApplicationServices.AXUIElementCopyAttributeValue(
+                node, attr_name, None
+            )
             if isinstance(attr_val, ApplicationServices.AXUIElementRef):
-                future_to_child.append(executor.submit(_create_axui_node, attr_val, nodes, depth + 1, bbox))
+                future_to_child.append(
+                    executor.submit(_create_axui_node, attr_val, nodes, depth + 1, bbox)
+                )
 
             elif isinstance(attr_val, (AppKit.NSArray, list)):
                 for child in attr_val:
-                    future_to_child.append(executor.submit(_create_axui_node, child, nodes, depth + 1, bbox))
+                    future_to_child.append(
+                        executor.submit(
+                            _create_axui_node, child, nodes, depth + 1, bbox
+                        )
+                    )
 
         try:
             for future in concurrent.futures.as_completed(future_to_child):
@@ -799,9 +918,13 @@ def get_accessibility_tree():
         libreoffice_version_tuple = _get_libreoffice_version()
 
         desktop: Accessible = pyatspi.Registry.getDesktop(0)
-        xml_node = lxml.etree.Element("desktop-frame", nsmap=_accessibility_ns_map_ubuntu)
+        xml_node = lxml.etree.Element(
+            "desktop-frame", nsmap=_accessibility_ns_map_ubuntu
+        )
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(_create_atspi_node, app_node, 1) for app_node in desktop]
+            futures = [
+                executor.submit(_create_atspi_node, app_node, 1) for app_node in desktop
+            ]
             for future in concurrent.futures.as_completed(futures):
                 xml_tree = future.result()
                 xml_node.append(xml_tree)
@@ -813,7 +936,10 @@ def get_accessibility_tree():
         desktop: Desktop = Desktop(backend="uia")
         xml_node = lxml.etree.Element("desktop", nsmap=_accessibility_ns_map_windows)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(_create_pywinauto_node, wnd, {}, 1) for wnd in desktop.windows()]
+            futures = [
+                executor.submit(_create_pywinauto_node, wnd, {}, 1)
+                for wnd in desktop.windows()
+            ]
             for future in concurrent.futures.as_completed(futures):
                 xml_tree = future.result()
                 xml_node.append(xml_tree)
@@ -825,17 +951,23 @@ def get_accessibility_tree():
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             foreground_windows = [
-                win for win in Quartz.CGWindowListCopyWindowInfo(
-                    (Quartz.kCGWindowListExcludeDesktopElements |
-                     Quartz.kCGWindowListOptionOnScreenOnly),
-                    Quartz.kCGNullWindowID
-                ) if win["kCGWindowLayer"] == 0 and win["kCGWindowOwnerName"] != "Window Server"
+                win
+                for win in Quartz.CGWindowListCopyWindowInfo(
+                    (
+                        Quartz.kCGWindowListExcludeDesktopElements
+                        | Quartz.kCGWindowListOptionOnScreenOnly
+                    ),
+                    Quartz.kCGNullWindowID,
+                )
+                if win["kCGWindowLayer"] == 0
+                and win["kCGWindowOwnerName"] != "Window Server"
             ]
             dock_info = [
-                win for win in Quartz.CGWindowListCopyWindowInfo(
-                    Quartz.kCGWindowListOptionAll,
-                    Quartz.kCGNullWindowID
-                ) if win.get("kCGWindowName", None) == "Dock"
+                win
+                for win in Quartz.CGWindowListCopyWindowInfo(
+                    Quartz.kCGWindowListOptionAll, Quartz.kCGNullWindowID
+                )
+                if win.get("kCGWindowName", None) == "Dock"
             ]
 
             futures = [
@@ -851,10 +983,13 @@ def get_accessibility_tree():
         return jsonify({"AT": lxml.etree.tostring(xml_node, encoding="unicode")})
 
     else:
-        return "Currently not implemented for platform {:}.".format(platform.platform()), 500
+        return (
+            "Currently not implemented for platform {:}.".format(platform.platform()),
+            500,
+        )
 
 
-@app.route('/screen_size', methods=['POST'])
+@app.route("/screen_size", methods=["POST"])
 def get_screen_size():
     if platform_name == "Linux":
         d = display.Display()
@@ -864,28 +999,25 @@ def get_screen_size():
         user32 = ctypes.windll.user32
         screen_width: int = user32.GetSystemMetrics(0)
         screen_height: int = user32.GetSystemMetrics(1)
-    return jsonify(
-        {
-            "width": screen_width,
-            "height": screen_height
-        }
-    )
+    return jsonify({"width": screen_width, "height": screen_height})
 
 
-@app.route('/window_size', methods=['POST'])
+@app.route("/window_size", methods=["POST"])
 def get_window_size():
-    if 'app_class_name' in request.form:
-        app_class_name = request.form['app_class_name']
+    if "app_class_name" in request.form:
+        app_class_name = request.form["app_class_name"]
     else:
         return jsonify({"error": "app_class_name is required"}), 400
 
     d = display.Display()
     root = d.screen().root
-    window_ids = root.get_full_property(d.intern_atom('_NET_CLIENT_LIST'), X.AnyPropertyType).value
+    window_ids = root.get_full_property(
+        d.intern_atom("_NET_CLIENT_LIST"), X.AnyPropertyType
+    ).value
 
     for window_id in window_ids:
         try:
-            window = d.create_resource_object('window', window_id)
+            window = d.create_resource_object("window", window_id)
             wm_class = window.get_wm_class()
 
             if wm_class is None:
@@ -893,18 +1025,13 @@ def get_window_size():
 
             if app_class_name.lower() in [name.lower() for name in wm_class]:
                 geom = window.get_geometry()
-                return jsonify(
-                    {
-                        "width": geom.width,
-                        "height": geom.height
-                    }
-                )
+                return jsonify({"width": geom.width, "height": geom.height})
         except Xlib.error.XError:  # Ignore windows that give an error
             continue
     return None
 
 
-@app.route('/desktop_path', methods=['POST'])
+@app.route("/desktop_path", methods=["POST"])
 def get_desktop_path():
     # Get the home directory in a platform-independent manner using pathlib
     home_directory = str(Path.home())
@@ -913,54 +1040,63 @@ def get_desktop_path():
     desktop_path = {
         "Windows": os.path.join(home_directory, "Desktop"),
         "Darwin": os.path.join(home_directory, "Desktop"),  # macOS
-        "Linux": os.path.join(home_directory, "Desktop")
+        "Linux": os.path.join(home_directory, "Desktop"),
     }.get(platform.system(), None)
 
     # Check if the operating system is supported and the desktop path exists
     if desktop_path and os.path.exists(desktop_path):
         return jsonify(desktop_path=desktop_path)
     else:
-        return jsonify(error="Unsupported operating system or desktop path not found"), 404
+        return (
+            jsonify(error="Unsupported operating system or desktop path not found"),
+            404,
+        )
 
 
-@app.route('/wallpaper', methods=['POST'])
+@app.route("/wallpaper", methods=["POST"])
 def get_wallpaper():
     def get_wallpaper_windows():
         SPI_GETDESKWALLPAPER = 0x73
         MAX_PATH = 260
         buffer = ctypes.create_unicode_buffer(MAX_PATH)
-        ctypes.windll.user32.SystemParametersInfoW(SPI_GETDESKWALLPAPER, MAX_PATH, buffer, 0)
+        ctypes.windll.user32.SystemParametersInfoW(
+            SPI_GETDESKWALLPAPER, MAX_PATH, buffer, 0
+        )
         return buffer.value
 
     def get_wallpaper_macos():
         script = """
         tell application "System Events" to tell every desktop to get picture
         """
-        process = subprocess.Popen(['osascript', '-e', script], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(
+            ["osascript", "-e", script], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         output, error = process.communicate()
         if error:
-            app.logger.error("Error: %s", error.decode('utf-8'))
+            app.logger.error("Error: %s", error.decode("utf-8"))
             return None
-        return output.strip().decode('utf-8')
+        return output.strip().decode("utf-8")
 
     def get_wallpaper_linux():
         try:
             output = subprocess.check_output(
                 ["gsettings", "get", "org.gnome.desktop.background", "picture-uri"],
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
-            return output.decode('utf-8').strip().replace('file://', '').replace("'", "")
+            return (
+                output.decode("utf-8").strip().replace("file://", "").replace("'", "")
+            )
         except subprocess.CalledProcessError as e:
             app.logger.error("Error: %s", e)
             return None
 
     os_name = platform.system()
     wallpaper_path = None
-    if os_name == 'Windows':
+    if os_name == "Windows":
         wallpaper_path = get_wallpaper_windows()
-    elif os_name == 'Darwin':
+    elif os_name == "Darwin":
         wallpaper_path = get_wallpaper_macos()
-    elif os_name == 'Linux':
+    elif os_name == "Linux":
         wallpaper_path = get_wallpaper_linux()
     else:
         app.logger.error(f"Unsupported OS: {os_name}")
@@ -969,7 +1105,7 @@ def get_wallpaper():
     if wallpaper_path:
         try:
             # Ensure the filename is secure
-            return send_file(wallpaper_path, mimetype='image/png')
+            return send_file(wallpaper_path, mimetype="image/png")
         except Exception as e:
             app.logger.error(f"An error occurred while serving the wallpaper file: {e}")
             abort(500, description="Unable to serve the wallpaper file")
@@ -977,7 +1113,7 @@ def get_wallpaper():
         abort(404, description="Wallpaper file not found")
 
 
-@app.route('/list_directory', methods=['POST'])
+@app.route("/list_directory", methods=["POST"])
 def get_directory_tree():
     def _list_dir_contents(directory):
         """
@@ -986,27 +1122,31 @@ def get_directory_tree():
         :param directory: The path of the directory to inspect.
         :return: A nested dictionary with the contents of the directory.
         """
-        tree = {'type': 'directory', 'name': os.path.basename(directory), 'children': []}
+        tree = {
+            "type": "directory",
+            "name": os.path.basename(directory),
+            "children": [],
+        }
         try:
             # List all files and directories in the current directory
             for entry in os.listdir(directory):
                 full_path = os.path.join(directory, entry)
                 # If entry is a directory, recurse into it
                 if os.path.isdir(full_path):
-                    tree['children'].append(_list_dir_contents(full_path))
+                    tree["children"].append(_list_dir_contents(full_path))
                 else:
-                    tree['children'].append({'type': 'file', 'name': entry})
+                    tree["children"].append({"type": "file", "name": entry})
         except OSError as e:
             # If the directory cannot be accessed, return the exception message
-            tree = {'error': str(e)}
+            tree = {"error": str(e)}
         return tree
 
     # Extract the 'path' parameter from the JSON request
     data = request.get_json()
-    if 'path' not in data:
+    if "path" not in data:
         return jsonify(error="Missing 'path' parameter"), 400
 
-    start_path = data['path']
+    start_path = data["path"]
     # Ensure the provided path is a directory
     if not os.path.isdir(start_path):
         return jsonify(error="The provided path is not a directory"), 400
@@ -1016,11 +1156,11 @@ def get_directory_tree():
     return jsonify(directory_tree=directory_tree)
 
 
-@app.route('/file', methods=['POST'])
+@app.route("/file", methods=["POST"])
 def get_file():
     # Retrieve filename from the POST request
-    if 'file_path' in request.form:
-        file_path = os.path.expandvars(os.path.expanduser(request.form['file_path']))
+    if "file_path" in request.form:
+        file_path = os.path.expandvars(os.path.expanduser(request.form["file_path"]))
     else:
         return jsonify({"error": "file_path is required"}), 400
 
@@ -1035,8 +1175,8 @@ def get_file():
 @app.route("/setup/upload", methods=["POST"])
 def upload_file():
     # Retrieve filename from the POST request
-    if 'file_path' in request.form and 'file_data' in request.files:
-        file_path = os.path.expandvars(os.path.expanduser(request.form['file_path']))
+    if "file_path" in request.form and "file_data" in request.files:
+        file_path = os.path.expandvars(os.path.expanduser(request.form["file_path"]))
         file = request.files["file_data"]
         file.save(file_path)
         return "File Uploaded"
@@ -1044,20 +1184,21 @@ def upload_file():
         return jsonify({"error": "file_path and file_data are required"}), 400
 
 
-@app.route('/platform', methods=['GET'])
+@app.route("/platform", methods=["GET"])
 def get_platform():
     return platform.system()
 
 
-@app.route('/cursor_position', methods=['GET'])
+@app.route("/cursor_position", methods=["GET"])
 def get_cursor_position():
     pos = pyautogui.position()
     return jsonify(pos.x, pos.y)
 
-@app.route("/setup/change_wallpaper", methods=['POST'])
+
+@app.route("/setup/change_wallpaper", methods=["POST"])
 def change_wallpaper():
     data = request.json
-    path = data.get('path', None)
+    path = data.get("path", None)
 
     if not path:
         return "Path not supplied!", 400
@@ -1071,24 +1212,40 @@ def change_wallpaper():
         user_platform = platform.system()
         if user_platform == "Windows":
             import ctypes
+
             ctypes.windll.user32.SystemParametersInfoW(20, 0, str(path), 3)
         elif user_platform == "Linux":
             import subprocess
-            subprocess.run(["gsettings", "set", "org.gnome.desktop.background", "picture-uri", f"file://{path}"])
+
+            subprocess.run(
+                [
+                    "gsettings",
+                    "set",
+                    "org.gnome.desktop.background",
+                    "picture-uri",
+                    f"file://{path}",
+                ]
+            )
         elif user_platform == "Darwin":  # (Mac OS)
             import subprocess
+
             subprocess.run(
-                ["osascript", "-e", f'tell application "Finder" to set desktop picture to POSIX file "{path}"'])
+                [
+                    "osascript",
+                    "-e",
+                    f'tell application "Finder" to set desktop picture to POSIX file "{path}"',
+                ]
+            )
         return "Wallpaper changed successfully"
     except Exception as e:
         return f"Failed to change wallpaper. Error: {e}", 500
 
 
-@app.route("/setup/download_file", methods=['POST'])
+@app.route("/setup/download_file", methods=["POST"])
 def download_file():
     data = request.json
-    url = data.get('url', None)
-    path = data.get('path', None)
+    url = data.get("url", None)
+    path = data.get("path", None)
 
     if not url or not path:
         return "Path or URL not supplied!", 400
@@ -1103,7 +1260,7 @@ def download_file():
             response = requests.get(url, stream=True)
             response.raise_for_status()
 
-            with open(path, 'wb') as f:
+            with open(path, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         f.write(chunk)
@@ -1111,15 +1268,17 @@ def download_file():
 
         except requests.RequestException as e:
             error = e
-            logger.error(f"Failed to download {url}. Retrying... ({max_retries - i - 1} attempts left)")
+            logger.error(
+                f"Failed to download {url}. Retrying... ({max_retries - i - 1} attempts left)"
+            )
 
     return f"Failed to download {url}. No retries left. Error: {error}", 500
 
 
-@app.route("/setup/open_file", methods=['POST'])
+@app.route("/setup/open_file", methods=["POST"])
 def open_file():
     data = request.json
-    path = data.get('path', None)
+    path = data.get("path", None)
 
     if not path:
         return "Path not supplied!", 400
@@ -1140,21 +1299,27 @@ def open_file():
         return f"Failed to open {path}. Error: {e}", 500
 
 
-@app.route("/setup/activate_window", methods=['POST'])
+@app.route("/setup/activate_window", methods=["POST"])
 def activate_window():
     data = request.json
-    window_name = data.get('window_name', None)
+    window_name = data.get("window_name", None)
     if not window_name:
         return "window_name required", 400
-    strict: bool = data.get("strict", False)  # compare case-sensitively and match the whole string
+    strict: bool = data.get(
+        "strict", False
+    )  # compare case-sensitively and match the whole string
     by_class_name: bool = data.get("by_class", False)
 
     os_name = platform.system()
 
-    if os_name == 'Windows':
+    if os_name == "Windows":
         import pygetwindow as gw
+
         if by_class_name:
-            return "Get window by class name is not supported on Windows currently.", 500
+            return (
+                "Get window by class name is not supported on Windows currently.",
+                500,
+            )
         windows: List[gw.Window] = gw.getWindowsWithTitle(window_name)
 
         window: Optional[gw.Window] = None
@@ -1170,8 +1335,9 @@ def activate_window():
             window = windows[0]
         window.activate()
 
-    elif os_name == 'Darwin':
+    elif os_name == "Darwin":
         import pygetwindow as gw
+
         if by_class_name:
             return "Get window by class name is not supported on macOS currently.", 500
         # Find the VS Code window
@@ -1193,15 +1359,15 @@ def activate_window():
         window.unminimize()
         window.activate()
 
-    elif os_name == 'Linux':
+    elif os_name == "Linux":
         # Attempt to activate VS Code window using wmctrl
-        subprocess.run(["wmctrl"
-                           , "-{:}{:}a".format("x" if by_class_name else ""
-                                               , "F" if strict else ""
-                                               )
-                           , window_name
-                        ]
-                       )
+        subprocess.run(
+            [
+                "wmctrl",
+                "-{:}{:}a".format("x" if by_class_name else "", "F" if strict else ""),
+                window_name,
+            ]
+        )
 
     else:
         return f"Operating system {os_name} not supported.", 400
@@ -1215,7 +1381,9 @@ def close_window():
     if "window_name" not in data:
         return "window_name required", 400
     window_name: str = data["window_name"]
-    strict: bool = data.get("strict", False)  # compare case-sensitively and match the whole string
+    strict: bool = data.get(
+        "strict", False
+    )  # compare case-sensitively and match the whole string
     by_class_name: bool = data.get("by_class", False)
 
     os_name: str = platform.system()
@@ -1223,7 +1391,10 @@ def close_window():
         import pygetwindow as gw
 
         if by_class_name:
-            return "Get window by class name is not supported on Windows currently.", 500
+            return (
+                "Get window by class name is not supported on Windows currently.",
+                500,
+            )
         windows: List[gw.Window] = gw.getWindowsWithTitle(window_name)
 
         window: Optional[gw.Window] = None
@@ -1239,15 +1410,16 @@ def close_window():
             window = windows[0]
         window.close()
     elif os_name == "Linux":
-        subprocess.run(["wmctrl"
-                           , "-{:}{:}c".format("x" if by_class_name else ""
-                                               , "F" if strict else ""
-                                               )
-                           , window_name
-                        ]
-                       )
+        subprocess.run(
+            [
+                "wmctrl",
+                "-{:}{:}c".format("x" if by_class_name else "", "F" if strict else ""),
+                window_name,
+            ]
+        )
     elif os_name == "Darwin":
         import pygetwindow as gw
+
         return "Currently not supported on macOS.", 500
     else:
         return "Not supported platform {:}".format(os_name), 500
@@ -1255,11 +1427,16 @@ def close_window():
     return "Window closed successfully.", 200
 
 
-@app.route('/start_recording', methods=['POST'])
+@app.route("/start_recording", methods=["POST"])
 def start_recording():
     global recording_process
     if recording_process:
-        return jsonify({'status': 'error', 'message': 'Recording is already in progress.'}), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "Recording is already in progress."}
+            ),
+            400,
+        )
 
     d = display.Display()
     screen_width = d.screen().width_in_pixels
@@ -1267,18 +1444,24 @@ def start_recording():
 
     start_command = f"ffmpeg -y -f x11grab -draw_mouse 1 -s {screen_width}x{screen_height} -i :0.0 -c:v libx264 -r 30 {recording_path}"
 
-    recording_process = subprocess.Popen(shlex.split(start_command), stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
+    recording_process = subprocess.Popen(
+        shlex.split(start_command), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
-    return jsonify({'status': 'success', 'message': 'Started recording.'})
+    return jsonify({"status": "success", "message": "Started recording."})
 
 
-@app.route('/end_recording', methods=['POST'])
+@app.route("/end_recording", methods=["POST"])
 def end_recording():
     global recording_process
 
     if not recording_process:
-        return jsonify({'status': 'error', 'message': 'No recording in progress to stop.'}), 400
+        return (
+            jsonify(
+                {"status": "error", "message": "No recording in progress to stop."}
+            ),
+            400,
+        )
 
     recording_process.send_signal(signal.SIGINT)
     recording_process.wait()
@@ -1291,5 +1474,5 @@ def end_recording():
         return abort(404, description="Recording failed")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

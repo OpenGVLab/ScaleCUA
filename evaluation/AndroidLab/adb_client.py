@@ -32,7 +32,7 @@ app = Flask(__name__)
 
 
 class Config:
-    avd_log_dir = "/logs" 
+    avd_log_dir = "/logs"
 
 
 class EmulatorController:
@@ -47,7 +47,13 @@ class EmulatorController:
         assert adb_command.startswith("adb"), "Command must start with 'adb'"
         adb_command = "/root/.android/platform-tools/adb" + adb_command[3:]
 
-        result = subprocess.run(adb_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(
+            adb_command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
         print(f"Return code: {result}")
         if result.returncode == 0:
             return result.stdout.strip()
@@ -61,11 +67,18 @@ class EmulatorController:
         if not os.path.exists(self.avd_log_dir):
             os.makedirs(self.avd_log_dir, exist_ok=True)
 
-        self.out_file = open(os.path.join(self.avd_log_dir, 'emulator_output.txt'), 'a')
+        self.out_file = open(os.path.join(self.avd_log_dir, "emulator_output.txt"), "a")
         self.emulator_process = subprocess.Popen(
-            ["/root/.android/emulator/emulator", "-avd", avd_name, "-no-snapshot-save", "-no-window", "-no-audio"],
+            [
+                "/root/.android/emulator/emulator",
+                "-avd",
+                avd_name,
+                "-no-snapshot-save",
+                "-no-window",
+                "-no-audio",
+            ],
             stdout=self.out_file,
-            stderr=self.out_file
+            stderr=self.out_file,
         )
 
         print("Waiting for the emulator to start...")
@@ -76,6 +89,7 @@ class EmulatorController:
                 device = get_adb_device_name(avd_name)
             except:
                 import traceback
+
                 traceback.print_exc()
                 continue
             if device is not None:
@@ -87,7 +101,7 @@ class EmulatorController:
         while True:
             boot_complete = f"adb -s {device} shell getprop init.svc.bootanim"
             boot_complete = self.execute_adb(boot_complete)
-            if boot_complete == 'stopped':
+            if boot_complete == "stopped":
                 print("Emulator started successfully")
                 break
             time.sleep(1)
@@ -126,9 +140,9 @@ class EmulatorController:
 emulator_controller = EmulatorController()
 
 
-@app.route('/start', methods=['POST'])
+@app.route("/start", methods=["POST"])
 def start():
-    avd_name = request.json.get('avd_name')
+    avd_name = request.json.get("avd_name")
     if not avd_name:
         return jsonify({"error": "No AVD name provided"}), 400
 
@@ -136,9 +150,9 @@ def start():
     return jsonify({"result": "Emulator started", "device": device})
 
 
-@app.route('/stop', methods=['POST'])
+@app.route("/stop", methods=["POST"])
 def stop():
-    avd_name = request.json.get('avd_name')
+    avd_name = request.json.get("avd_name")
     if not avd_name:
         return jsonify({"error": "No AVD name provided"}), 400
 
@@ -146,9 +160,9 @@ def stop():
     return jsonify({"result": "Emulator stopped"})
 
 
-@app.route('/execute', methods=['POST'])
+@app.route("/execute", methods=["POST"])
 def execute():
-    adb_command = request.json.get('command')
+    adb_command = request.json.get("command")
     if not adb_command:
         return jsonify({"error": "No command provided"}), 400
 
@@ -156,5 +170,5 @@ def execute():
     return jsonify({"result": result})
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6060)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=6060)

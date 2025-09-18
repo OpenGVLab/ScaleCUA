@@ -358,7 +358,16 @@ Remember to always use the correct syntax for functions, verify all required fie
 """
 
 
-def build_user_msg_visual(query, window_title, window_names_str, clipboard_content, text_rendering, candidates, prev_actions, textual_memory):
+def build_user_msg_visual(
+    query,
+    window_title,
+    window_names_str,
+    clipboard_content,
+    text_rendering,
+    candidates,
+    prev_actions,
+    textual_memory,
+):
     msg = f"""\Inputs:
 
 1. User objective: {query}

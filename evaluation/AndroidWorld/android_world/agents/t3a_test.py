@@ -20,74 +20,80 @@ from android_world.utils import test_utils
 
 
 class MockLlmWrapper(infer.LlmWrapper):
-  """Mock LLM wrapper for testing."""
+    """Mock LLM wrapper for testing."""
 
-  def __init__(self, mock_responses: list[tuple[str, Any]]):
-    self.mock_responses = mock_responses
-    self.index = 0
+    def __init__(self, mock_responses: list[tuple[str, Any]]):
+        self.mock_responses = mock_responses
+        self.index = 0
 
-  def predict(
-      self,
-      text_prompt: str,
-  ) -> tuple[str, Any]:
-    if self.index < len(self.mock_responses):
-      index = self.index
-      self.index += 1
-      return self.mock_responses[index][0], None, self.mock_responses[index][1]
-    else:
-      return infer.ERROR_CALLING_LLM, None, None
+    def predict(
+        self,
+        text_prompt: str,
+    ) -> tuple[str, Any]:
+        if self.index < len(self.mock_responses):
+            index = self.index
+            self.index += 1
+            return self.mock_responses[index][0], None, self.mock_responses[index][1]
+        else:
+            return infer.ERROR_CALLING_LLM, None, None
 
 
 class T3AInteractionTest(absltest.TestCase):
 
-  def test_step_method_with_completion(self):
-    env = test_utils.FakeAsyncEnv()
-    mock_llm = MockLlmWrapper([(
-        (
-            "Reason: completed.\nAction: {'action_type': 'status',"
-            " 'goal_status': 'complete'}"
-        ),
-        "fake_response",
-    )])
-    agent = t3a.T3A(env, mock_llm)
+    def test_step_method_with_completion(self):
+        env = test_utils.FakeAsyncEnv()
+        mock_llm = MockLlmWrapper(
+            [
+                (
+                    (
+                        "Reason: completed.\nAction: {'action_type': 'status',"
+                        " 'goal_status': 'complete'}"
+                    ),
+                    "fake_response",
+                )
+            ]
+        )
+        agent = t3a.T3A(env, mock_llm)
 
-    goal = "do something"
-    step_data = agent.step(goal)
+        goal = "do something"
+        step_data = agent.step(goal)
 
-    self.assertTrue(step_data.done)
+        self.assertTrue(step_data.done)
 
-  def test_history_recording(self):
-    env = test_utils.FakeAsyncEnv()
-    mock_llm = MockLlmWrapper([
-        (
-            (
-                "Reason: completed.\nAction: {'action_type': 'answer',"
-                " 'text': 'mock_response'}"
-            ),
-            "fake_response_1",
-        ),
-        (
-            "fake_summary",
-            "fake_response_1",
-        ),
-        (
-            (
-                "Reason: completed.\nAction: {'action_type': 'status',"
-                " 'goal_status': 'complete'}"
-            ),
-            "fake_response_2",
-        ),
-    ])
-    agent = t3a.T3A(env, mock_llm)
+    def test_history_recording(self):
+        env = test_utils.FakeAsyncEnv()
+        mock_llm = MockLlmWrapper(
+            [
+                (
+                    (
+                        "Reason: completed.\nAction: {'action_type': 'answer',"
+                        " 'text': 'mock_response'}"
+                    ),
+                    "fake_response_1",
+                ),
+                (
+                    "fake_summary",
+                    "fake_response_1",
+                ),
+                (
+                    (
+                        "Reason: completed.\nAction: {'action_type': 'status',"
+                        " 'goal_status': 'complete'}"
+                    ),
+                    "fake_response_2",
+                ),
+            ]
+        )
+        agent = t3a.T3A(env, mock_llm)
 
-    goal = "do something"
-    step1_data = agent.step(goal)
-    self.assertFalse(step1_data.done)
+        goal = "do something"
+        step1_data = agent.step(goal)
+        self.assertFalse(step1_data.done)
 
-    step2_data = agent.step(goal)
-    self.assertTrue(step2_data.done)
-    self.assertLen(agent.history, 2)
+        step2_data = agent.step(goal)
+        self.assertTrue(step2_data.done)
+        self.assertLen(agent.history, 2)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

@@ -8,12 +8,15 @@ import ast
 
 logger = logging.getLogger("desktopenv.agent")
 
+
 class OpenCUANativeAgent(UIAgent):
-    def __init__(self,
-                 engine_params: Dict,
-                 platform: str = "web",
-                 width: int = 1600,
-                 height: int = 2560):
+    def __init__(
+        self,
+        engine_params: Dict,
+        platform: str = "web",
+        width: int = 1600,
+        height: int = 2560,
+    ):
         """
         Initialize the Native OpenCUA worker agent.
 
@@ -23,8 +26,7 @@ class OpenCUANativeAgent(UIAgent):
             width: Screen width for coordinate normalization
             height: Screen height for coordinate normalization
         """
-        super().__init__(engine_params=engine_params,
-                         platform=platform)
+        super().__init__(engine_params=engine_params, platform=platform)
 
         self.width = width
         self.height = height
@@ -53,26 +55,17 @@ class OpenCUANativeAgent(UIAgent):
         Reset the agent's state to prepare for a new conversation.
         """
         self.messages = [
-            {
-                "role": "system",
-                "content": self.sys_prompt
-            },
+            {"role": "system", "content": self.sys_prompt},
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "image_url",
-                        "image_url": {
-                            "url": "waiting to fill",
-                            "detail": "high"
-                        }
+                        "image_url": {"url": "waiting to fill", "detail": "high"},
                     },
-                    {
-                        "type": "text",
-                        "text": "waiting to fill"
-                    }
+                    {"type": "text", "text": "waiting to fill"},
                 ],
-            }
+            },
         ]
         self.native_agent = self._create_agent("")
         self.previous_operations_list = []
@@ -88,17 +81,17 @@ class OpenCUANativeAgent(UIAgent):
             A tuple of (thought, operation, action) strings.
         """
         # Extract thinking section
-        think_pattern = r'<think>(.*?)</think>'
+        think_pattern = r"<think>(.*?)</think>"
         think_match = re.search(think_pattern, plan, re.DOTALL)
         thought = think_match.group(1).strip() if think_match else ""
 
         # Extract operation section
-        operation_pattern = r'<operation>(.*?)</operation>'
+        operation_pattern = r"<operation>(.*?)</operation>"
         operation_match = re.search(operation_pattern, plan, re.DOTALL)
         operation = operation_match.group(1).strip() if operation_match else ""
 
         # Extract action section
-        action_pattern = r'<operation>.*?</operation>.*?<action>(.*?)</action>'
+        action_pattern = r"<operation>.*?</operation>.*?<action>(.*?)</action>"
         action_match = re.search(action_pattern, plan, re.DOTALL)
         action = action_match.group(1).strip() if action_match else ""
 
@@ -119,12 +112,14 @@ class OpenCUANativeAgent(UIAgent):
         exec_action = []
         for line in lines:
             # Skip empty lines, comments, function definitions, etc.
-            if (not line.strip() or
-                    line.strip().startswith('#') or
-                    line.strip().startswith('def ') or
-                    line.strip().startswith('"""') or
-                    line.strip().startswith("'''") or
-                    line.strip() == 'pass'):
+            if (
+                not line.strip()
+                or line.strip().startswith("#")
+                or line.strip().startswith("def ")
+                or line.strip().startswith('"""')
+                or line.strip().startswith("'''")
+                or line.strip() == "pass"
+            ):
                 continue
             cleaned_lines.append(line.strip())
 
@@ -133,12 +128,7 @@ class OpenCUANativeAgent(UIAgent):
         if len(exec_action) > 0:
             return exec_action
         else:
-            return [{
-                "name": "wait",
-                "parameters": {
-                    "seconds": 3
-                }
-            }]
+            return [{"name": "wait", "parameters": {"seconds": 3}}]
 
     def parse_exec_action(self, action):
         """
@@ -160,7 +150,7 @@ class OpenCUANativeAgent(UIAgent):
 
         # Parse using AST
         try:
-            tree = ast.parse(action.strip(), mode='eval')
+            tree = ast.parse(action.strip(), mode="eval")
 
             # Ensure it's a function call
             if not isinstance(tree.body, ast.Call):
@@ -188,7 +178,7 @@ class OpenCUANativeAgent(UIAgent):
 
         except (SyntaxError, ValueError):
             # Fallback to regex parsing if AST fails
-            func_match = re.match(r'(\w+)\((.*)\)$', action.strip())
+            func_match = re.match(r"(\w+)\((.*)\)$", action.strip())
             if not func_match:
                 raise ValueError(f"Invalid function call format: {action}")
 
@@ -197,14 +187,14 @@ class OpenCUANativeAgent(UIAgent):
 
             # Special handling for write function
             if method_name == "write":
-                write_match = re.match(r'message=[\'\"](.+)[\'\"]', params_str)
+                write_match = re.match(r"message=[\'\"](.+)[\'\"]", params_str)
                 if write_match:
                     message = write_match.group(1)
                     kwargs = {"message": message}
 
             # Special handling for response function
             elif method_name == "response":
-                response_match = re.match(r'answer=[\'\"](.+)[\'\"]', params_str)
+                response_match = re.match(r"answer=[\'\"](.+)[\'\"]", params_str)
                 if response_match:
                     answer = response_match.group(1)
                     kwargs = {"answer": answer}
@@ -214,156 +204,202 @@ class OpenCUANativeAgent(UIAgent):
 
         # Apply smart resize if enabled
         if self.smart_resize:
-            smart_resize_height, smart_resize_width = smart_resize(self.height, self.width, factor=IMAGE_FACTOR,
-                                                                   min_pixels=self.min_pixels,
-                                                                   max_pixels=self.max_pixels)
+            smart_resize_height, smart_resize_width = smart_resize(
+                self.height,
+                self.width,
+                factor=IMAGE_FACTOR,
+                min_pixels=self.min_pixels,
+                max_pixels=self.max_pixels,
+            )
             # Adjust coordinates to 0-1 scale
-            kwargs['x'] = kwargs.get("x") / smart_resize_width if kwargs.get("x") is not None else None
-            kwargs['y'] = kwargs.get("y") / smart_resize_height if kwargs.get("y") is not None else None
-            kwargs['from_coord'] = (kwargs.get("from_coord")[0] / smart_resize_width,
-                                    kwargs.get("from_coord")[1] / smart_resize_height) if kwargs.get(
-                "from_coord") is not None and isinstance(kwargs.get("from_coord"), list) else None
-            kwargs['to_coord'] = (kwargs.get("to_coord")[0] / smart_resize_width,
-                                  kwargs.get("to_coord")[1] / smart_resize_height) if kwargs.get(
-                "to_coord") is not None and isinstance(kwargs.get("to_coord"), list) else None
+            kwargs["x"] = (
+                kwargs.get("x") / smart_resize_width
+                if kwargs.get("x") is not None
+                else None
+            )
+            kwargs["y"] = (
+                kwargs.get("y") / smart_resize_height
+                if kwargs.get("y") is not None
+                else None
+            )
+            kwargs["from_coord"] = (
+                (
+                    kwargs.get("from_coord")[0] / smart_resize_width,
+                    kwargs.get("from_coord")[1] / smart_resize_height,
+                )
+                if kwargs.get("from_coord") is not None
+                and isinstance(kwargs.get("from_coord"), list)
+                else None
+            )
+            kwargs["to_coord"] = (
+                (
+                    kwargs.get("to_coord")[0] / smart_resize_width,
+                    kwargs.get("to_coord")[1] / smart_resize_height,
+                )
+                if kwargs.get("to_coord") is not None
+                and isinstance(kwargs.get("to_coord"), list)
+                else None
+            )
 
         # Convert to standardized action format based on method name
         if method_name == "click":
             return {
                 "name": "click",
                 "parameters": {
-                    "x": kwargs.get("x") * self.width if kwargs.get("x") is not None else None,
-                    "y": kwargs.get("y") * self.height if kwargs.get("y") is not None else None,
+                    "x": (
+                        kwargs.get("x") * self.width
+                        if kwargs.get("x") is not None
+                        else None
+                    ),
+                    "y": (
+                        kwargs.get("y") * self.height
+                        if kwargs.get("y") is not None
+                        else None
+                    ),
                     "clicks": kwargs.get("clicks", 1),
-                    "button": kwargs.get("button", "left")
-                }
+                    "button": kwargs.get("button", "left"),
+                },
             }
 
         elif method_name == "doubleClick":
             return {
                 "name": "click",
                 "parameters": {
-                    "x": kwargs.get("x") * self.width if kwargs.get("x") is not None else None,
-                    "y": kwargs.get("y") * self.height if kwargs.get("y") is not None else None,
+                    "x": (
+                        kwargs.get("x") * self.width
+                        if kwargs.get("x") is not None
+                        else None
+                    ),
+                    "y": (
+                        kwargs.get("y") * self.height
+                        if kwargs.get("y") is not None
+                        else None
+                    ),
                     "clicks": 2,
-                    "button": kwargs.get("button", "left")
-                }
+                    "button": kwargs.get("button", "left"),
+                },
             }
 
         elif method_name == "rightClick":
             return {
                 "name": "click",
                 "parameters": {
-                    "x": kwargs.get("x") * self.width if kwargs.get("x") is not None else None,
-                    "y": kwargs.get("y") * self.height if kwargs.get("y") is not None else None,
+                    "x": (
+                        kwargs.get("x") * self.width
+                        if kwargs.get("x") is not None
+                        else None
+                    ),
+                    "y": (
+                        kwargs.get("y") * self.height
+                        if kwargs.get("y") is not None
+                        else None
+                    ),
                     "clicks": 1,
-                    "button": "right"
-                }
+                    "button": "right",
+                },
             }
 
         elif method_name == "moveTo":
             return {
                 "name": "moveTo",
                 "parameters": {
-                    "x": kwargs.get("x") * self.width if kwargs.get("x") is not None else None,
-                    "y": kwargs.get("y") * self.height if kwargs.get("y") is not None else None,
-                }
+                    "x": (
+                        kwargs.get("x") * self.width
+                        if kwargs.get("x") is not None
+                        else None
+                    ),
+                    "y": (
+                        kwargs.get("y") * self.height
+                        if kwargs.get("y") is not None
+                        else None
+                    ),
+                },
             }
 
         elif method_name == "dragTo":
             return {
                 "name": "dragTo",
                 "parameters": {
-                    "x": kwargs.get("x") * self.width if kwargs.get("x") is not None else None,
-                    "y": kwargs.get("y") * self.height if kwargs.get("y") is not None else None,
-                    "button": kwargs.get("button", "left")
-                }
+                    "x": (
+                        kwargs.get("x") * self.width
+                        if kwargs.get("x") is not None
+                        else None
+                    ),
+                    "y": (
+                        kwargs.get("y") * self.height
+                        if kwargs.get("y") is not None
+                        else None
+                    ),
+                    "button": kwargs.get("button", "left"),
+                },
             }
 
         elif method_name == "swipe":
             return {
                 "name": "swipe",
                 "parameters": {
-                    "from_coord": (kwargs.get("from_coord")[0] * self.width,
-                                   kwargs.get("from_coord")[1] * self.height)
-                    if kwargs.get("from_coord") is not None and isinstance(kwargs.get("from_coord"), list) else (
-                    None, None),
-                    "to_coord": (kwargs.get("to_coord")[0] * self.width,
-                                 kwargs.get("to_coord")[1] * self.height)
-                    if kwargs.get("to_coord") is not None and isinstance(kwargs.get("to_coord"), list) else (
-                    None, None),
+                    "from_coord": (
+                        (
+                            kwargs.get("from_coord")[0] * self.width,
+                            kwargs.get("from_coord")[1] * self.height,
+                        )
+                        if kwargs.get("from_coord") is not None
+                        and isinstance(kwargs.get("from_coord"), list)
+                        else (None, None)
+                    ),
+                    "to_coord": (
+                        (
+                            kwargs.get("to_coord")[0] * self.width,
+                            kwargs.get("to_coord")[1] * self.height,
+                        )
+                        if kwargs.get("to_coord") is not None
+                        and isinstance(kwargs.get("to_coord"), list)
+                        else (None, None)
+                    ),
                     "direction": kwargs.get("direction", "up"),
-                    "amount": kwargs.get("amount", 0.5)
-                }
+                    "amount": kwargs.get("amount", 0.5),
+                },
             }
 
         elif method_name == "write":
             return {
                 "name": "write",
-                "parameters": {
-                    "message": kwargs.get("message", "")
-                }
+                "parameters": {"message": kwargs.get("message", "")},
             }
 
         elif method_name == "press":
-            return {
-                "name": "press",
-                "parameters": {
-                    "keys": kwargs.get("keys", None)
-                }
-            }
+            return {"name": "press", "parameters": {"keys": kwargs.get("keys", None)}}
 
         elif method_name == "hotkey":
             return {
                 "name": "hotkey",
-                "parameters": {
-                    "args": args if len(args) > 0 else []
-                }
+                "parameters": {"args": args if len(args) > 0 else []},
             }
 
         elif method_name == "callUser":
-            return {
-                "name": "callUser",
-                "parameters": {}
-            }
+            return {"name": "callUser", "parameters": {}}
 
         elif method_name == "wait":
-            return {
-                "name": "wait",
-                "parameters": {
-                    "seconds": kwargs.get("seconds", 3)
-                }
-            }
+            return {"name": "wait", "parameters": {"seconds": kwargs.get("seconds", 3)}}
 
         elif method_name == "response":
             return {
                 "name": "response",
-                "parameters": {
-                    "answer": kwargs.get("answer", "")
-                }
+                "parameters": {"answer": kwargs.get("answer", "")},
             }
         elif method_name == "terminate":
             return {
                 "name": "terminate",
                 "parameters": {
                     "status": kwargs.get("status", "success"),
-                    "info": kwargs.get("info", "")
-                }
+                    "info": kwargs.get("info", ""),
+                },
             }
 
         else:
-            return {
-                "name": "wait",
-                "parameters": {
-                    "seconds": 1
-                }
-            }
+            return {"name": "wait", "parameters": {"seconds": 1}}
 
-    def generate_next_action(
-            self,
-            instruction: str,
-            obs: Dict
-    ) -> Tuple[Dict, List]:
+    def generate_next_action(self, instruction: str, obs: Dict) -> Tuple[Dict, List]:
         """
         Generate the next action based on the current observation and instruction.
 
@@ -381,8 +417,7 @@ class OpenCUANativeAgent(UIAgent):
 
         # Format user prompt
         user_prompt = self.user_instruction_template.format(
-            instruction=instruction,
-            actions=previous_operations
+            instruction=instruction, actions=previous_operations
         )
 
         self.messages[1]["content"][1]["text"] = user_prompt
@@ -390,7 +425,9 @@ class OpenCUANativeAgent(UIAgent):
         # Encode screenshot
         image_content = obs["screenshot"]
         base64_image = self.native_agent.encode_image(image_content)
-        self.messages[1]["content"][0]["image_url"]["url"] = f"data:image/png;base64,{base64_image}"
+        self.messages[1]["content"][0]["image_url"][
+            "url"
+        ] = f"data:image/png;base64,{base64_image}"
 
         # Send message to language model
         self.native_agent.replace_messages(self.messages)
@@ -410,19 +447,10 @@ class OpenCUANativeAgent(UIAgent):
 
         except Exception as e:
             logger.error("Error in parsing plan code: %s", e)
-            exec_actions = [{
-                "name": "wait",
-                "parameters": {
-                    "seconds": 1
-                }
-            }]
+            exec_actions = [{"name": "wait", "parameters": {"seconds": 1}}]
 
         # Prepare execution info
-        exec_info = {
-            "thought": thought,
-            "operation": operation,
-            "actions": actions
-        }
+        exec_info = {"thought": thought, "operation": operation, "actions": actions}
 
         return exec_info, exec_actions
 

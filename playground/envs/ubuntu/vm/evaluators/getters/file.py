@@ -14,9 +14,9 @@ def get_content_from_vm_file(env, config: Dict[str, Any]) -> Any:
 
     path = config["path"]
     file_path = get_vm_file(env, {"path": path, "dest": os.path.basename(path)})
-    file_type, file_content = config['file_type'], config['file_content']
-    if file_type == 'xlsx':
-        if file_content == 'last_row':
+    file_type, file_content = config["file_type"], config["file_content"]
+    if file_type == "xlsx":
+        if file_content == "last_row":
             df = pd.read_excel(file_path)
             last_row = df.iloc[-1]
             last_row_as_list = last_row.astype(str).tolist()
@@ -53,22 +53,24 @@ def get_cloud_file(env, config: Dict[str, Any]) -> Union[str, List[str]]:
             cache_paths.append(_path)
 
         if os.path.exists(_path):
-            #return _path
+            # return _path
             continue
 
         url = p
         response = requests.get(url, stream=True, timeout=60)
         response.raise_for_status()
 
-        with open(_path, 'wb') as f:
+        with open(_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
 
-    return cache_paths[0] if len(cache_paths)==1 else cache_paths
+    return cache_paths[0] if len(cache_paths) == 1 else cache_paths
 
 
-def get_vm_file(env, config: Dict[str, Any]) -> Union[Optional[str], List[Optional[str]]]:
+def get_vm_file(
+    env, config: Dict[str, Any]
+) -> Union[Optional[str], List[Optional[str]]]:
     """
     Config:
         path (str): absolute path on the VM to fetch
@@ -90,12 +92,31 @@ def get_vm_file(env, config: Dict[str, Any]) -> Union[Optional[str], List[Option
             if "time_format" in config.keys():
                 time_format = config["time_format"]
             # Insert time before . in file type suffix
-            paths = [p.split(".")[0] + datetime.now().strftime(time_format) + "." + p.split(".")[1] if "." in p else p for p in paths]
-            dests = [d.split(".")[0] + datetime.now().strftime(time_format) + "." + d.split(".")[1] if "." in d else d for d in dests]
+            paths = [
+                (
+                    p.split(".")[0]
+                    + datetime.now().strftime(time_format)
+                    + "."
+                    + p.split(".")[1]
+                    if "." in p
+                    else p
+                )
+                for p in paths
+            ]
+            dests = [
+                (
+                    d.split(".")[0]
+                    + datetime.now().strftime(time_format)
+                    + "."
+                    + d.split(".")[1]
+                    if "." in d
+                    else d
+                )
+                for d in dests
+            ]
     else:
         paths: List[str] = config["path"]
         dests: List[str] = config["dest"]
-
 
     cache_paths: List[str] = []
 
@@ -105,7 +126,7 @@ def get_vm_file(env, config: Dict[str, Any]) -> Union[Optional[str], List[Option
         _path = os.path.join(env.cache_dir, d)
         file = env.controller.get_file(p)
         if file is None:
-            #return None
+            # return None
             # raise FileNotFoundError("File not found on VM: {:}".format(config["path"]))
             if i in gives:
                 cache_paths.append(None)
@@ -115,7 +136,7 @@ def get_vm_file(env, config: Dict[str, Any]) -> Union[Optional[str], List[Option
             cache_paths.append(_path)
         with open(_path, "wb") as f:
             f.write(file)
-    return cache_paths[0] if len(cache_paths)==1 else cache_paths
+    return cache_paths[0] if len(cache_paths) == 1 else cache_paths
 
 
 def get_cache_file(env, config: Dict[str, str]) -> str:

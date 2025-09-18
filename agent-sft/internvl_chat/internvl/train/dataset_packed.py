@@ -101,43 +101,49 @@ class PackedDataset(IterableDataset):
         self.worker_state_key = None
         self.dataset_iter_list = None
         self._state_dict = {
-            'sample_info': {d.ds_name:0 for d in self.datasets},
+            "sample_info": {d.ds_name: 0 for d in self.datasets},
         }
 
         self.worker_custom_infos = None
 
         ds_name_list = [d.ds_name for d in self.datasets]
         if not allow_deduplicated_ds_name:
-            assert len(ds_name_list) == len(set(ds_name_list)), f'deduplicated ds_name: {ds_name_list}'
+            assert len(ds_name_list) == len(
+                set(ds_name_list)
+            ), f"deduplicated ds_name: {ds_name_list}"
 
         for ds in self.datasets:
             if ds.max_num_images > self.num_images_expected:
-                logger.warning(f'{ds.max_num_images=} of {ds.ds_name} is larger than {self.num_images_expected=}')
+                logger.warning(
+                    f"{ds.max_num_images=} of {ds.ds_name} is larger than {self.num_images_expected=}"
+                )
                 ds.max_num_images = num_images_expected
 
             if ds.max_tokens > self.max_packed_tokens:
-                logger.warning(f'{ds.max_tokens=} of {ds.ds_name} is larger than {self.max_packed_tokens=}')
+                logger.warning(
+                    f"{ds.max_tokens=} of {ds.ds_name} is larger than {self.max_packed_tokens=}"
+                )
                 ds.max_tokens = self.max_packed_tokens
 
             self._state_dict[ds.ds_name] = {}
 
         if get_rank() == 0:
             logger.info(
-                f'Loaded dataset to pack: {ds_name_list}, '
-                f'{self.num_images_expected=}, {self.max_packed_tokens=}, '
-                f'{self.replacement=}, {self.allow_overflow=}',
+                f"Loaded dataset to pack: {ds_name_list}, "
+                f"{self.num_images_expected=}, {self.max_packed_tokens=}, "
+                f"{self.replacement=}, {self.allow_overflow=}",
             )
 
             temp = []
             for ds, ds_w in zip(self.datasets, self.dataset_weight):
-                temp.append(f'{ds.ds_name:<25}: {ds_w*100:.2f}%')
-            temp = '\n'.join(temp)
-            logger.info(
-                f'Sampling prob for each dataset:\n{temp}'
-            )
+                temp.append(f"{ds.ds_name:<25}: {ds_w*100:.2f}%")
+            temp = "\n".join(temp)
+            logger.info(f"Sampling prob for each dataset:\n{temp}")
 
         if self.allow_empty_data:
-            logger.warning('allow_empty_data is enabled, note that empty data may be generated!')
+            logger.warning(
+                "allow_empty_data is enabled, note that empty data may be generated!"
+            )
 
     def load_state_dict(self, state_dict, custom_infos=None):
 
@@ -147,9 +153,9 @@ class PackedDataset(IterableDataset):
         for ds in self.datasets:
             if ds.ds_name in self._state_dict:
                 ds.load_state_dict(self._state_dict[ds.ds_name])
-                logger.info(f'{ds.ds_name=} is resumed.')
+                logger.info(f"{ds.ds_name=} is resumed.")
             else:
-                logger.warning(f'{ds.ds_name=} is not resumed.')
+                logger.warning(f"{ds.ds_name=} is not resumed.")
 
     def _should_log(self):
         worker_id = 0 if get_worker_info() is None else get_worker_info().id
@@ -169,8 +175,12 @@ class PackedDataset(IterableDataset):
                 if self.replacement:
                     # logger.info(f'[Worker id {self.worker_id}] Dataset {self.datasets[current_dataset_idx].ds_name} is exhausted, restart it.')
                     try:
-                        self.dataset_iter_list[current_dataset_idx] = iter(self.datasets[current_dataset_idx])
-                        current_sample = next(self.dataset_iter_list[current_dataset_idx])
+                        self.dataset_iter_list[current_dataset_idx] = iter(
+                            self.datasets[current_dataset_idx]
+                        )
+                        current_sample = next(
+                            self.dataset_iter_list[current_dataset_idx]
+                        )
                         break
                     except:
                         # logger.error(f'{self.worker_id=} Fail to get any data from {self.datasets[current_dataset_idx].ds_name}! length={len(self.datasets)}')
@@ -191,20 +201,22 @@ class PackedDataset(IterableDataset):
                         raise StopIteration
                     current_dataset_idx = np.random.choice(len(self.datasets))
             except:
-                logger.error('Unexpected error!')
+                logger.error("Unexpected error!")
                 if len(self.datasets) == 0:
                     raise StopIteration
                 current_dataset_idx = np.random.choice(len(self.datasets))
 
         current_ds_name = self.datasets[current_dataset_idx].ds_name
-        current_sample['type_ids'] = torch.zeros_like(current_sample['input_ids']) + current_dataset_idx
+        current_sample["type_ids"] = (
+            torch.zeros_like(current_sample["input_ids"]) + current_dataset_idx
+        )
 
         if self.worker_state_key not in self._state_dict[current_ds_name]:
             self._state_dict[current_ds_name][self.worker_state_key] = {}
 
-        meta_info = current_sample.pop('meta_info', {})
+        meta_info = current_sample.pop("meta_info", {})
         self._state_dict[current_ds_name][self.worker_state_key].update(**meta_info)
-        self._state_dict['sample_info'][self.datasets[current_dataset_idx].ds_name] += 1
+        self._state_dict["sample_info"][self.datasets[current_dataset_idx].ds_name] += 1
         return current_sample
 
     def find_buffer(self, buffer_list, new_sample):
@@ -212,18 +224,23 @@ class PackedDataset(IterableDataset):
 
         find = False
         find_idx = -1
-        num_images_current = new_sample['pixel_values'].size(0)
+        num_images_current = new_sample["pixel_values"].size(0)
         for buffer_idx, buffer in enumerate(buffer_list):
-            num_images_buffer = buffer['pixel_values'].size(0)
+            num_images_buffer = buffer["pixel_values"].size(0)
             if num_images_buffer + num_images_current <= self.num_images_expected:
-                num_merged_tokens = new_sample['input_ids'].size(0) + buffer['input_ids'].size(0)
+                num_merged_tokens = new_sample["input_ids"].size(0) + buffer[
+                    "input_ids"
+                ].size(0)
 
                 if num_merged_tokens <= self.max_packed_tokens:
                     find = True
                     find_idx = buffer_idx
                     break
 
-                if self.allow_overflow and len(buffer_list) >= self.max_buffer_size // 2:
+                if (
+                    self.allow_overflow
+                    and len(buffer_list) >= self.max_buffer_size // 2
+                ):
                     find = True
                     find_idx = buffer_idx
 
@@ -233,10 +250,12 @@ class PackedDataset(IterableDataset):
 
     def update_buffer(self, buffer, new_sample):
         if buffer is None:
-            new_sample['data_index'] = torch.zeros_like(new_sample['input_ids'])
+            new_sample["data_index"] = torch.zeros_like(new_sample["input_ids"])
             return new_sample
 
-        new_sample['data_index'] = torch.ones_like(new_sample['input_ids']) + buffer['data_index'][-1].item()
+        new_sample["data_index"] = (
+            torch.ones_like(new_sample["input_ids"]) + buffer["data_index"][-1].item()
+        )
 
         assert buffer.keys() == new_sample.keys()
         for k in buffer:
@@ -244,14 +263,16 @@ class PackedDataset(IterableDataset):
         return buffer
 
     @staticmethod
-    def check_valid(sample_to_check, min_active_tokens_ratio=1/256):
-        num_ignore_tokens = (sample_to_check['labels'] == IGNORE_TOKEN_ID).sum()
-        num_tokens = sample_to_check['labels'].numel()
+    def check_valid(sample_to_check, min_active_tokens_ratio=1 / 256):
+        num_ignore_tokens = (sample_to_check["labels"] == IGNORE_TOKEN_ID).sum()
+        num_tokens = sample_to_check["labels"].numel()
         return (1 - num_ignore_tokens / num_tokens) > min_active_tokens_ratio
 
     @staticmethod
-    def split_buffer(buffer, max_tokens, img_start_token_id, img_token_id, img_end_token_id):
-        if buffer['input_ids'].size(0) <= max_tokens:
+    def split_buffer(
+        buffer, max_tokens, img_start_token_id, img_token_id, img_end_token_id
+    ):
+        if buffer["input_ids"].size(0) <= max_tokens:
             return [buffer]
 
         def _image_is_splitted(input_ids, cut_idx):
@@ -266,27 +287,43 @@ class PackedDataset(IterableDataset):
             left_sample = {}
             right_sample = {} if right_idx is not None else None
             for k in sample_to_split:
-                if k in ['input_ids', 'labels', 'attention_mask', 'position_ids', 'data_index', 'type_ids']:
+                if k in [
+                    "input_ids",
+                    "labels",
+                    "attention_mask",
+                    "position_ids",
+                    "data_index",
+                    "type_ids",
+                ]:
                     left_sample[k] = sample_to_split[k][:left_idx]
                     if right_sample is not None:
                         right_sample[k] = sample_to_split[k][right_idx:]
-                elif k in ['pixel_values', 'image_flags']:
+                elif k in ["pixel_values", "image_flags"]:
                     left_sample[k] = sample_to_split[k][:left_img_idx]
                     if right_sample is not None:
                         right_sample[k] = sample_to_split[k][right_img_idx:]
                 else:
-                    raise NotImplementedError(f'find unsupported keys: {k} from {sample_to_split.keys()}')
+                    raise NotImplementedError(
+                        f"find unsupported keys: {k} from {sample_to_split.keys()}"
+                    )
             return left_sample, right_sample
 
         splitted_buffer = []
-        while buffer['input_ids'].size(0) > max_tokens:
-            img_start_idx_list = (buffer['input_ids'] == img_start_token_id).nonzero().squeeze(1).tolist()
-            img_end_idx_list = (buffer['input_ids'] == img_end_token_id).nonzero().squeeze(1).tolist()
+        while buffer["input_ids"].size(0) > max_tokens:
+            img_start_idx_list = (
+                (buffer["input_ids"] == img_start_token_id)
+                .nonzero()
+                .squeeze(1)
+                .tolist()
+            )
+            img_end_idx_list = (
+                (buffer["input_ids"] == img_end_token_id).nonzero().squeeze(1).tolist()
+            )
             assert len(img_start_idx_list) == len(img_end_idx_list)
 
-            if _image_is_splitted(buffer['input_ids'], max_tokens):
+            if _image_is_splitted(buffer["input_ids"], max_tokens):
                 cut_idx = bisect.bisect_left(img_start_idx_list, max_tokens)
-                if buffer['input_ids'][max_tokens] == img_start_token_id:
+                if buffer["input_ids"][max_tokens] == img_start_token_id:
                     assert max_tokens == img_start_idx_list[cut_idx]
                     cut_left_idx = img_start_idx_list[cut_idx]
                     cut_left_img_idx = cut_idx
@@ -305,7 +342,11 @@ class PackedDataset(IterableDataset):
                     cut_right_img_idx = None
 
                 cut_left_idx = max_tokens
-                cut_left_img_idx = cut_right_img_idx if cut_right_img_idx is not None else buffer['pixel_values'].size(0)
+                cut_left_img_idx = (
+                    cut_right_img_idx
+                    if cut_right_img_idx is not None
+                    else buffer["pixel_values"].size(0)
+                )
 
             left, right = _split(
                 sample_to_split=buffer,
@@ -315,24 +356,34 @@ class PackedDataset(IterableDataset):
                 right_img_idx=cut_right_img_idx,
             )
 
-            assert (left['input_ids'] == img_end_token_id).sum() == (left['input_ids'] == img_start_token_id).sum() == left['pixel_values'].size(0)
+            assert (
+                (left["input_ids"] == img_end_token_id).sum()
+                == (left["input_ids"] == img_start_token_id).sum()
+                == left["pixel_values"].size(0)
+            )
             if right is not None:
-                assert (right['input_ids'] == img_end_token_id).sum() == (right['input_ids'] == img_start_token_id).sum() == right['pixel_values'].size(0)
+                assert (
+                    (right["input_ids"] == img_end_token_id).sum()
+                    == (right["input_ids"] == img_start_token_id).sum()
+                    == right["pixel_values"].size(0)
+                )
 
-            if left['pixel_values'].size(0) >= 1 and PackedDataset.check_valid(left):
+            if left["pixel_values"].size(0) >= 1 and PackedDataset.check_valid(left):
                 splitted_buffer.append(left)
 
-            if right is None or right['pixel_values'].size(0) == 0:
+            if right is None or right["pixel_values"].size(0) == 0:
                 break
 
             buffer = right
-            if buffer['input_ids'].size(0) <= max_tokens and PackedDataset.check_valid(buffer):
+            if buffer["input_ids"].size(0) <= max_tokens and PackedDataset.check_valid(
+                buffer
+            ):
                 splitted_buffer.append(buffer)
                 break
 
         logger.debug(
-            f'split a sample into {len(splitted_buffer)} samples, '
-            f'current max_tokens={max_tokens}'
+            f"split a sample into {len(splitted_buffer)} samples, "
+            f"current max_tokens={max_tokens}"
         )
         return splitted_buffer
 
@@ -348,52 +399,58 @@ class PackedDataset(IterableDataset):
         )
 
         for each_buffer in splitted_buffer:
-            if each_buffer['pixel_values'].size(0) > self.num_images_expected:
+            if each_buffer["pixel_values"].size(0) > self.num_images_expected:
                 logger.error(
                     f"Find a sample with {each_buffer['pixel_values'].size(0)} images, "
-                    f'which exceeds {self.num_images_expected}'
+                    f"which exceeds {self.num_images_expected}"
                 )
                 continue
 
-            if each_buffer['input_ids'].size(0) >= self.max_packed_tokens:
-                assert each_buffer['input_ids'].size(0) == self.max_packed_tokens
+            if each_buffer["input_ids"].size(0) >= self.max_packed_tokens:
+                assert each_buffer["input_ids"].size(0) == self.max_packed_tokens
                 buffer_max_len_list.append(each_buffer)
                 continue
 
             find_idx = len(buffer_list)
-            num_images_new_sample = each_buffer['pixel_values'].size(0)
+            num_images_new_sample = each_buffer["pixel_values"].size(0)
             for buffer_idx in range(len(buffer_list)):
-                if buffer_list[buffer_idx]['pixel_values'].size(0) < num_images_new_sample:
+                if (
+                    buffer_list[buffer_idx]["pixel_values"].size(0)
+                    < num_images_new_sample
+                ):
                     find_idx = buffer_idx
                     break
             buffer_list.insert(find_idx, each_buffer)
 
         for i in range(1, len(buffer_list)):
-            assert buffer_list[i-1]['pixel_values'].size(0) >= buffer_list[i]['pixel_values'].size(0)
+            assert buffer_list[i - 1]["pixel_values"].size(0) >= buffer_list[i][
+                "pixel_values"
+            ].size(0)
 
         return buffer_list, buffer_max_len_list
 
     def pad_buffer(self, buffer):
-        if buffer['pixel_values'].size(0) == self.num_images_expected:
+        if buffer["pixel_values"].size(0) == self.num_images_expected:
             return buffer
 
-        num_pad_images = self.num_images_expected - buffer['pixel_values'].size(0)
-        pad_images = torch.stack([
-            torch.zeros_like(buffer['pixel_values'][0])
-            for _ in range(num_pad_images)
-        ])
+        num_pad_images = self.num_images_expected - buffer["pixel_values"].size(0)
+        pad_images = torch.stack(
+            [torch.zeros_like(buffer["pixel_values"][0]) for _ in range(num_pad_images)]
+        )
         pad_image_flags = torch.tensor([0] * num_pad_images, dtype=torch.long)
 
-        buffer['pixel_values'] = torch.cat([buffer['pixel_values'], pad_images])
-        buffer['image_flags'] = torch.cat([buffer['image_flags'], pad_image_flags])
+        buffer["pixel_values"] = torch.cat([buffer["pixel_values"], pad_images])
+        buffer["image_flags"] = torch.cat([buffer["image_flags"], pad_image_flags])
 
         return buffer
 
     def postprocess_buffer(self, buffer, custom_infos=None):
-        buffer['worker_state_key'] = self.worker_state_key
-        buffer['worker_state_dict'] = self._state_dict
+        buffer["worker_state_key"] = self.worker_state_key
+        buffer["worker_state_dict"] = self._state_dict
         if custom_infos is not None:
-            buffer['custom_infos'] = {self.worker_state_key: copy.deepcopy(custom_infos)}
+            buffer["custom_infos"] = {
+                self.worker_state_key: copy.deepcopy(custom_infos)
+            }
         return buffer
 
     def print_log(self, iter_idx, buffer_list):
@@ -411,7 +468,7 @@ class PackedDataset(IterableDataset):
         buffer_max_len_list = []
 
         if self._should_log():
-            logger.info(f'Begin to iter, {len(buffer_list)=}')
+            logger.info(f"Begin to iter, {len(buffer_list)=}")
 
         worker_id = 0 if get_worker_info() is None else get_worker_info().id
         num_workers = 1 if get_worker_info() is None else get_worker_info().num_workers
@@ -423,7 +480,7 @@ class PackedDataset(IterableDataset):
 
         # reset states of each dataset
         self.worker_id = worker_id
-        self.worker_state_key = f'work_state_{self.worker_id}'
+        self.worker_state_key = f"work_state_{self.worker_id}"
         self.datasets = [d for d in self.datasets_orig]
         self.dataset_weight = [w for w in self.dataset_weight_orig]
         self.dataset_iter_list = [iter(d) for d in self.datasets]
@@ -431,84 +488,130 @@ class PackedDataset(IterableDataset):
         for ds in self.datasets:
             # if not isinstance(ds, (ImageTextPairDataset, InterleavedDataset)):
             ds.worker_id = worker_id
-            ds.worker_state_key = f'work_state_{self.worker_id}'
+            ds.worker_state_key = f"work_state_{self.worker_id}"
             ds.num_workers = num_workers
             if self._should_log() and worker_id == 0:
-                logger.info(f'set worker_id and num_workers of {ds.__class__.__name__} {ds.ds_name}')
+                logger.info(
+                    f"set worker_id and num_workers of {ds.__class__.__name__} {ds.ds_name}"
+                )
 
-        if self.worker_custom_infos is not None and self.worker_state_key in self.worker_custom_infos:
+        if (
+            self.worker_custom_infos is not None
+            and self.worker_state_key in self.worker_custom_infos
+        ):
             custom_infos = self.worker_custom_infos[self.worker_state_key]
             # buffer list
-            if 'buffer_list' in custom_infos and isinstance(custom_infos['buffer_list'], list):
-                buffer_list = custom_infos['buffer_list']
+            if "buffer_list" in custom_infos and isinstance(
+                custom_infos["buffer_list"], list
+            ):
+                buffer_list = custom_infos["buffer_list"]
                 if self._should_log() and worker_id == 0:
-                    logger.info(f'[{self.worker_state_key}] load buffer list --> {len(buffer_list)=}')
+                    logger.info(
+                        f"[{self.worker_state_key}] load buffer list --> {len(buffer_list)=}"
+                    )
             # other infos
 
             # reset
             self.worker_custom_infos = None
 
         logger.debug(
-            f'{self.__class__.__name__} Rank {self.data_rank} '
-            f'Worker {worker_id} begin to load data'
+            f"{self.__class__.__name__} Rank {self.data_rank} "
+            f"Worker {worker_id} begin to load data"
         )
 
         while True:
-            self.dataset_weight = [w / sum(self.dataset_weight) for w in self.dataset_weight]
-            current_dataset_idx = rng.choice(len(self.dataset_iter_list), p=self.dataset_weight)
+            self.dataset_weight = [
+                w / sum(self.dataset_weight) for w in self.dataset_weight
+            ]
+            current_dataset_idx = rng.choice(
+                len(self.dataset_iter_list), p=self.dataset_weight
+            )
 
             try:
                 current_sample = self.next_data(current_dataset_idx)
             except:
-                logger.info(f'All datasets are exhausted, begin to empty the buffer_list ({len(buffer_list)=})')
+                logger.info(
+                    f"All datasets are exhausted, begin to empty the buffer_list ({len(buffer_list)=})"
+                )
                 while len(buffer_list) > 0:
                     if self.strict_mode:
-                        yield self.postprocess_buffer(self.pad_buffer(buffer_list.pop(0)))
+                        yield self.postprocess_buffer(
+                            self.pad_buffer(buffer_list.pop(0))
+                        )
                     else:
                         yield self.postprocess_buffer(buffer_list.pop(0))
-                logger.info(f'buffer_list is empty! ({len(buffer_list)=})')
+                logger.info(f"buffer_list is empty! ({len(buffer_list)=})")
                 return
 
             buffer = self.find_buffer(buffer_list, current_sample)
             buffer = self.update_buffer(buffer, current_sample)
-            buffer_list, buffer_max_len_list = self.update_buffer_list(buffer_list, buffer_max_len_list, buffer)
+            buffer_list, buffer_max_len_list = self.update_buffer_list(
+                buffer_list, buffer_max_len_list, buffer
+            )
 
             while len(buffer_max_len_list) > 0:
-                if buffer_max_len_list[0]['pixel_values'].size(0) != self.max_packed_tokens:
+                if (
+                    buffer_max_len_list[0]["pixel_values"].size(0)
+                    != self.max_packed_tokens
+                ):
                     logger.debug(
-                        f'num tokens of a buffer exceed {self.max_packed_tokens=}, '
+                        f"num tokens of a buffer exceed {self.max_packed_tokens=}, "
                         f"yield a sample with {buffer_max_len_list[0]['pixel_values'].size(0)} images"
                     )
-                if self.strict_mode and buffer_max_len_list[0]['pixel_values'].size(0) != self.num_images_expected:
+                if (
+                    self.strict_mode
+                    and buffer_max_len_list[0]["pixel_values"].size(0)
+                    != self.num_images_expected
+                ):
                     # buffer_max_len_list.pop(0)
-                    yield self.postprocess_buffer(self.pad_buffer(buffer_max_len_list.pop(0)), {'buffer_list': buffer_list})
+                    yield self.postprocess_buffer(
+                        self.pad_buffer(buffer_max_len_list.pop(0)),
+                        {"buffer_list": buffer_list},
+                    )
                 else:
-                    yield self.postprocess_buffer(buffer_max_len_list.pop(0), {'buffer_list': buffer_list})
+                    yield self.postprocess_buffer(
+                        buffer_max_len_list.pop(0), {"buffer_list": buffer_list}
+                    )
 
-            while len(buffer_list) > 0 and buffer_list[0]['pixel_values'].size(0) > self.num_images_expected:
+            while (
+                len(buffer_list) > 0
+                and buffer_list[0]["pixel_values"].size(0) > self.num_images_expected
+            ):
                 logger.error(
                     f"num images of a buffer ({buffer_list[0]['pixel_values'].size(0)}) "
-                    f'is larger than num_images_expected({self.num_images_expected})'
+                    f"is larger than num_images_expected({self.num_images_expected})"
                 )
                 buffer_list.pop(0)
 
-            while len(buffer_list) > 0 and buffer_list[0]['pixel_values'].size(0) == self.num_images_expected:
+            while (
+                len(buffer_list) > 0
+                and buffer_list[0]["pixel_values"].size(0) == self.num_images_expected
+            ):
                 if self.debug_mode:
-                    debug_data = self.postprocess_buffer(buffer_list.pop(0), {'buffer_list': buffer_list})
+                    debug_data = self.postprocess_buffer(
+                        buffer_list.pop(0), {"buffer_list": buffer_list}
+                    )
                     while True:
                         yield debug_data.copy()
 
-                yield self.postprocess_buffer(buffer_list.pop(0), {'buffer_list': buffer_list})
+                yield self.postprocess_buffer(
+                    buffer_list.pop(0), {"buffer_list": buffer_list}
+                )
 
             while len(buffer_list) > self.max_buffer_size:
                 logger.debug(
-                    f'Failed to pack data to exactly {self.num_images_expected} images, '
+                    f"Failed to pack data to exactly {self.num_images_expected} images, "
                     f"yield a data sample with {buffer_list[0]['pixel_values'].size(0)} images."
                 )
                 if self.strict_mode:
-                    yield self.postprocess_buffer(self.pad_buffer(buffer_list.pop(0)), {'buffer_list': buffer_list})
+                    yield self.postprocess_buffer(
+                        self.pad_buffer(buffer_list.pop(0)),
+                        {"buffer_list": buffer_list},
+                    )
                 else:
-                    yield self.postprocess_buffer(buffer_list.pop(0), {'buffer_list': buffer_list})
+                    yield self.postprocess_buffer(
+                        buffer_list.pop(0), {"buffer_list": buffer_list}
+                    )
 
             self.print_log(iter_idx=iter_idx, buffer_list=buffer_list)
             iter_idx += 1
@@ -516,8 +619,8 @@ class PackedDataset(IterableDataset):
     @staticmethod
     def get_cu_seqlens_and_indexes(
         data_index: torch.LongTensor,  # (seq_len,)
-        input_ids: torch.LongTensor,   # (seq_len,)
-        labels: torch.LongTensor,   # (seq_len,)
+        input_ids: torch.LongTensor,  # (seq_len,)
+        labels: torch.LongTensor,  # (seq_len,)
         len2weight: callable,
     ):
         indexes = []
@@ -532,14 +635,16 @@ class PackedDataset(IterableDataset):
             cu_seqlens.append(cu_seqlens[-1] + num_tokens)
             assert num_tokens > 0
 
-            curr_data_index = data_index[cu_seqlens[-2]:cu_seqlens[-2]+num_tokens]
+            curr_data_index = data_index[cu_seqlens[-2] : cu_seqlens[-2] + num_tokens]
             assert (curr_data_index == i).all(), data_index
 
-            curr_labels = labels[cu_seqlens[-2]:cu_seqlens[-2]+num_tokens]
+            curr_labels = labels[cu_seqlens[-2] : cu_seqlens[-2] + num_tokens]
             num_effective_tokens = (curr_labels != IGNORE_TOKEN_ID).sum().item()
             loss_weight.extend([len2weight(num_effective_tokens)] * num_tokens)
 
-        assert len(indexes) == data_index.size(0), f'{len(indexes)=}, {data_index.size(0)=}'
+        assert len(indexes) == data_index.size(
+            0
+        ), f"{len(indexes)=}, {data_index.size(0)=}"
 
         loss_weight = torch.tensor(loss_weight, dtype=torch.float32)
         return cu_seqlens, indexes, loss_weight
@@ -561,20 +666,22 @@ def packed_collate_fn(
         features = [features]
 
     if len(features) > micro_num:
-        raise NotImplementedError(f'{len(features)=} > {micro_num=}')
+        raise NotImplementedError(f"{len(features)=} > {micro_num=}")
 
-    if len(features) < micro_num and WARNING_CNT['micro_num_warning'] < 5:
+    if len(features) < micro_num and WARNING_CNT["micro_num_warning"] < 5:
         logger.warning(
-            f'{len(features)=} > {micro_num=}, '
-            f'the features will be padded to satisfy micro_num requirement'
+            f"{len(features)=} > {micro_num=}, "
+            f"the features will be padded to satisfy micro_num requirement"
         )
-        WARNING_CNT['micro_num_warning'] += 1
+        WARNING_CNT["micro_num_warning"] += 1
 
     # ensure that the len(features) is equal to the required micro_num
     num_features = len(features)
     while len(features) < micro_num:
         features.append(copy.deepcopy(features[0]))
-        features[-1]['labels'] = torch.full_like(features[-1]['labels'], IGNORE_TOKEN_ID)
+        features[-1]["labels"] = torch.full_like(
+            features[-1]["labels"], IGNORE_TOKEN_ID
+        )
 
     indexes = []
     cu_seqlens = []
@@ -584,21 +691,23 @@ def packed_collate_fn(
     worker_state_dict_list = []
     worker_state_custom_infos_list = []
 
-    batch_lens = [feat['input_ids'].shape for feat in features]
+    batch_lens = [feat["input_ids"].shape for feat in features]
     max_item_length = max_item_length or max(batch_lens)[0]
 
     num_samples = 0
     num_padding_tokens = 0
     for feat_idx, feat in enumerate(features):
-        data_index = feat.pop('data_index')
-        curr_cu_seqlens, curr_indexes, curr_loss_weight = PackedDataset.get_cu_seqlens_and_indexes(
-            data_index=data_index,
-            input_ids=feat['input_ids'],
-            labels=feat['labels'],
-            len2weight=len2weight,
+        data_index = feat.pop("data_index")
+        curr_cu_seqlens, curr_indexes, curr_loss_weight = (
+            PackedDataset.get_cu_seqlens_and_indexes(
+                data_index=data_index,
+                input_ids=feat["input_ids"],
+                labels=feat["labels"],
+                len2weight=len2weight,
+            )
         )
 
-        feat['loss_weight'] = curr_loss_weight
+        feat["loss_weight"] = curr_loss_weight
 
         if feat_idx < num_features:
             num_samples += len(curr_cu_seqlens) - 1
@@ -610,25 +719,29 @@ def packed_collate_fn(
         indexes.append(torch.tensor(curr_indexes, dtype=torch.long))
         cu_seqlens.append(torch.tensor(curr_cu_seqlens, dtype=torch.int32))
 
-        worker_state_key_list.append(feat.pop('worker_state_key'))
-        worker_state_dict_list.append(feat.pop('worker_state_dict'))
-        worker_state_custom_infos_list.append(feat.pop('custom_infos', None))
+        worker_state_key_list.append(feat.pop("worker_state_key"))
+        worker_state_dict_list.append(feat.pop("worker_state_dict"))
+        worker_state_custom_infos_list.append(feat.pop("custom_infos", None))
 
-        num_padding_tokens += (max_item_length - feat['input_ids'].size(0))
-        cu_num_images_list.append(cu_num_images_list[-1] + feat['pixel_values'].size(0))
+        num_padding_tokens += max_item_length - feat["input_ids"].size(0)
+        cu_num_images_list.append(cu_num_images_list[-1] + feat["pixel_values"].size(0))
 
-    batch = data_collator(features=features, max_item_length=max_item_length, pad_id=pad_id)
+    batch = data_collator(
+        features=features, max_item_length=max_item_length, pad_id=pad_id
+    )
     # convert it to list in case it is converted into bf16
-    batch['loss_weight'] = torch.where(batch['labels'] == IGNORE_TOKEN_ID, 0, batch['loss_weight']).tolist()
-    batch['attention_mask'] = torch.stack(cu_seqlens)
-    batch['loss_reduction_all_gather'] = loss_reduction_all_gather
-    batch['statistics'] = torch.tensor(
+    batch["loss_weight"] = torch.where(
+        batch["labels"] == IGNORE_TOKEN_ID, 0, batch["loss_weight"]
+    ).tolist()
+    batch["attention_mask"] = torch.stack(cu_seqlens)
+    batch["loss_reduction_all_gather"] = loss_reduction_all_gather
+    batch["statistics"] = torch.tensor(
         [
             num_samples,
             num_padding_tokens,
-            batch['image_flags'].numel() - batch['image_flags'].sum().item(),
+            batch["image_flags"].numel() - batch["image_flags"].sum().item(),
         ],
         dtype=torch.long,
     )
-    batch.pop('type_ids')
+    batch.pop("type_ids")
     return batch

@@ -13,8 +13,10 @@ from PIL import Image
 import os
 import base64
 
+
 def b64_to_byte(data):
     return base64.b64decode(data)
+
 
 def request_api_wrapper(url, files=None, json=None, try_max_times=5, timeout=360):
     """Synchronous request API wrapper"""
@@ -35,14 +37,17 @@ def request_api_wrapper(url, files=None, json=None, try_max_times=5, timeout=360
         except Exception as e:
             print(f"Unexpected error, please check: {e}")
         time.sleep(1)
-        
+
+
 class AndroidEnv(BaseEnv):
-    def __init__(self, server_path, platform='Android', **kwargs):
+    def __init__(self, server_path, platform="Android", **kwargs):
         super().__init__(server_path, platform)
-        self.manager_port = kwargs.get('manager_port', None)
-        self.avd_name = kwargs.get('avd_name', "Pixel_7_Pro_API_33")
-        self.docker = kwargs.get('docker', True)
-        self.docker_args = kwargs.get('docker_args', {"image_name": "android_eval:latest", "port": 6060})
+        self.manager_port = kwargs.get("manager_port", None)
+        self.avd_name = kwargs.get("avd_name", "Pixel_7_Pro_API_33")
+        self.docker = kwargs.get("docker", True)
+        self.docker_args = kwargs.get(
+            "docker_args", {"image_name": "android_eval:latest", "port": 6060}
+        )
         self.config = {
             "avd_name": self.avd_name,
             "docker": self.docker,
@@ -53,19 +58,17 @@ class AndroidEnv(BaseEnv):
         self.Base_url = Base_url
 
         config_json = json.dumps(self.config)
-        files = {
-            "file": ("config.json", config_json, "application/json")
-        }
+        files = {"file": ("config.json", config_json, "application/json")}
         response = request_api_wrapper(f"{Base_url}create_env", files=files)
         self.env_id = response["env_id"]
         print(response)
 
         self.get_a11tree()
 
-        get_screen_size_payload = {
-            "env_id": self.env_id
-        }
-        response = request_api_wrapper(f"{self.Base_url}get_screen_size", json=get_screen_size_payload)
+        get_screen_size_payload = {"env_id": self.env_id}
+        response = request_api_wrapper(
+            f"{self.Base_url}get_screen_size", json=get_screen_size_payload
+        )
         self.width, self.height = response["screen_size"]
         self.screen_size = (self.width, self.height)
         print(f"Screen size: {self.width}x{self.height}")
@@ -85,15 +88,13 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Click failed: {e}")
             return False
-    
+
     def _execute_write(self, parameters):
         try:
             write_payload = {
                 "env_id": self.env_id,
                 "action": "Type",
-                "kwargs": {
-                    "text": parameters["message"]
-                }
+                "kwargs": {"text": parameters["message"]},
             }
             response = request_api_wrapper(f"{self.Base_url}step", json=write_payload)
             if response["success"]:
@@ -101,7 +102,7 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Write failed: {e}")
             return False
-    
+
     def _execute_swipe(self, parameters):
         try:
             swipe_payload = {
@@ -109,8 +110,8 @@ class AndroidEnv(BaseEnv):
                 "action": "Swipe Precise",
                 "kwargs": {
                     "start": parameters["from_coord"],
-                    "end": parameters["to_coord"]
-                }
+                    "end": parameters["to_coord"],
+                },
             }
             response = request_api_wrapper(f"{self.Base_url}step", json=swipe_payload)
             if response["success"]:
@@ -118,7 +119,7 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Swipe failed: {e}")
             return False
-    
+
     def _execute_long_press(self, parameters):
         try:
             long_press_payload = {
@@ -126,13 +127,15 @@ class AndroidEnv(BaseEnv):
                 "action": "Long Press",
                 "element": [parameters["x"], parameters["y"]],
             }
-            response = request_api_wrapper(f"{self.Base_url}step", json=long_press_payload)
+            response = request_api_wrapper(
+                f"{self.Base_url}step", json=long_press_payload
+            )
             if response["success"]:
                 return True
         except Exception as e:
             print(f"Long press failed: {e}")
             return False
-    
+
     def _execute_home(self, parameters):
         try:
             home_payload = {
@@ -145,7 +148,7 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Home failed: {e}")
             return False
-    
+
     def _execute_back(self, parameters):
         try:
             back_payload = {
@@ -158,23 +161,23 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Back failed: {e}")
             return False
-        
+
     def _execute_open_app(self, parameters):
         try:
             open_app_payload = {
                 "env_id": self.env_id,
                 "action": "Launch",
-                "kwargs": {
-                    "app": parameters["app_name"]
-                }
+                "kwargs": {"app": parameters["app_name"]},
             }
-            response = request_api_wrapper(f"{self.Base_url}step", json=open_app_payload)
+            response = request_api_wrapper(
+                f"{self.Base_url}step", json=open_app_payload
+            )
             if response["success"]:
                 return True
         except Exception as e:
             print(f"Open app failed: {e}")
             return False
-    
+
     def _execute_wait(self, parameters):
         try:
             seconds = parameters.get("seconds", 5)
@@ -194,7 +197,7 @@ class AndroidEnv(BaseEnv):
         except Exception as e:
             print(f"Terminate failed: {e}")
             return False
-        
+
     def _execute_callUser(self, parameters):
         print("Calling user...")
         return True
@@ -206,28 +209,20 @@ class AndroidEnv(BaseEnv):
     # def _execute_terminate(self, parameters):
 
     def resart(self, **kwargs):
-        stop_payload = {
-            "env_id": self.env_id
-        }
+        stop_payload = {"env_id": self.env_id}
         response = request_api_wrapper(f"{self.Base_url}stop_env", json=stop_payload)
 
         config_json = json.dumps(self.config)
-        files = {
-            "file": ("config.json", config_json, "application/json")
-        }
+        files = {"file": ("config.json", config_json, "application/json")}
         response = request_api_wrapper(f"{self.Base_url}create_env", files=files)
         self.env_id = response["env_id"]
 
     def resart(self, **kwargs):
-        stop_payload = {
-            "env_id": self.env_id
-        }
+        stop_payload = {"env_id": self.env_id}
         response = request_api_wrapper(f"{self.Base_url}stop_env", json=stop_payload)
 
         config_json = json.dumps(self.config)
-        files = {
-            "file": ("config.json", config_json, "application/json")
-        }
+        files = {"file": ("config.json", config_json, "application/json")}
         response = request_api_wrapper(f"{self.Base_url}create_env", files=files)
         self.env_id = response["env_id"]
 
@@ -235,10 +230,7 @@ class AndroidEnv(BaseEnv):
         app = None
         if "application" in kwargs:
             app = kwargs["application"]
-        reset_payload = {
-            "env_id": self.env_id,
-            "app_name": app
-        }
+        reset_payload = {"env_id": self.env_id, "app_name": app}
         response = request_api_wrapper(f"{self.Base_url}reset", json=reset_payload)
         if response["success"]:
             return True
@@ -248,38 +240,32 @@ class AndroidEnv(BaseEnv):
 
     def get_screen_size(self) -> tuple[int, int]:
         return self.width, self.height
-    
+
     def onScreen(self, x, y):
         screen_width, screen_height = self.get_screen_size()
         if isinstance(x, float) and isinstance(y, float):
             assert 0 <= x <= 1 and 0 <= y <= 1
             x = round(x * screen_width)
             y = round(y * screen_height)
-        
+
         return 0 <= x < screen_width and 0 <= y < screen_height
 
     def get_screenshot(self, prefix=None, suffix=None):
-        screenshot_payload = {
-            "env_id": self.env_id,
-            "prefix": None,
-            "suffix": None
-        }
-        response = request_api_wrapper(f"{self.Base_url}screenshot", json=screenshot_payload)
+        screenshot_payload = {"env_id": self.env_id, "prefix": None, "suffix": None}
+        response = request_api_wrapper(
+            f"{self.Base_url}screenshot", json=screenshot_payload
+        )
         screenshot = b64_to_byte(response["screenshot"])
-        
+
         # image = Image.open(BytesIO(screenshot))
-        # image.show() 
+        # image.show()
         return screenshot
 
-
     def get_a11tree(self):
-        get_xml_payload = {
-            "env_id": self.env_id
-        }
+        get_xml_payload = {"env_id": self.env_id}
         response = request_api_wrapper(f"{self.Base_url}get_xml", json=get_xml_payload)
-        xml = response['xml']
+        xml = response["xml"]
         return xml
-
 
     def step(self, action_list):
         try:
@@ -287,11 +273,12 @@ class AndroidEnv(BaseEnv):
             self.execute(action_list)
         except Exception as e:
             from traceback import print_stack
+
             print_stack()
             return False
-        
+
         return True
-        
+
     def parse_action(self, prediction):
         pass
 
@@ -320,19 +307,16 @@ class AndroidEnv(BaseEnv):
             print(f"Action Status: \n {action} executed successfully.")
         else:
             print(f"Action Status: \n {action} failed.")
-       
-    
+
     def execute(self, action_list: list[dict]):
         for action in action_list:
             self.execute_single_action(action)
 
     def exit(self):
-        stop_payload = {
-            "env_id": self.env_id
-        }
+        stop_payload = {"env_id": self.env_id}
         response = request_api_wrapper(f"{self.Base_url}stop_env", json=stop_payload)
         print(response)
-    
+
     @agent_action
     def click(
         self,
@@ -348,15 +332,17 @@ class AndroidEnv(BaseEnv):
             button_type:str, which mouse button to press can be "left", "middle", or "right"
             hold_keys:List, list of keys to hold while clicking
         """
-        actions = [{
-            "name": "click",
-            "parameters":{
-                "x": None,
-                "y": None,
-                "clicks": num_clicks,
-                "button": button_type,
-                }
-        }]
+        actions = [
+            {
+                "name": "click",
+                "parameters": {
+                    "x": None,
+                    "y": None,
+                    "clicks": num_clicks,
+                    "button": button_type,
+                },
+            }
+        ]
         return actions
 
     @agent_action
@@ -377,30 +363,21 @@ class AndroidEnv(BaseEnv):
         actions = [
             {
                 "name": "click",
-                "parameters":{ 
-                    "x": None,
-                    "y": None,
-                    "clicks": 1,
-                    "button": "left"}
-                
+                "parameters": {"x": None, "y": None, "clicks": 1, "button": "left"},
             },
-            {
-                "name": "write",
-                "parameters":{
-                    "message": text
-                }
-            }
+            {"name": "write", "parameters": {"message": text}},
         ]
         if enter:
-            actions.append({
-                "name": "press",
-                "parameters":{
-                    "keys": "enter",
-                    "presses": 1,
+            actions.append(
+                {
+                    "name": "press",
+                    "parameters": {
+                        "keys": "enter",
+                        "presses": 1,
+                    },
                 }
-            })
+            )
         return actions
-
 
     @agent_action
     def wait(self, time: float):
@@ -410,11 +387,11 @@ class AndroidEnv(BaseEnv):
         """
         actions = [
             {
-            "name": "wait",
-            "parameters":{
-                "seconds": time,
+                "name": "wait",
+                "parameters": {
+                    "seconds": time,
+                },
             }
-        }
         ]
         return actions
 
@@ -427,11 +404,11 @@ class AndroidEnv(BaseEnv):
         self.returned_info = return_value
         actions = [
             {
-            "name": "terminate",
-            "parameters":{
-                "status": "success",
+                "name": "terminate",
+                "parameters": {
+                    "status": "success",
+                },
             }
-        }
         ]
         return actions
 
@@ -440,11 +417,11 @@ class AndroidEnv(BaseEnv):
         """End the current task with a failure, and replan the whole task."""
         actions = [
             {
-            "name": "terminate",
-            "parameters":{
-                "status": "failure",
+                "name": "terminate",
+                "parameters": {
+                    "status": "failure",
+                },
             }
-        }
         ]
         return actions
 
@@ -454,14 +431,8 @@ class AndroidEnv(BaseEnv):
         Args:
             None
         """
-        actions = [
-            {
-            "name": "callUser",
-            "parameters":{}
-        }
-        ]
+        actions = [{"name": "callUser", "parameters": {}}]
         return actions
-        
 
     @agent_action
     def swipe(self, starting_description: str, ending_description: str):
@@ -476,7 +447,7 @@ class AndroidEnv(BaseEnv):
                 "parameters": {
                     "from": None,
                     "to": None,
-                }
+                },
             }
         ]
         return actions
@@ -484,23 +455,13 @@ class AndroidEnv(BaseEnv):
     @agent_action
     def home(self):
         """Press the home button on the device"""
-        actions = [
-            {
-                "name": "home",
-                "parameters": {}
-            }
-        ]
+        actions = [{"name": "home", "parameters": {}}]
         return actions
-    
+
     @agent_action
     def back(self):
         """Press the back button on the device"""
-        actions = [
-            {
-                "name": "back",
-                "parameters": {}
-            }
-        ]
+        actions = [{"name": "back", "parameters": {}}]
         return actions
 
     @agent_action
@@ -515,11 +476,11 @@ class AndroidEnv(BaseEnv):
                 "parameters": {
                     "x": None,
                     "y": None,
-                }
+                },
             }
         ]
         return actions
-    
+
     @agent_action
     def open_app(self, app_name: str):
         """Open an app on the device
@@ -531,21 +492,21 @@ class AndroidEnv(BaseEnv):
                 "name": "open_app",
                 "parameters": {
                     "app_name": app_name,
-                }
+                },
             }
         ]
         return actions
-    
+
     def start_recording(self, save_path: str = None):
         if self.is_recording:
             print("Recording is already in progress.")
             return False
         self.is_recording = True
         try:
-            start_record_payload = {
-                "env_id": self.env_id
-            }
-            response = request_api_wrapper(f"{self.Base_url}start_record", json=start_record_payload)
+            start_record_payload = {"env_id": self.env_id}
+            response = request_api_wrapper(
+                f"{self.Base_url}start_record", json=start_record_payload
+            )
             if response["success"]:
                 return True
         except Exception as e:
@@ -580,17 +541,18 @@ class AndroidEnv(BaseEnv):
             print(f"record failed: {e}")
 
         return False
-    
+
+
 if __name__ == "__main__":
-        
-    with open('config/env/android.yaml', 'r', encoding='utf-8') as f:
+
+    with open("config/env/android.yaml", "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     env = AndroidEnv(
-        config['server_path'],
-        platform=config.get('platform', 'Android'),
-        manager_port=config.get('manager_port', None),
-        avd_name=config.get('avd_name', None),
-        docker=config.get('docker', None),
-        docker_args=config.get('docker_args', None)
+        config["server_path"],
+        platform=config.get("platform", "Android"),
+        manager_port=config.get("manager_port", None),
+        avd_name=config.get("avd_name", None),
+        docker=config.get("docker", None),
+        docker_args=config.get("docker_args", None),
     )

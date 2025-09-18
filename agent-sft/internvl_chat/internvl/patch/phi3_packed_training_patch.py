@@ -6,8 +6,10 @@
 
 import torch
 from flash_attn.flash_attn_interface import flash_attn_varlen_func
-from internvl.model.phi3.modeling_phi3 import (PHI3_ATTENTION_CLASSES,
-                                               Phi3FlashAttention2)
+from internvl.model.phi3.modeling_phi3 import (
+    PHI3_ATTENTION_CLASSES,
+    Phi3FlashAttention2,
+)
 
 
 class Phi3FlashAttention2ForPackedTraining(Phi3FlashAttention2):
@@ -51,10 +53,12 @@ class Phi3FlashAttention2ForPackedTraining(Phi3FlashAttention2):
         cu_seqlens = attention_mask.squeeze(0)
 
         with torch.no_grad():
-            max_seqlen = max([
-                cu_seqlens[idx+1] - cu_seqlens[idx]
-                for idx in range(cu_seqlens.size(0) - 1)
-            ]).item()
+            max_seqlen = max(
+                [
+                    cu_seqlens[idx + 1] - cu_seqlens[idx]
+                    for idx in range(cu_seqlens.size(0) - 1)
+                ]
+            ).item()
 
         if not self._flash_attn_uses_top_left_mask:
             causal = self.is_causal
@@ -101,5 +105,5 @@ class Phi3FlashAttention2ForPackedTraining(Phi3FlashAttention2):
 
 
 def replace_phi3_attention_class():
-    PHI3_ATTENTION_CLASSES['flash_attention_2'] = Phi3FlashAttention2ForPackedTraining
-    print('Replace PHI3_ATTENTION_CLASSES to support packed training!!')
+    PHI3_ATTENTION_CLASSES["flash_attention_2"] = Phi3FlashAttention2ForPackedTraining
+    print("Replace PHI3_ATTENTION_CLASSES to support packed training!!")

@@ -23,53 +23,53 @@ from android_world.utils import datetime_utils
 
 class EventsGeneratorTest(parameterized.TestCase):
 
-  def test_generate_event(self):
-    """Test if generate_event produces a valid event."""
-    event = events_generator.generate_event(
-        datetime_utils.create_random_october_2023_unix_ts()
+    def test_generate_event(self):
+        """Test if generate_event produces a valid event."""
+        event = events_generator.generate_event(
+            datetime_utils.create_random_october_2023_unix_ts()
+        )
+        self.assertGreater(event.end_ts, event.start_ts)
+        self.assertIsInstance(event.title, str)
+        self.assertIsInstance(event.description, str)
+        self.assertNotEmpty(event.title)
+        self.assertNotEmpty(event.description)
+
+    @parameterized.named_parameters(
+        ("name_suffix", "Meeting with Alice", 0),
+        ("subject_suffix", "Workshop on Budget Planning", 2),
     )
-    self.assertGreater(event.end_ts, event.start_ts)
-    self.assertIsInstance(event.title, str)
-    self.assertIsInstance(event.description, str)
-    self.assertNotEmpty(event.title)
-    self.assertNotEmpty(event.description)
+    @mock.patch.object(random, "choice")
+    def test_generate_event_title(
+        self,
+        expected_title,
+        mock_idx,
+        mock_random_choice,
+    ):
+        """Test if generate_event_title produces a valid title."""
+        mock_random_choice.side_effect = lambda x: x[mock_idx]
+        title = events_generator.generate_event_title()
+        self.assertEqual(title, expected_title)
 
-  @parameterized.named_parameters(
-      ('name_suffix', 'Meeting with Alice', 0),
-      ('subject_suffix', 'Workshop on Budget Planning', 2),
-  )
-  @mock.patch.object(random, 'choice')
-  def test_generate_event_title(
-      self,
-      expected_title,
-      mock_idx,
-      mock_random_choice,
-  ):
-    """Test if generate_event_title produces a valid title."""
-    mock_random_choice.side_effect = lambda x: x[mock_idx]
-    title = events_generator.generate_event_title()
-    self.assertEqual(title, expected_title)
-
-  @parameterized.named_parameters(
-      ('name_suffix', 'We will discuss upcoming project milestones.', 0),
-      (
-          'subject_suffix',
-          (
-              'We will finalize marketing strategies. Remember to confirm'
-              ' attendance.'
-          ),
-          1,
-      ),
-  )
-  @mock.patch.object(random, 'choice')
-  def test_generate_event_description(
-      self, expected_description, mock_idx, mock_random_choice
-  ):
-    """Test if generate_event_description produces a valid description."""
-    mock_random_choice.side_effect = lambda x: x[mock_idx]
-    description = events_generator.generate_event_description()
-    self.assertEqual(description, expected_description)
+    @parameterized.named_parameters(
+        ("name_suffix", "We will discuss upcoming project milestones.", 0),
+        (
+            "subject_suffix",
+            (
+                "We will finalize marketing strategies. Remember to confirm"
+                " attendance."
+            ),
+            1,
+        ),
+    )
+    @mock.patch.object(random, "choice")
+    def test_generate_event_description(
+        self, expected_description, mock_idx, mock_random_choice
+    ):
+        """Test if generate_event_description produces a valid description."""
+        mock_random_choice.side_effect = lambda x: x[mock_idx]
+        description = events_generator.generate_event_description()
+        self.assertEqual(description, expected_description)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

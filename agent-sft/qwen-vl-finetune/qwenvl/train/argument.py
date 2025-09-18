@@ -10,6 +10,7 @@ class ModelArguments:
     tune_mm_mlp: bool = field(default=False)
     tune_mm_vision: bool = field(default=False)
 
+
 @dataclass
 class DataArguments:
     data_path: str = field(default="")

@@ -71,7 +71,7 @@ from internvl.train.dataset import (
     preprocess_internvl2_5,
     preprocess_mpt,
     preprocess_phi3,
-    preprocess_gui_conv
+    preprocess_gui_conv,
 )
 from internvl.conversation import GUI_CONV_TEMPLATE
 from internvl.train.dataset_packed import PackedDataset, packed_collate_fn
@@ -930,7 +930,11 @@ class LazySupervisedDataset(Dataset):
                 data_item = self.raw_data[i]
                 # conversations = data_item['conversations']
                 # check_conversations_repetition(conversations, repeat_threshold=0.4, ngram=10)
-                if "image" in data_item and data_item["image"] is not None and len(data_item["image"]) != 0:
+                if (
+                    "image" in data_item
+                    and data_item["image"] is not None
+                    and len(data_item["image"]) != 0
+                ):
                     if type(data_item["image"]) == list:
                         ret = self.multi_modal_multi_image_get_item(data_item)
                     else:
@@ -1020,7 +1024,7 @@ def build_datasets(
     data_rank = dist.get_rank()
     data_world_size = dist.get_world_size()
     ds_collections = json.loads(open(data_args.meta_path).read())
-    
+
     new_ds_collections = {}
     if type(ds_collections) == list:
         for item in ds_collections:

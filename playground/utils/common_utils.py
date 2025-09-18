@@ -42,7 +42,6 @@ def call_llm_safe(agent) -> Union[str, Dag]:
     return response
 
 
-
 def calculate_tokens(messages, num_image_token=NUM_IMAGE_TOKEN) -> Tuple[int, int]:
 
     num_input_images = 0
@@ -133,6 +132,7 @@ def parse_single_code_from_string(input_string):
 
 def get_input_token_length(input_string):
     import tiktoken
+
     enc = tiktoken.encoding_for_model("gpt-4")
     tokens = enc.encode(input_string)
     return len(tokens)

@@ -31,7 +31,9 @@ class ConfigDict(Dict):
         try:
             value = super(ConfigDict, self).__getattr__(name)
         except KeyError:
-            ex = AttributeError(f"'{self.__class__.__name__}' object has no " f"attribute '{name}'")
+            ex = AttributeError(
+                f"'{self.__class__.__name__}' object has no " f"attribute '{name}'"
+            )
         except Exception as e:
             ex = e
         else:
@@ -79,9 +81,11 @@ class SLConfig(object):
         check_file_exist(filename)
         if filename.lower().endswith(".py"):
             with tempfile.TemporaryDirectory() as temp_config_dir:
-                temp_config_file = tempfile.NamedTemporaryFile(dir=temp_config_dir, suffix=".py")
+                temp_config_file = tempfile.NamedTemporaryFile(
+                    dir=temp_config_dir, suffix=".py"
+                )
                 temp_config_name = osp.basename(temp_config_file.name)
-                if platform.system() == 'Windows':
+                if platform.system() == "Windows":
                     temp_config_file.close()
                 shutil.copyfile(filename, osp.join(temp_config_dir, temp_config_name))
                 temp_module_name = osp.splitext(temp_config_name)[0]
@@ -90,7 +94,9 @@ class SLConfig(object):
                 mod = import_module(temp_module_name)
                 sys.path.pop(0)
                 cfg_dict = {
-                    name: value for name, value in mod.__dict__.items() if not name.startswith("__")
+                    name: value
+                    for name, value in mod.__dict__.items()
+                    if not name.startswith("__")
                 }
                 # delete imported module
                 del sys.modules[temp_module_name]
@@ -111,7 +117,9 @@ class SLConfig(object):
         if BASE_KEY in cfg_dict:
             cfg_dir = osp.dirname(filename)
             base_filename = cfg_dict.pop(BASE_KEY)
-            base_filename = base_filename if isinstance(base_filename, list) else [base_filename]
+            base_filename = (
+                base_filename if isinstance(base_filename, list) else [base_filename]
+            )
 
             cfg_dict_list = list()
             cfg_text_list = list()
@@ -172,7 +180,8 @@ class SLConfig(object):
                     _ = int(k)
                 except:
                     raise TypeError(
-                        f"b is a list, " f"index {k} should be an int when input but {type(k)}"
+                        f"b is a list, "
+                        f"index {k} should be an int when input but {type(k)}"
                     )
                 b[int(k)] = SLConfig._merge_a_into_b(v, b[int(k)])
             else:

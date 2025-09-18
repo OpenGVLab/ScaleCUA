@@ -1,12 +1,18 @@
 import datetime
 import time
-from env_tools.docker_utils import create_docker_container, execute_command_in_container, remove_docker_container, \
-    start_avd, stop_avd
+from env_tools.docker_utils import (
+    create_docker_container,
+    execute_command_in_container,
+    remove_docker_container,
+    start_avd,
+    stop_avd,
+)
 import os
 from utils_mobile.utils import *
 
-class Instance():
-    def __init__(self, config, idx = 0):
+
+class Instance:
+    def __init__(self, config, idx=0):
         self.idx = str(idx)
         self.type = "cmd"
         self.config = config
@@ -21,22 +27,39 @@ class Instance():
         sdk_path = self.config.avd_base
         src_avd_name = self.config.avd_name
         self.avd_name = f"{src_avd_name}_{self.idx}"
-        self.tar_avd_dir, self.tar_ini_file = clone_avd(src_avd_name, self.avd_name, sdk_path)
+        self.tar_avd_dir, self.tar_ini_file = clone_avd(
+            src_avd_name, self.avd_name, sdk_path
+        )
 
-    def initialize_single_task(self, config = None):
+    def initialize_single_task(self, config=None):
         avd_name = self.avd_name
         print_with_color(f"Starting Android Emulator with AVD name: {avd_name}", "blue")
         if not os.path.exists(self.config.avd_log_dir):
             os.makedirs(self.config.avd_log_dir, exist_ok=True)
-        out_file = open(os.path.join(self.config.avd_log_dir, f'emulator_output_{self.idx}.txt'), 'a')
+        out_file = open(
+            os.path.join(self.config.avd_log_dir, f"emulator_output_{self.idx}.txt"),
+            "a",
+        )
 
         if self.config.show_avd:
-            emulator_process = subprocess.Popen(["emulator", "-avd", avd_name, "-no-snapshot-save"], stdout=out_file,
-                                                stderr=out_file)
+            emulator_process = subprocess.Popen(
+                ["emulator", "-avd", avd_name, "-no-snapshot-save"],
+                stdout=out_file,
+                stderr=out_file,
+            )
         else:
             emulator_process = subprocess.Popen(
-                ["emulator", "-avd", avd_name, "-no-snapshot-save", "-no-window", "-no-audio"], stdout=out_file,
-                stderr=out_file)
+                [
+                    "emulator",
+                    "-avd",
+                    avd_name,
+                    "-no-snapshot-save",
+                    "-no-window",
+                    "-no-audio",
+                ],
+                stdout=out_file,
+                stderr=out_file,
+            )
         print_with_color(f"Waiting for the emulator to start...", "blue")
         while True:
             try:
@@ -52,7 +75,7 @@ class Instance():
         while True:
             boot_complete = f"adb -s {device} shell getprop init.svc.bootanim"
             boot_complete = execute_adb(boot_complete, output=False)
-            if boot_complete == 'stopped':
+            if boot_complete == "stopped":
                 print_with_color("Emulator started successfully", "blue")
                 break
             time.sleep(1)
@@ -84,8 +107,12 @@ class Instance():
                 break
             time.sleep(1)
         self.out_file.close()
-        if os.path.exists(os.path.join(self.config.avd_log_dir, f'emulator_output_{self.idx}.txt')):
-            os.remove(os.path.join(self.config.avd_log_dir, f'emulator_output_{self.idx}.txt'))
+        if os.path.exists(
+            os.path.join(self.config.avd_log_dir, f"emulator_output_{self.idx}.txt")
+        ):
+            os.remove(
+                os.path.join(self.config.avd_log_dir, f"emulator_output_{self.idx}.txt")
+            )
 
     def __del__(self):
         if self.tar_avd_dir is not None:
@@ -101,8 +128,9 @@ class Instance():
         except:
             pass
 
+
 class Docker_Instance(Instance):
-    def __init__(self, config, idx = 0):
+    def __init__(self, config, idx=0):
         self.controller = None
         self.idx = idx
         self.config = config
@@ -112,18 +140,23 @@ class Docker_Instance(Instance):
         self.screenshot_dir = config.screenshot_dir
         self.record_dir = config.record_dir
         self.xml_dir = config.xml_dir
-        
+
     def initialize_worker(self, config):
         self.config = config
-        print_with_color(f"Starting Android Emulator in docker with AVD name: {config.avd_name}", "blue")
+        print_with_color(
+            f"Starting Android Emulator in docker with AVD name: {config.avd_name}",
+            "blue",
+        )
         docker_port_local = find_free_ports(start_port=6060 + self.idx)
         self.docker_port_local = docker_port_local
         print(f"Local port: {docker_port_local}")
 
-    def initialize_single_task(self,config):
+    def initialize_single_task(self, config):
         docker_image_name = config.docker_args.get("image_name")
         docker_port = config.docker_args.get("port")
-        container_id = create_docker_container(docker_image_name, docker_port, self.docker_port_local)
+        container_id = create_docker_container(
+            docker_image_name, docker_port, self.docker_port_local
+        )
 
         # TODO: python location should be configurable
         command = "/usr/local/bin/python adb_client.py > server.txt 2>&1"
@@ -143,16 +176,18 @@ class Docker_Instance(Instance):
         # execute_command_in_container(self.container_id, f"mkdir -p {config.rsp_dir}")
         time.sleep(10)
         return device
-    
+
     def make_dirs(self):
-        execute_command_in_container(self.container_id, f"mkdir -p {self.screenshot_dir}")
+        execute_command_in_container(
+            self.container_id, f"mkdir -p {self.screenshot_dir}"
+        )
         execute_command_in_container(self.container_id, f"mkdir -p {self.xml_dir}")
         execute_command_in_container(self.container_id, f"mkdir -p {self.record_dir}")
 
     def stop_single_task(self):
         print_with_color("Stopping Android Emulator in docker...", "blue")
         remove_docker_container(self.container_id)
-        #stop_avd(self.docker_port_local, self.config.avd_name)
+        # stop_avd(self.docker_port_local, self.config.avd_name)
         print_with_color("Emulator stopped successfully", "blue")
 
     def __del__(self):

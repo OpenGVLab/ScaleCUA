@@ -16,8 +16,12 @@ def coords_to_bounds(bounds):
 def check_valid_bounds(bounds):
     bounds = bounds_to_coords(bounds)
 
-    return bounds[0] >= 0 and bounds[1] >= 0 and \
-        bounds[0] < bounds[2] and bounds[1] < bounds[3]
+    return (
+        bounds[0] >= 0
+        and bounds[1] >= 0
+        and bounds[0] < bounds[2]
+        and bounds[1] < bounds[3]
+    )
 
 
 def check_point_containing(bounds, x, y, window, threshold=0):
@@ -26,26 +30,34 @@ def check_point_containing(bounds, x, y, window, threshold=0):
     screen_threshold_x = threshold * window[0]
     screen_threshold_y = threshold * window[1]
 
-    return bounds[0] - screen_threshold_x <= x <= bounds[2] + screen_threshold_x and \
-        bounds[1] - screen_threshold_y <= y <= bounds[3] + screen_threshold_y
+    return (
+        bounds[0] - screen_threshold_x <= x <= bounds[2] + screen_threshold_x
+        and bounds[1] - screen_threshold_y <= y <= bounds[3] + screen_threshold_y
+    )
 
 
 def check_bounds_containing(bounds_contained, bounds_containing):
     bounds_contained = bounds_to_coords(bounds_contained)
     bounds_containing = bounds_to_coords(bounds_containing)
 
-    return bounds_contained[0] >= bounds_containing[0] and \
-        bounds_contained[1] >= bounds_containing[1] and \
-        bounds_contained[2] <= bounds_containing[2] and \
-        bounds_contained[3] <= bounds_containing[3]
+    return (
+        bounds_contained[0] >= bounds_containing[0]
+        and bounds_contained[1] >= bounds_containing[1]
+        and bounds_contained[2] <= bounds_containing[2]
+        and bounds_contained[3] <= bounds_containing[3]
+    )
 
 
 def check_bounds_intersection(bounds1, bounds2):
     bounds1 = bounds_to_coords(bounds1)
     bounds2 = bounds_to_coords(bounds2)
 
-    return bounds1[0] < bounds2[2] and bounds1[2] > bounds2[0] and \
-        bounds1[1] < bounds2[3] and bounds1[3] > bounds2[1]
+    return (
+        bounds1[0] < bounds2[2]
+        and bounds1[2] > bounds2[0]
+        and bounds1[1] < bounds2[3]
+        and bounds1[3] > bounds2[1]
+    )
 
 
 def get_bounds_area(bounds):

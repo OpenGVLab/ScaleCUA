@@ -1,6 +1,8 @@
 """Script to automatically login each website"""
+
 import sys
 import os
+
 sys.path.append(os.getenv("PWD"))
 import argparse
 import glob
@@ -48,9 +50,9 @@ def is_expired(
             "--allow-running-insecure-content",
             "--disable-web-security",
             # 特别添加允许不安全端口的参数
-            "--explicitly-allowed-ports=6666,6667,6668,6669,6670,6671,6672"
+            "--explicitly-allowed-ports=6666,6667,6668,6669,6670,6671,6672",
         ],
-        slow_mo=SLOW_MO
+        slow_mo=SLOW_MO,
     )
     context = browser.new_context(storage_state=storage_state)
     page = context.new_page()
@@ -77,8 +79,8 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
             "--allow-running-insecure-content",
             "--disable-web-security",
             # 特别添加允许不安全端口的参数
-             f"--explicitly-allowed-ports={','.join(str(i) for i in range(6660, 7000))}"
-        ]
+            f"--explicitly-allowed-ports={','.join(str(i) for i in range(6660, 7000))}",
+        ],
     )
     context = browser.new_context()
     page = context.new_page()
@@ -111,7 +113,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_test_id("password-field").fill(password)
         page.get_by_test_id("sign-in-button").click()
         print(f"Gitlab 重新登录")
-    
+
     if "shopping" in comb:
         username = ACCOUNTS["shopping"]["username"]
         password = ACCOUNTS["shopping"]["password"]
@@ -126,7 +128,7 @@ def renew_comb(comb: list[str], auth_folder: str = "./.auth") -> None:
         page.get_by_label("Password", exact=True).fill(password)
         page.get_by_role("button", name="Sign In").click()
         # page.screenshot(path=f"shopping_test1.png") # 可以正常登录
-        print(f'Shopping 重新登录')
+        print(f"Shopping 重新登录")
 
     # page.screenshot(path=f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.png") # 可以正常登录
     context.storage_state(path=f"{auth_folder}/{'.'.join(comb)}_state.json")
@@ -156,9 +158,7 @@ def main(auth_folder: str = "./.auth") -> None:
                 url = URLS[SITES.index(cur_site)]
                 keyword = KEYWORDS[SITES.index(cur_site)]
                 match = EXACT_MATCH[SITES.index(cur_site)]
-                future = executor.submit(
-                    is_expired, Path(c_file), url, keyword, match
-                )
+                future = executor.submit(is_expired, Path(c_file), url, keyword, match)
                 futures.append(future)
 
     for i, future in enumerate(futures):

@@ -7,10 +7,9 @@ from utils_mobile.utils import draw_bbox_multi
 from utils_mobile.xml_tool import UIXMLTree
 
 
-
 def get_compressed_xml(xml_path, type="plain_text", version="v1"):
     xml_parser = UIXMLTree()
-    with open(xml_path, 'r', encoding='utf-8') as f:
+    with open(xml_path, "r", encoding="utf-8") as f:
         xml_str = f.read()
     try:
         compressed_xml = xml_parser.process(xml_str, level=1, str_type=type)
@@ -32,8 +31,8 @@ class JSONRecorder:
         self.page_executor = page_executor
 
         self.turn_number = 0
-        trace_dir = os.path.join(config.task_dir, 'traces')
-        xml_dir = os.path.join(config.task_dir, 'xml')
+        trace_dir = os.path.join(config.task_dir, "traces")
+        xml_dir = os.path.join(config.task_dir, "xml")
         log_dir = config.task_dir
         if not os.path.exists(trace_dir):
             os.makedirs(trace_dir)
@@ -41,7 +40,7 @@ class JSONRecorder:
             os.makedirs(xml_dir)
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
-        self.trace_file_path = os.path.join(trace_dir, 'trace.jsonl')
+        self.trace_file_path = os.path.join(trace_dir, "trace.jsonl")
         self.xml_file_path = os.path.join(xml_dir)
         self.log_dir = log_dir
         self.contents = []
@@ -53,25 +52,41 @@ class JSONRecorder:
         elif config.version == "v2":
             self.xml_compressed_version = "v2"
 
-    def update_response_deprecated(self, controller, response=None, prompt="** screenshot **", need_screenshot=False,
-                                   ac_status=False):
+    def update_response_deprecated(
+        self,
+        controller,
+        response=None,
+        prompt="** screenshot **",
+        need_screenshot=False,
+        ac_status=False,
+    ):
         if need_screenshot:
-            self.page_executor.update_screenshot(prefix=str(self.turn_number), suffix="before")
+            self.page_executor.update_screenshot(
+                prefix=str(self.turn_number), suffix="before"
+            )
         xml_path = None
         ac_xml_path = None
 
         if not ac_status:
-            xml_status = controller.get_xml(prefix=str(self.turn_number), save_dir=self.xml_file_path)
+            xml_status = controller.get_xml(
+                prefix=str(self.turn_number), save_dir=self.xml_file_path
+            )
             if "ERROR" in xml_status:
                 xml_path = "ERROR"
             else:
-                xml_path = os.path.join(self.xml_file_path, str(self.turn_number) + '.xml')
+                xml_path = os.path.join(
+                    self.xml_file_path, str(self.turn_number) + ".xml"
+                )
         else:
-            xml_status = controller.get_ac_xml(prefix=str(self.turn_number), save_dir=self.xml_file_path)
+            xml_status = controller.get_ac_xml(
+                prefix=str(self.turn_number), save_dir=self.xml_file_path
+            )
             if "ERROR" in xml_status:
                 ac_xml_path = "ERROR"
             else:
-                ac_xml_path = os.path.join(self.xml_file_path, 'ac_' + str(self.turn_number) + '.xml')
+                ac_xml_path = os.path.join(
+                    self.xml_file_path, "ac_" + str(self.turn_number) + ".xml"
+                )
         step = {
             "trace_id": self.id,
             "index": self.turn_number,
@@ -83,7 +98,7 @@ class JSONRecorder:
             # "url": map_url_to_real(page.url),
             "window": controller.viewport_size,
             "target": self.instruction,
-            "current_activity": controller.get_current_activity()
+            "current_activity": controller.get_current_activity(),
         }
         step = self.test_per_step(step, controller)
         self.contents.append(step)
@@ -101,24 +116,41 @@ class JSONRecorder:
             step["command"][command] = result
         return step
 
-    def update_before(self, controller, prompt="** XML **", need_screenshot=False, ac_status=False, need_labeled=False):
+    def update_before(
+        self,
+        controller,
+        prompt="** XML **",
+        need_screenshot=False,
+        ac_status=False,
+        need_labeled=False,
+    ):
         if need_screenshot:
-            self.page_executor.update_screenshot(prefix=str(self.turn_number), suffix="before")
+            self.page_executor.update_screenshot(
+                prefix=str(self.turn_number), suffix="before"
+            )
         xml_path = None
         ac_xml_path = None
 
         if not ac_status:
-            xml_status = controller.get_xml(prefix=str(self.turn_number), save_dir=self.xml_file_path)
+            xml_status = controller.get_xml(
+                prefix=str(self.turn_number), save_dir=self.xml_file_path
+            )
             if "ERROR" in xml_status:
                 xml_path = "ERROR"
             else:
-                xml_path = os.path.join(self.xml_file_path, str(self.turn_number) + '.xml')
+                xml_path = os.path.join(
+                    self.xml_file_path, str(self.turn_number) + ".xml"
+                )
         else:
-            xml_status = controller.get_ac_xml(prefix=str(self.turn_number), save_dir=self.xml_file_path)
+            xml_status = controller.get_ac_xml(
+                prefix=str(self.turn_number), save_dir=self.xml_file_path
+            )
             if "ERROR" in xml_status:
                 ac_xml_path = "ERROR"
             else:
-                ac_xml_path = os.path.join(self.xml_file_path, str(self.turn_number) + '.xml')
+                ac_xml_path = os.path.join(
+                    self.xml_file_path, str(self.turn_number) + ".xml"
+                )
 
         step = {
             "trace_id": self.id,
@@ -129,7 +161,7 @@ class JSONRecorder:
             "ac_xml": ac_xml_path,
             "current_activity": controller.get_current_activity(),
             "window": controller.viewport_size,
-            "target": self.instruction
+            "target": self.instruction,
         }
         step = self.test_per_step(step, controller)
         if need_labeled:
@@ -142,11 +174,16 @@ class JSONRecorder:
                 print("xml_path:", xml_path)
                 print("ac_xml_path:", ac_xml_path)
                 import traceback
+
                 print(traceback.print_exc())
-            draw_bbox_multi(self.page_executor.current_screenshot,
-                            self.page_executor.current_screenshot.replace(".png", "_labeled.png"),
-                            self.page_executor.elem_list)
-            self.labeled_current_screenshot_path = self.page_executor.current_screenshot.replace(".png", "_labeled.png")
+            draw_bbox_multi(
+                self.page_executor.current_screenshot,
+                self.page_executor.current_screenshot.replace(".png", "_labeled.png"),
+                self.page_executor.elem_list,
+            )
+            self.labeled_current_screenshot_path = (
+                self.page_executor.current_screenshot.replace(".png", "_labeled.png")
+            )
             step["labeled_image"] = self.labeled_current_screenshot_path
 
         self.contents.append(step)
@@ -155,9 +192,9 @@ class JSONRecorder:
         if len(self.contents) <= 5:
             return
         should_stop = True
-        parsed_action = self.contents[-1]['parsed_action']
+        parsed_action = self.contents[-1]["parsed_action"]
         for i in range(1, 6):
-            if self.contents[-i]['parsed_action'] != parsed_action:
+            if self.contents[-i]["parsed_action"] != parsed_action:
                 should_stop = False
                 break
         if should_stop:
@@ -167,13 +204,18 @@ class JSONRecorder:
         if len(self.contents) == 0:
             return None
         # print(self.contents[-1])
-        if self.contents[-1]['xml'] == "ERROR" or self.contents[-1]['xml'] is None:
-            xml_path = self.contents[-1]['ac_xml']
+        if self.contents[-1]["xml"] == "ERROR" or self.contents[-1]["xml"] is None:
+            xml_path = self.contents[-1]["ac_xml"]
         else:
-            xml_path = self.contents[-1]['xml']
-        xml_compressed = get_compressed_xml(xml_path, version=self.xml_compressed_version)
-        with open(os.path.join(self.xml_file_path, f"{self.turn_number}_compressed_xml.txt"), 'w',
-                  encoding='utf-8') as f:
+            xml_path = self.contents[-1]["xml"]
+        xml_compressed = get_compressed_xml(
+            xml_path, version=self.xml_compressed_version
+        )
+        with open(
+            os.path.join(self.xml_file_path, f"{self.turn_number}_compressed_xml.txt"),
+            "w",
+            encoding="utf-8",
+        ) as f:
             f.write(xml_compressed)
         self.page_executor.latest_xml = xml_compressed
         return xml_compressed
@@ -182,24 +224,24 @@ class JSONRecorder:
         if len(self.contents) == 0:
             return None
         print(self.contents[-1])
-        if self.contents[-1]['xml'] == "ERROR" or self.contents[-1]['xml'] is None:
-            xml_path = self.contents[-1]['ac_xml']
+        if self.contents[-1]["xml"] == "ERROR" or self.contents[-1]["xml"] is None:
+            xml_path = self.contents[-1]["ac_xml"]
         else:
-            xml_path = self.contents[-1]['xml']
+            xml_path = self.contents[-1]["xml"]
         xml_compressed = get_compressed_xml(xml_path, type="json")
         return json.loads(xml_compressed)
 
     def update_execution(self, exe_res):
         if len(self.contents) == 0:
             return
-        self.contents[-1]['parsed_action'] = exe_res
-        with jsonlines.open(self.trace_file_path, 'a') as f:
+        self.contents[-1]["parsed_action"] = exe_res
+        with jsonlines.open(self.trace_file_path, "a") as f:
             f.write(self.contents[-1])
 
     def update_after(self, exe_res, rsp):
         if len(self.contents) == 0:
             return
-        self.contents[-1]['parsed_action'] = exe_res
+        self.contents[-1]["parsed_action"] = exe_res
         self.history.append({"role": "user", "content": "** XML **"})
         if exe_res["action"] == "Call_API":
             call_instruction = exe_res["kwargs"]["instruction"]
@@ -207,6 +249,6 @@ class JSONRecorder:
             rsp = rsp + f"\n\nQuery:{call_instruction}\nResponse:{call_response}"
         self.history.append({"role": "assistant", "content": rsp})
         self.contents[-1]["current_response"] = rsp
-        with jsonlines.open(self.trace_file_path, 'a') as f:
+        with jsonlines.open(self.trace_file_path, "a") as f:
             f.write(self.contents[-1])
         self.dectect_auto_stop()

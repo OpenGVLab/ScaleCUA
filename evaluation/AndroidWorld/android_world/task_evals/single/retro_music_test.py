@@ -20,18 +20,18 @@ from android_world.task_evals.single import retro_music
 
 class TestGenerateListWithSum(absltest.TestCase):
 
-  def test_generate_list_with_sum(self):
-    trials = 10_000
+    def test_generate_list_with_sum(self):
+        trials = 10_000
 
-    for _ in range(trials):
-      n = random.randint(1, 19_000)
-      m = random.randint(1, 10)
+        for _ in range(trials):
+            n = random.randint(1, 19_000)
+            m = random.randint(1, 10)
 
-      result = retro_music._generate_list_with_sum(n, m)
+            result = retro_music._generate_list_with_sum(n, m)
 
-      self.assertLen(result, m)
-      self.assertEqual(sum(result), n)
+            self.assertLen(result, m)
+            self.assertEqual(sum(result), n)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

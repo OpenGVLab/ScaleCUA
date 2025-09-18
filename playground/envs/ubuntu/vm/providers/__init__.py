@@ -9,6 +9,7 @@ def create_vm_manager_and_provider(provider_name: str, region: str, **kwargs):
     if provider_name == "docker":
         from envs.ubuntu.vm.providers.docker.manager import DockerVMManager
         from envs.ubuntu.vm.providers.docker.provider import DockerProvider
+
         return DockerVMManager(), DockerProvider(region, **kwargs)
     else:
         raise NotImplementedError(f"{provider_name} not implemented!")

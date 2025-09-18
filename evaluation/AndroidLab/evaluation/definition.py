@@ -9,11 +9,11 @@ from utils_mobile.utils import print_with_color
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 def get_code_snippet(content):
-    code = re.search(r'```.*?([\s\S]+?)```', content)
+    code = re.search(r"```.*?([\s\S]+?)```", content)
     if code is None:
         return content
         # print(content)
@@ -30,8 +30,10 @@ def handle_backoff(details):
 
 def handle_giveup(details):
     print(
-        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}"
-        .format(**details))
+        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}".format(
+            **details
+        )
+    )
 
 
 def detect_answer(question: str, model_answer: str, standard_answer: str, args):
@@ -41,14 +43,22 @@ def detect_answer(question: str, model_answer: str, standard_answer: str, args):
     while call_time <= 5:
         call_time += 1
         if args.judge_model == "glm4":
-            return_message = get_completion_glm(prompt=detect_prompt, glm4_key=args.api_key)
+            return_message = get_completion_glm(
+                prompt=detect_prompt, glm4_key=args.api_key
+            )
         elif "gpt" in args.judge_model:
             # print(f"api_key: {args.api_key}, api_url: {args.api_base}")
-            return_message = get_completion_gpt(prompt=detect_prompt, model_name = args.judge_model, api_key=args.api_key, api_url=args.api_base)
+            return_message = get_completion_gpt(
+                prompt=detect_prompt,
+                model_name=args.judge_model,
+                api_key=args.api_key,
+                api_url=args.api_base,
+            )
         if "True" in return_message:
             return True
         elif "False" in return_message:
             return False
+
 
 def detect_answer_test(args):
     # print(f"Question: {question}\nModel Answer: {model_answer}\nStandard Answer: {standard_answer}")
@@ -58,9 +68,16 @@ def detect_answer_test(args):
         call_time += 1
         return_message = None
         if args.judge_model == "glm4":
-            return_message = get_completion_glm(prompt=detect_prompt, glm4_key=args.api_key)
+            return_message = get_completion_glm(
+                prompt=detect_prompt, glm4_key=args.api_key
+            )
         elif "gpt" in args.judge_model:
-            return_message = get_completion_gpt(prompt=detect_prompt, model_name = args.judge_model, api_key=args.api_key, api_url=args.api_base)
+            return_message = get_completion_gpt(
+                prompt=detect_prompt,
+                model_name=args.judge_model,
+                api_key=args.api_key,
+                api_url=args.api_base,
+            )
         else:
             print("ERROR: No model found!")
             sys.exit()
@@ -74,39 +91,38 @@ def detect_answer_test(args):
             return
 
 
-@backoff.on_exception(backoff.expo,
-                      Exception,
-                      max_tries=5,
-                      on_backoff=handle_backoff, 
-                      giveup=handle_giveup)
+@backoff.on_exception(
+    backoff.expo,
+    Exception,
+    max_tries=5,
+    on_backoff=handle_backoff,
+    giveup=handle_giveup,
+)
 def get_completion_glm(prompt, glm4_key):
     client = ZhipuAI(api_key=glm4_key)
     response = client.chat.completions.create(
-        model="glm-4", 
+        model="glm-4",
         messages=[
             {"role": "user", "content": prompt},
         ],
     )
     return response.choices[0].message.content
 
-@backoff.on_exception(backoff.expo,
-                      Exception, 
-                      max_tries=5,
-                      on_backoff=handle_backoff,
-                      giveup=handle_giveup)  
+
+@backoff.on_exception(
+    backoff.expo,
+    Exception,
+    max_tries=5,
+    on_backoff=handle_backoff,
+    giveup=handle_giveup,
+)
 def get_completion_gpt(prompt, model_name, api_key, api_url):
     # print(f"api_key: {api_key}, api_url: {api_url}")
     client = OpenAI(api_key=api_key, base_url=api_url)
-    messages = [{
-            "role": "user",
-            "content": prompt
-        }]
+    messages = [{"role": "user", "content": prompt}]
     # print(f"Request: {messages}")
     r = client.chat.completions.create(
-        model=model_name,
-        messages=messages,
-        max_tokens=512,
-        temperature=0.001
+        model=model_name, messages=messages, max_tokens=512, temperature=0.001
     )
     print(f"Response: {r.choices[0].message.content}")
     return r.choices[0].message.content
@@ -122,7 +138,9 @@ def get_mobile_device():
         device = device_list[0]
         print_with_color(f"Device selected: {device}", "yellow")
     else:
-        print_with_color("Please choose the Android device to start demo by entering its ID:", "blue")
+        print_with_color(
+            "Please choose the Android device to start demo by entering its ID:", "blue"
+        )
         device = input()
 
     controller = AndroidController(device)
@@ -145,7 +163,9 @@ def get_mobile_device_and_name():
         device = device_list[0]
         print_with_color(f"Device selected: {device}", "yellow")
     else:
-        print_with_color("Please choose the Android device to start demo by entering its ID:", "blue")
+        print_with_color(
+            "Please choose the Android device to start demo by entering its ID:", "blue"
+        )
         device = input()
 
     controller = AndroidController(device)

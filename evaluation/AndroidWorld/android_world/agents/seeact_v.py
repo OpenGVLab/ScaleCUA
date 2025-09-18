@@ -51,37 +51,37 @@ def _action_selection_prompt_locate(
     ui_elements: str,
     additional_guidelines: list[str] | None = None,
 ) -> str:
-  """Generate the prompt for the action selection.
+    """Generate the prompt for the action selection.
 
-  Args:
-    goal: The current goal.
-    history: Summaries for previous steps.
-    ui_elements: A list of descriptions for the UI elements.
-    additional_guidelines: Task specific guidelines.
+    Args:
+      goal: The current goal.
+      history: Summaries for previous steps.
+      ui_elements: A list of descriptions for the UI elements.
+      additional_guidelines: Task specific guidelines.
 
-  Returns:
-    The text prompt for action selection that will be sent to gpt4v.
-  """
-  if history:
-    history = '\n'.join(history)
-  else:
-    history = 'You just started, no action has been performed yet.'
+    Returns:
+      The text prompt for action selection that will be sent to gpt4v.
+    """
+    if history:
+        history = "\n".join(history)
+    else:
+        history = "You just started, no action has been performed yet."
 
-  extra_guidelines = ''
-  if additional_guidelines:
-    extra_guidelines = 'For The Current Task:\n'
-    for guideline in additional_guidelines:
-      extra_guidelines += f'- {guideline}\n'
+    extra_guidelines = ""
+    if additional_guidelines:
+        extra_guidelines = "For The Current Task:\n"
+        for guideline in additional_guidelines:
+            extra_guidelines += f"- {guideline}\n"
 
-  return ACTION_SELECTION_PROMPT_TEMPLATE_LOCATE.format(
-      goal=goal,
-      history=history,
-      additional_guidelines=extra_guidelines,
-  )
+    return ACTION_SELECTION_PROMPT_TEMPLATE_LOCATE.format(
+        goal=goal,
+        history=history,
+        additional_guidelines=extra_guidelines,
+    )
 
 
 def _generate_ui_element_description(
-        ui_element: representation_utils.UIElement, index: int
+    ui_element: representation_utils.UIElement, index: int
 ) -> str:
     """Generate a description for a given UI element with important information.
 
@@ -123,12 +123,12 @@ def _generate_ui_element_description(
     element_description += (
         f'"is_checked": {"True" if ui_element.is_checked else "False"}, '
     )
-    return element_description[:-2] + '}'
+    return element_description[:-2] + "}"
 
 
 def _generate_ui_elements_description_list(
-        ui_elements: list[representation_utils.UIElement],
-        screen_width_height_px: tuple[int, int],
+    ui_elements: list[representation_utils.UIElement],
+    screen_width_height_px: tuple[int, int],
 ) -> str:
     """Generate concise information for a list of UIElement.
 
@@ -139,19 +139,19 @@ def _generate_ui_elements_description_list(
     Returns:
       Concise information for each UIElement.
     """
-    tree_info = ''
+    tree_info = ""
     for index, ui_element in enumerate(ui_elements):
         if m3a_utils.validate_ui_element(ui_element, screen_width_height_px):
-            tree_info += _generate_ui_element_description(ui_element, index) + '\n'
+            tree_info += _generate_ui_element_description(ui_element, index) + "\n"
     return tree_info
 
 
 def _summarize_prompt(
-        action: str,
-        reason: str,
-        goal: str,
-        before_elements: str,
-        after_elements: str,
+    action: str,
+    reason: str,
+    goal: str,
+    before_elements: str,
+    after_elements: str,
 ) -> str:
     """Generate the prompt for the summarization step.
 
@@ -174,17 +174,16 @@ def _summarize_prompt(
     )
 
 
-
 class InternVL(base_agent.EnvironmentInteractingAgent):
     def __init__(
-            self,
-            env: interface.AsyncEnv,
-            llm: infer.MultimodalLlmWrapper,
-            name: str = 'M3A',
-            wait_after_action_seconds: float = 2.0,
-            model_address='http://10.140.60.2:10020/',
-            model_api_key="gui_v89",
-            model_name=''
+        self,
+        env: interface.AsyncEnv,
+        llm: infer.MultimodalLlmWrapper,
+        name: str = "M3A",
+        wait_after_action_seconds: float = 2.0,
+        model_address="http://10.140.60.2:10020/",
+        model_api_key="gui_v89",
+        model_name="",
     ):
         super().__init__(env, name)
         self.llm = llm
@@ -192,16 +191,12 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
         self.additional_guidelines = None
         self.wait_after_action_seconds = wait_after_action_seconds
         print(f"{model_address}v1")
-        self.model_client = OpenAI(
-            base_url=f"{model_address}v1",
-            api_key=model_api_key
-        )
+        self.model_client = OpenAI(base_url=f"{model_address}v1", api_key=model_api_key)
         self.step_his: str = ""
         self.turn_number: int = 0
         self.model_name = model_name
         self.last_action = None
         self.repeat_time = 0
-
 
     def step(self, instruction: str) -> base_agent.AgentInteractionResult:
         self.turn_number += 1
@@ -211,33 +206,38 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
 
         system_prompt = internvl2_5_mobile_planning_cot_v1
         user_prompt = android_user_prompt.format(
-            instruction=instruction,
-            actions=self.step_his
+            instruction=instruction, actions=self.step_his
         )
 
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": [
-                {"type": "image_url", "image_url": {"url": self._to_base64_png(screenshot)}},
-                {"type": "text", "text": user_prompt}
-            ]}
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": self._to_base64_png(screenshot)},
+                    },
+                    {"type": "text", "text": user_prompt},
+                ],
+            },
         ]
         completion = self.model_client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=0
+            model=self.model_name, messages=messages, temperature=0
         )
         response = completion.choices[0].message.content
         print(response)
-        print("="*50)
+        print("=" * 50)
         # Extract operation and actions
         op_m = re.search(r"<operation>([\s\S]*?)</operation>", response)
         act_m = re.search(r"<action>([\s\S]*?)</action>", response)
-        op_text = op_m.group(1).strip() if op_m else ''
+        op_text = op_m.group(1).strip() if op_m else ""
         self.step_his += f"Step {self.turn_number}: {op_text}\n"
 
         if not act_m:
-            return base_agent.AgentInteractionResult(True, {'summary': 'No valid action returned.'})
+            return base_agent.AgentInteractionResult(
+                True, {"summary": "No valid action returned."}
+            )
         if self.last_action == act_m.group(1):
             # return base_agent.AgentInteractionResult(True, {'operation': op_text, 'response': response})
             self.repeat_time += 1
@@ -260,10 +260,18 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
                 # continue
                 print("Failed to execute action:", parsed)
         if "terminate" in response or self.repeat_time == 3:
-            return base_agent.AgentInteractionResult(True, {'operation': op_text, 'response': response})
-        return base_agent.AgentInteractionResult(False, {'operation': op_text, 'response': response})
+            return base_agent.AgentInteractionResult(
+                True, {"operation": op_text, "response": response}
+            )
+        return base_agent.AgentInteractionResult(
+            False, {"operation": op_text, "response": response}
+        )
 
-    def get_point_from_description(self, image: np.ndarray,description: str, ) -> tuple[int, int]:
+    def get_point_from_description(
+        self,
+        image: np.ndarray,
+        description: str,
+    ) -> tuple[int, int]:
         def format_openai_template(description: str, base64_image):
             return [
                 {"role": "system", "content": android_system_prompt_grounding},
@@ -272,12 +280,11 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
                     "content": [
                         {
                             "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
                         },
-                        {
-                            "type": "text",
-                            "text": description
-                        },
+                        {"type": "text", "text": description},
                     ],
                 },
             ]
@@ -286,29 +293,26 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
 
         new_width = 1080
         new_height = 2340
-        width,height = img.size
+        width, height = img.size
 
-        print(width,height)
+        print(width, height)
 
         img_resized = img.resize((new_width, new_height))
 
-        if img_resized.mode == 'RGBA':
-            img_resized = img_resized.convert('RGB')
+        if img_resized.mode == "RGBA":
+            img_resized = img_resized.convert("RGB")
 
         img_byte_arr = io.BytesIO()
-        img_resized.save(img_byte_arr, format='JPEG') 
+        img_resized.save(img_byte_arr, format="JPEG")
         image_bytes = img_byte_arr.getvalue()
 
-        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
         messages = format_openai_template(description, base64_image)
 
-        completion =  self.model_client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=0
+        completion = self.model_client.chat.completions.create(
+            model=self.model_name, messages=messages, temperature=0
         )
-
 
         response_text = completion.choices[0].message.content
         print(response_text)
@@ -318,7 +322,7 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
         x_coord = round(x_ratio * width)
         y_coord = round(y_ratio * height)
 
-        return (x_coord,y_coord)
+        return (x_coord, y_coord)
 
     def set_task_guidelines(self, task_guidelines: list[str]) -> None:
         self.additional_guidelines = task_guidelines
@@ -334,40 +338,40 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
 
     def step_planner(self, goal: str) -> base_agent.AgentInteractionResult:
         step_data = {
-            'raw_screenshot': None,
-            'before_screenshot_with_som': None,
-            'before_ui_elements': [],
-            'after_screenshot_with_som': None,
-            'action_prompt': None,
-            'action_output': None,
-            'action_output_json': None,
-            'action_reason': None,
-            'action_raw_response': None,
-            'summary_prompt': None,
-            'summary': None,
-            'summary_raw_response': None,
+            "raw_screenshot": None,
+            "before_screenshot_with_som": None,
+            "before_ui_elements": [],
+            "after_screenshot_with_som": None,
+            "action_prompt": None,
+            "action_output": None,
+            "action_output_json": None,
+            "action_reason": None,
+            "action_raw_response": None,
+            "summary_prompt": None,
+            "summary": None,
+            "summary_raw_response": None,
         }
-        print('----------step ' + str(len(self.history) + 1))
+        print("----------step " + str(len(self.history) + 1))
 
         state = self.get_post_transition_state()
-        step_data['raw_screenshot'] = state.pixels.copy()
+        step_data["raw_screenshot"] = state.pixels.copy()
         before_screenshot = state.pixels.copy()
-        step_data['before_screenshot_with_som'] = before_screenshot.copy()
+        step_data["before_screenshot_with_som"] = before_screenshot.copy()
 
         action_prompt = _action_selection_prompt_locate(
             goal,
             [
-                'Step ' + str(i + 1) + '- ' + step_info['summary']
+                "Step " + str(i + 1) + "- " + step_info["summary"]
                 for i, step_info in enumerate(self.history)
             ],
             None,
             self.additional_guidelines,
         )
-        step_data['action_prompt'] = action_prompt
+        step_data["action_prompt"] = action_prompt
         action_output, is_safe, raw_response = self.llm.predict_mm(
             action_prompt,
             [
-                step_data['raw_screenshot'],
+                step_data["raw_screenshot"],
             ],
         )
 
@@ -376,17 +380,17 @@ class InternVL(base_agent.EnvironmentInteractingAgent):
 Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         if not raw_response:
-            raise RuntimeError('Error calling LLM in action selection phase.')
-        step_data['action_output'] = action_output
-        step_data['action_raw_response'] = raw_response
+            raise RuntimeError("Error calling LLM in action selection phase.")
+        step_data["action_output"] = action_output
+        step_data["action_raw_response"] = raw_response
 
         reason, action = m3a_utils.parse_reason_action_output(action_output)
 
         if (not reason) or (not action):
-            print('Action prompt output is not in the correct format.')
-            step_data['summary'] = (
-                'Output for action selection is not in the correct format, so no'
-                ' action is performed.'
+            print("Action prompt output is not in the correct format.")
+            step_data["summary"] = (
+                "Output for action selection is not in the correct format, so no"
+                " action is performed."
             )
             self.history.append(step_data)
 
@@ -395,28 +399,32 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
         self.step_his += f"Step {self.turn_number}: {action}\n"
-        print('Action: ' + action)
-        print('Reason: ' + reason)
-        step_data['action_reason'] = reason
+        print("Action: " + action)
+        print("Reason: " + reason)
+        step_data["action_reason"] = reason
         import traceback
+
         try:
             converted_action = json_action.JSONAction(
                 **agent_utils.extract_json(action),
             )
-            step_data['action_output_json'] = converted_action
+            step_data["action_output_json"] = converted_action
 
             if converted_action.element:
-                converted_action.x, converted_action.y = self.get_point_from_description(step_data['raw_screenshot'],
-                                                                       converted_action.element)
+                converted_action.x, converted_action.y = (
+                    self.get_point_from_description(
+                        step_data["raw_screenshot"], converted_action.element
+                    )
+                )
 
-        except Exception as e: 
-            print('Failed to convert the output to a valid action.')
+        except Exception as e:
+            print("Failed to convert the output to a valid action.")
             print(traceback.print_exc())
             print(str(e))
-            step_data['summary'] = (
-                'Can not parse the output to a valid action. Please make sure to pick'
-                ' the action from the list with required parameters (if any) in the'
-                ' correct JSON format!'
+            step_data["summary"] = (
+                "Can not parse the output to a valid action. Please make sure to pick"
+                " the action from the list with required parameters (if any) in the"
+                " correct JSON format!"
             )
             self.history.append(step_data)
 
@@ -424,27 +432,27 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 False,
                 step_data,
             )
-        if converted_action.action_type == 'status':
-            if converted_action.goal_status == 'infeasible':
-                print('Agent stopped since it thinks mission impossible.')
-            step_data['summary'] = 'Agent thinks the request has been completed.'
+        if converted_action.action_type == "status":
+            if converted_action.goal_status == "infeasible":
+                print("Agent stopped since it thinks mission impossible.")
+            step_data["summary"] = "Agent thinks the request has been completed."
             self.history.append(step_data)
             return base_agent.AgentInteractionResult(
                 True,
                 step_data,
             )
 
-        if converted_action.action_type == 'answer':
-            print('Agent answered with: ' + converted_action.text)
+        if converted_action.action_type == "answer":
+            print("Agent answered with: " + converted_action.text)
 
         try:
             self.env.execute_action(converted_action)
         except Exception as e:
-            print('Failed to execute action.')
+            print("Failed to execute action.")
             print(str(e))
-            step_data['summary'] = (
-                'Can not execute the action, make sure to select the action with'
-                ' the required parameters (if any) in the correct JSON format!'
+            step_data["summary"] = (
+                "Can not execute the action, make sure to select the action with"
+                " the required parameters (if any) in the correct JSON format!"
             )
             return base_agent.AgentInteractionResult(
                 False,
@@ -460,13 +468,16 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         if converted_action.x:
             m3a_utils.add_ui_element_dot(
                 before_screenshot,
-                target_element=[round(converted_action.x), round(converted_action.y)] if converted_action.x else None
-
+                target_element=(
+                    [round(converted_action.x), round(converted_action.y)]
+                    if converted_action.x
+                    else None
+                ),
             )
 
-        step_data['before_screenshot_with_som'] = before_screenshot.copy()
-        m3a_utils.add_screenshot_label(after_screenshot, 'after')
-        step_data['after_screenshot_with_som'] = after_screenshot.copy()
+        step_data["before_screenshot_with_som"] = before_screenshot.copy()
+        m3a_utils.add_screenshot_label(after_screenshot, "after")
+        step_data["after_screenshot_with_som"] = after_screenshot.copy()
 
         summary_prompt = _summarize_prompt(
             action,
@@ -483,17 +494,17 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
             ],
         )
 
-        if is_safe == False: 
+        if is_safe == False:
             summary = """Summary triggered LLM safety classifier."""
 
         if not raw_response:
             print(
-                'Error calling LLM in summarization phase. This should not happen: '
-                f'{summary}'
+                "Error calling LLM in summarization phase. This should not happen: "
+                f"{summary}"
             )
-            step_data['summary'] = (
-                    'Some error occurred calling LLM during summarization phase: %s'
-                    % summary
+            step_data["summary"] = (
+                "Some error occurred calling LLM during summarization phase: %s"
+                % summary
             )
             self.history.append(step_data)
             return base_agent.AgentInteractionResult(
@@ -501,10 +512,10 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
 
-        step_data['summary_prompt'] = summary_prompt
-        step_data['summary'] = f'Action selected: {action}. {summary}'
-        print('Summary: ' + summary)
-        step_data['summary_raw_response'] = raw_response
+        step_data["summary_prompt"] = summary_prompt
+        step_data["summary"] = f"Action selected: {action}. {summary}"
+        print("Summary: " + summary)
+        step_data["summary_raw_response"] = raw_response
 
         self.history.append(step_data)
         return base_agent.AgentInteractionResult(
@@ -517,22 +528,23 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         import base64
         from io import BytesIO
         from PIL import Image as PILImage
+
         buf = BytesIO()
-        PILImage.fromarray(image).save(buf, format='PNG')
+        PILImage.fromarray(image).save(buf, format="PNG")
         return f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}"
-    
-    
+
+
 class QwenVL(base_agent.EnvironmentInteractingAgent):
     def __init__(
-            self,
-            env: interface.AsyncEnv,
-            llm: infer.MultimodalLlmWrapper,
-            name: str = 'M3A',
-            wait_after_action_seconds: float = 2.0,
-            model_address='http://10.140.60.2:10020/',
-            model_api_key="fake",
-            model_name='',
-            mode="agent"
+        self,
+        env: interface.AsyncEnv,
+        llm: infer.MultimodalLlmWrapper,
+        name: str = "M3A",
+        wait_after_action_seconds: float = 2.0,
+        model_address="http://10.140.60.2:10020/",
+        model_api_key="fake",
+        model_name="",
+        mode="agent",
     ):
         super().__init__(env, name)
         self.llm = llm
@@ -542,10 +554,7 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
         self.grounding_address = model_address
         print(model_address)
         print(f"{model_address}v1")
-        self.model_client = OpenAI(
-            base_url=f"{model_address}v1",
-            api_key=model_api_key
-        )
+        self.model_client = OpenAI(base_url=f"{model_address}v1", api_key=model_api_key)
         self.step_his: str = ""
         self.turn_number: int = 0
         self.model_name = model_name
@@ -565,7 +574,9 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
         screenshot = state.pixels.copy()
         screenshot = screenshot[:, :, ::-1]
         if self.save_dir is not None:
-            screenshot_path = os.path.join(self.save_dir, f'screenshot_{self.turn_number}.png')
+            screenshot_path = os.path.join(
+                self.save_dir, f"screenshot_{self.turn_number}.png"
+            )
             cv2.imwrite(screenshot_path, screenshot)
             print(f"Screenshot saved to {screenshot_path}")
         height, width = screenshot.shape[:2]
@@ -573,36 +584,41 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
         # system_prompt = internvl2_5_mobile_planning_cot_v1
         system_prompt = android_system_prompt_navigation
         user_prompt = android_user_prompt.format(
-            instruction=instruction,
-            actions=self.step_his
+            instruction=instruction, actions=self.step_his
         )
 
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
         url = f"{self.grounding_address}v1/chat/completions"
         payload = {
             "model": self.model_name,
             "messages": [
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": [
-                    {"type": "image_url", "image_url": {"url": self._to_base64_png(screenshot)}},
-                    {"type": "text", "text": user_prompt}
-                ]}
-            ]
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": self._to_base64_png(screenshot)},
+                        },
+                        {"type": "text", "text": user_prompt},
+                    ],
+                },
+            ],
         }
         response = requests.post(url, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()  
-        response = response.json()['choices'][0]['message']['content']
+        response.raise_for_status()
+        response = response.json()["choices"][0]["message"]["content"]
         print(response)
-        print("="*50)
+        print("=" * 50)
         op_m = re.search(r"<operation>([\s\S]*?)</operation>", response)
         act_m = re.search(r"<action>([\s\S]*?)</action>", response)
-        op_text = op_m.group(1).strip() if op_m else ''
+        op_text = op_m.group(1).strip() if op_m else ""
         self.step_his += f"Step {self.turn_number}: {op_text}\n"
 
         if not act_m:
-            return base_agent.AgentInteractionResult(True, {'summary': 'No valid action returned.'})
+            return base_agent.AgentInteractionResult(
+                True, {"summary": "No valid action returned."}
+            )
         if self.last_action == act_m.group(1):
             self.repeat_time += 1
         else:
@@ -611,7 +627,14 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
         cmds = [l for l in act_m.group(1).splitlines() if l.strip()]
         print(cmds)
         for cmd in cmds:
-            parsed = qwen_action_transform(cmd, width, height, smart_resize_option=True, min_pixels=3136, max_pixels=2109744)
+            parsed = qwen_action_transform(
+                cmd,
+                width,
+                height,
+                smart_resize_option=True,
+                min_pixels=3136,
+                max_pixels=2109744,
+            )
             print(parsed)
             if not parsed:
                 continue
@@ -622,10 +645,24 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
             except Exception:
                 print("Failed to execute action:", parsed)
         if "terminate" in response or self.repeat_time == 3:
-            return base_agent.AgentInteractionResult(True, {'operation': op_text, 'response': response, 'step_history': self.step_his})
-        return base_agent.AgentInteractionResult(False, {'operation': op_text, 'response': response, 'step_history': self.step_his})
+            return base_agent.AgentInteractionResult(
+                True,
+                {
+                    "operation": op_text,
+                    "response": response,
+                    "step_history": self.step_his,
+                },
+            )
+        return base_agent.AgentInteractionResult(
+            False,
+            {"operation": op_text, "response": response, "step_history": self.step_his},
+        )
 
-    def get_point_from_description(self, image: np.ndarray,description: str, ) -> tuple[int, int]:
+    def get_point_from_description(
+        self,
+        image: np.ndarray,
+        description: str,
+    ) -> tuple[int, int]:
 
         def format_openai_template(description: str, base64_image):
             return [
@@ -635,7 +672,9 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
                     "content": [
                         {
                             "type": "image_url",
-                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
                         },
                         {
                             "type": "text",
@@ -649,47 +688,39 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
 
         new_width = 1080
         new_height = 2340
-        width,height = img.size
+        width, height = img.size
 
-        print(width,height)
+        print(width, height)
 
         img_resized = img.resize((new_width, new_height))
 
-        if img_resized.mode == 'RGBA':
-            img_resized = img_resized.convert('RGB')
+        if img_resized.mode == "RGBA":
+            img_resized = img_resized.convert("RGB")
 
         img_byte_arr = io.BytesIO()
-        img_resized.save(img_byte_arr, format='JPEG') 
+        img_resized.save(img_byte_arr, format="JPEG")
         image_bytes = img_byte_arr.getvalue()
 
-        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
         messages = format_openai_template(description, base64_image)
 
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
         url = f"{self.grounding_address}v1/chat/completions"
-        payload = {
-            "model": self.model_name,
-            "messages": messages
-        }
+        payload = {"model": self.model_name, "messages": messages}
         response = requests.post(url, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()  
-        response_text = response.json()['choices'][0]['message']['content']
+        response.raise_for_status()
+        response_text = response.json()["choices"][0]["message"]["content"]
         print(response_text)
         x_ratio, y_ratio = action_coord(response_text)
         print(f"x_ratio: {x_ratio}, y_ratio: {y_ratio}")
         resized_height, resized_width = smart_resize(
-                height,
-                width,
-                min_pixels=3136, 
-                max_pixels=2109744
-            )
+            height, width, min_pixels=3136, max_pixels=2109744
+        )
         x_coord = round(x_ratio / resized_width * width)
         y_coord = round(y_ratio / resized_height * height)
 
-        return (x_coord,y_coord)
+        return (x_coord, y_coord)
 
     def set_task_guidelines(self, task_guidelines: list[str]) -> None:
         self.additional_guidelines = task_guidelines
@@ -705,42 +736,42 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
 
     def step_planner(self, goal: str) -> base_agent.AgentInteractionResult:
         step_data = {
-            'raw_screenshot': None,
-            'before_screenshot_with_som': None,
-            'before_ui_elements': [],
-            'after_screenshot_with_som': None,
-            'action_prompt': None,
-            'action_output': None,
-            'action_output_json': None,
-            'action_reason': None,
-            'action_raw_response': None,
-            'summary_prompt': None,
-            'summary': None,
-            'summary_raw_response': None,
-            'response': None,
-            'step_history': None
+            "raw_screenshot": None,
+            "before_screenshot_with_som": None,
+            "before_ui_elements": [],
+            "after_screenshot_with_som": None,
+            "action_prompt": None,
+            "action_output": None,
+            "action_output_json": None,
+            "action_reason": None,
+            "action_raw_response": None,
+            "summary_prompt": None,
+            "summary": None,
+            "summary_raw_response": None,
+            "response": None,
+            "step_history": None,
         }
-        print('----------step ' + str(len(self.history) + 1))
+        print("----------step " + str(len(self.history) + 1))
 
         state = self.get_post_transition_state()
-        step_data['raw_screenshot'] = state.pixels.copy()
+        step_data["raw_screenshot"] = state.pixels.copy()
         before_screenshot = state.pixels.copy()
-        step_data['before_screenshot_with_som'] = before_screenshot.copy()
+        step_data["before_screenshot_with_som"] = before_screenshot.copy()
 
         action_prompt = _action_selection_prompt_locate(
             goal,
             [
-                'Step ' + str(i + 1) + '- ' + step_info['summary']
+                "Step " + str(i + 1) + "- " + step_info["summary"]
                 for i, step_info in enumerate(self.history)
             ],
             None,
             self.additional_guidelines,
         )
-        step_data['action_prompt'] = action_prompt
+        step_data["action_prompt"] = action_prompt
         action_output, is_safe, raw_response = self.llm.predict_mm(
             action_prompt,
             [
-                step_data['raw_screenshot'],
+                step_data["raw_screenshot"],
             ],
         )
 
@@ -749,16 +780,16 @@ class QwenVL(base_agent.EnvironmentInteractingAgent):
 Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         if not raw_response:
-            raise RuntimeError('Error calling LLM in action selection phase.')
-        step_data['action_output'] = action_output
-        step_data['action_raw_response'] = raw_response
+            raise RuntimeError("Error calling LLM in action selection phase.")
+        step_data["action_output"] = action_output
+        step_data["action_raw_response"] = raw_response
 
         reason, action = m3a_utils.parse_reason_action_output(action_output)
         if (not reason) or (not action):
-            print('Action prompt output is not in the correct format.')
-            step_data['summary'] = (
-                'Output for action selection is not in the correct format, so no'
-                ' action is performed.'
+            print("Action prompt output is not in the correct format.")
+            step_data["summary"] = (
+                "Output for action selection is not in the correct format, so no"
+                " action is performed."
             )
             self.history.append(step_data)
 
@@ -767,30 +798,34 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
         self.step_his += f"Step {self.turn_number}: {action}\n"
-        step_data['step_history'] = self.step_his
-        step_data['response'] = action_output
-        print('Action: ' + action)
-        print('Reason: ' + reason)
-        step_data['action_reason'] = reason
+        step_data["step_history"] = self.step_his
+        step_data["response"] = action_output
+        print("Action: " + action)
+        print("Reason: " + reason)
+        step_data["action_reason"] = reason
         import traceback
+
         try:
             converted_action = json_action.JSONAction(
                 **agent_utils.extract_json(action),
             )
-            step_data['action_output_json'] = converted_action
+            step_data["action_output_json"] = converted_action
 
             if converted_action.element:
-                converted_action.x, converted_action.y = self.get_point_from_description(step_data['raw_screenshot'],
-                                                                       converted_action.element)
+                converted_action.x, converted_action.y = (
+                    self.get_point_from_description(
+                        step_data["raw_screenshot"], converted_action.element
+                    )
+                )
 
-        except Exception as e: 
-            print('Failed to convert the output to a valid action.')
+        except Exception as e:
+            print("Failed to convert the output to a valid action.")
             print(traceback.print_exc())
             print(str(e))
-            step_data['summary'] = (
-                'Can not parse the output to a valid action. Please make sure to pick'
-                ' the action from the list with required parameters (if any) in the'
-                ' correct JSON format!'
+            step_data["summary"] = (
+                "Can not parse the output to a valid action. Please make sure to pick"
+                " the action from the list with required parameters (if any) in the"
+                " correct JSON format!"
             )
             self.history.append(step_data)
 
@@ -798,27 +833,27 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 False,
                 step_data,
             )
-        if converted_action.action_type == 'status':
-            if converted_action.goal_status == 'infeasible':
-                print('Agent stopped since it thinks mission impossible.')
-            step_data['summary'] = 'Agent thinks the request has been completed.'
+        if converted_action.action_type == "status":
+            if converted_action.goal_status == "infeasible":
+                print("Agent stopped since it thinks mission impossible.")
+            step_data["summary"] = "Agent thinks the request has been completed."
             self.history.append(step_data)
             return base_agent.AgentInteractionResult(
                 True,
                 step_data,
             )
 
-        if converted_action.action_type == 'answer':
-            print('Agent answered with: ' + converted_action.text)
+        if converted_action.action_type == "answer":
+            print("Agent answered with: " + converted_action.text)
 
         try:
             self.env.execute_action(converted_action)
-        except Exception as e: 
-            print('Failed to execute action.')
+        except Exception as e:
+            print("Failed to execute action.")
             print(str(e))
-            step_data['summary'] = (
-                'Can not execute the action, make sure to select the action with'
-                ' the required parameters (if any) in the correct JSON format!'
+            step_data["summary"] = (
+                "Can not execute the action, make sure to select the action with"
+                " the required parameters (if any) in the correct JSON format!"
             )
             return base_agent.AgentInteractionResult(
                 False,
@@ -833,13 +868,16 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         if converted_action.x:
             m3a_utils.add_ui_element_dot(
                 before_screenshot,
-                target_element=[round(converted_action.x), round(converted_action.y)] if converted_action.x else None
-
+                target_element=(
+                    [round(converted_action.x), round(converted_action.y)]
+                    if converted_action.x
+                    else None
+                ),
             )
 
-        step_data['before_screenshot_with_som'] = before_screenshot.copy()
-        m3a_utils.add_screenshot_label(after_screenshot, 'after')
-        step_data['after_screenshot_with_som'] = after_screenshot.copy()
+        step_data["before_screenshot_with_som"] = before_screenshot.copy()
+        m3a_utils.add_screenshot_label(after_screenshot, "after")
+        step_data["after_screenshot_with_som"] = after_screenshot.copy()
 
         summary_prompt = _summarize_prompt(
             action,
@@ -861,12 +899,12 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
 
         if not raw_response:
             print(
-                'Error calling LLM in summarization phase. This should not happen: '
-                f'{summary}'
+                "Error calling LLM in summarization phase. This should not happen: "
+                f"{summary}"
             )
-            step_data['summary'] = (
-                    'Some error occurred calling LLM during summarization phase: %s'
-                    % summary
+            step_data["summary"] = (
+                "Some error occurred calling LLM during summarization phase: %s"
+                % summary
             )
             self.history.append(step_data)
             return base_agent.AgentInteractionResult(
@@ -874,10 +912,10 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
                 step_data,
             )
 
-        step_data['summary_prompt'] = summary_prompt
-        step_data['summary'] = f'Action selected: {action}. {summary}'
-        print('Summary: ' + summary)
-        step_data['summary_raw_response'] = raw_response
+        step_data["summary_prompt"] = summary_prompt
+        step_data["summary"] = f"Action selected: {action}. {summary}"
+        print("Summary: " + summary)
+        step_data["summary_raw_response"] = raw_response
 
         self.history.append(step_data)
         return base_agent.AgentInteractionResult(
@@ -890,7 +928,7 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         import base64
         from io import BytesIO
         from PIL import Image as PILImage
+
         buf = BytesIO()
-        PILImage.fromarray(image).save(buf, format='PNG')
+        PILImage.fromarray(image).save(buf, format="PNG")
         return f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}"
-    

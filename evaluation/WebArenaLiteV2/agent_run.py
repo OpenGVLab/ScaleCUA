@@ -19,6 +19,7 @@ logger.setLevel(logging.DEBUG)
 import traceback
 from utils.misc import *
 
+
 def create_log(path, datetime_str):
     """
     Configure logging with handlers for both console output and file storage.
@@ -89,18 +90,20 @@ def run_agent(agent, instruction: str, env, root_folder, max_steps=15, **task_kw
     if os.path.exists(os.path.join(save_folder, "result.json")):
         with open(os.path.join(save_folder, "result.json")) as f:
             result = json.load(f)
-        if 'metric' in result:
-            return result['metric']
+        if "metric" in result:
+            return result["metric"]
 
     os.makedirs(save_folder, exist_ok=True)
-    os.makedirs(os.path.join(save_folder, "trajectory"), exist_ok=True)  # For saving screenshots
+    os.makedirs(
+        os.path.join(save_folder, "trajectory"), exist_ok=True
+    )  # For saving screenshots
 
     idx = 0
     metric = 0
 
     result = copy.deepcopy(RESULT_TEMPLATE)
-    result['task_id'] = task_id
-    result['task'] = instruction
+    result["task_id"] = task_id
+    result["task"] = instruction
 
     collected_data = defaultdict(list)
 
@@ -109,7 +112,9 @@ def run_agent(agent, instruction: str, env, root_folder, max_steps=15, **task_kw
     for idx in range(max_steps):
         obs = env.get_obs()
 
-        with open(os.path.join(save_folder, "trajectory", f"{idx}.png"), "wb") as image_save:
+        with open(
+            os.path.join(save_folder, "trajectory", f"{idx}.png"), "wb"
+        ) as image_save:
             image_save.write(obs["screenshot"])
 
         # Predict current step action
@@ -121,8 +126,12 @@ def run_agent(agent, instruction: str, env, root_folder, max_steps=15, **task_kw
         evaluate_actions.extend(code)
 
         if "x" in code[0]["parameters"] and "y" in code[0]["parameters"]:
-            draw_xy(os.path.join(save_folder, "trajectory", f"{idx}.png"), code[0]["parameters"]["x"],
-                    code[0]["parameters"]["y"], os.path.join(save_folder, "trajectory", f"{idx}_draw.png"))
+            draw_xy(
+                os.path.join(save_folder, "trajectory", f"{idx}.png"),
+                code[0]["parameters"]["x"],
+                code[0]["parameters"]["y"],
+                os.path.join(save_folder, "trajectory", f"{idx}_draw.png"),
+            )
 
         # Execute the current step
         env.step(code)
@@ -133,14 +142,14 @@ def run_agent(agent, instruction: str, env, root_folder, max_steps=15, **task_kw
     for key, value_list in collected_data.items():
         result[key] = value_list
 
-    result['steps'] = idx + 1
-    with open(os.path.join(save_folder, 'result.json'), 'w', encoding='utf-8') as f:
+    result["steps"] = idx + 1
+    with open(os.path.join(save_folder, "result.json"), "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=4)
 
     # Evaluation
     evaluate_kwargs = {
         "actions": evaluate_actions,
-        "benchmark": task_kwargs['benchmark']
+        "benchmark": task_kwargs["benchmark"],
     }
 
     if task_kwargs["task_config"] is not None:
@@ -177,16 +186,16 @@ def init_env_and_agent(args):
 
     # Initialize agent
     if "ui_grounding_model" not in agent_config:
-        engine_params_for_planner = agent_config['planner_model']
+        engine_params_for_planner = agent_config["planner_model"]
         agent = OpenCUANativeAgent(
             engine_params_for_planner,  # Planner Model
             platform=args.platform,
             width=screen_width,
-            height=screen_height
+            height=screen_height,
         )
     else:
-        engine_params_for_planner = agent_config['planner_model']
-        engine_params_for_ui_grounding = agent_config['ui_grounding_model']
+        engine_params_for_planner = agent_config["planner_model"]
+        engine_params_for_ui_grounding = agent_config["ui_grounding_model"]
         agent = OpenCUAAgenticWorkflow(
             engine_params_for_planner,
             engine_params_for_ui_grounding,
@@ -209,38 +218,53 @@ def worker(args, worker_id):
     """
     env, agent = init_env_and_agent(args)
 
-    task_files = [os.path.join(args.task_config_path, f) for f in os.listdir(args.task_config_path) if
-                  os.path.isfile(os.path.join(args.task_config_path, f))]
-    task_files = [task_file for i, task_file in enumerate(task_files) if i % args.num_workers == worker_id]
-    print(f'{multiprocessing.current_process().pid} is processing {task_files}')
+    task_files = [
+        os.path.join(args.task_config_path, f)
+        for f in os.listdir(args.task_config_path)
+        if os.path.isfile(os.path.join(args.task_config_path, f))
+    ]
+    task_files = [
+        task_file
+        for i, task_file in enumerate(task_files)
+        if i % args.num_workers == worker_id
+    ]
+    print(f"{multiprocessing.current_process().pid} is processing {task_files}")
 
     results = []
     for i, task_file in enumerate(task_files):
 
-        with open(task_file, 'r', encoding='utf-8') as f:
+        with open(task_file, "r", encoding="utf-8") as f:
             task_config = json.load(f)
-            query = task_config.pop('query')
+            query = task_config.pop("query")
             agent.reset()
             print(f"Execute Task: {task_config}. Query: {query}")
 
             # Skip task if starting page fails to load
             try:
                 env.reset(**task_config)
-                metric = run_agent(agent, query, env, os.path.join("results", args.exp_name),
-                                   max_steps=args.max_steps, **task_config)
+                metric = run_agent(
+                    agent,
+                    query,
+                    env,
+                    os.path.join("results", args.exp_name),
+                    max_steps=args.max_steps,
+                    **task_config,
+                )
             except Exception as e:
-                print(f'Error processing task {task_file}: {traceback.print_exc()}')
+                print(f"Error processing task {task_file}: {traceback.print_exc()}")
                 metric = 0
 
         if metric is not None:
             print(f"Task completed with metric: {metric}")
-            results.append({
-                "id": i,
-                "metric": metric,
-                "query": query,
-                "task_config": task_config,
-                "save_folder": f"results/{args.exp_name}/{task_config['task_config']['example_id'].split('.')[0]}",
-            })
+            results.append(
+                {
+                    "id": i,
+                    "metric": metric,
+                    "query": query,
+                    "task_config": task_config,
+                    "save_folder": f"results/{args.exp_name}/{task_config['task_config']['example_id'].split('.')[0]}",
+                }
+            )
 
     env.exit()
     return results
@@ -260,7 +284,9 @@ def multi_processes(args):
     if args.num_workers > 1:
         with multiprocessing.Pool(processes=args.num_workers) as pool:
             combine_test_result_list = pool.starmap(worker, worker_args)
-            test_result_list = [item for sublist in combine_test_result_list for item in sublist]
+            test_result_list = [
+                item for sublist in combine_test_result_list for item in sublist
+            ]
     else:
         test_result_list = worker(*worker_args[0])
 
@@ -274,9 +300,7 @@ def parse_args():
     Returns:
         argparse.Namespace: Parsed command line arguments
     """
-    parser = argparse.ArgumentParser(
-        description="Run Online Web Evaluation."
-    )
+    parser = argparse.ArgumentParser(description="Run Online Web Evaluation.")
     parser.add_argument(
         "--mode",
         type=str,
@@ -342,7 +366,7 @@ def demo(args):
 
     while True:
         query = input("Please enter your task (enter q to quit): ")
-        if query.lower() == 'q':
+        if query.lower() == "q":
             print("Program exited")
             break
 
@@ -354,17 +378,23 @@ def demo(args):
         task_config = {
             "url": url,
             "benchmark": "demo",
-            "task_config": {"example_id": f"{current_time}.json"}
+            "task_config": {"example_id": f"{current_time}.json"},
         }
 
         try:
             agent.reset()
             env.reset(**task_config)
-            run_agent(agent, query, env, os.path.join("results", args.exp_name),
-                      max_steps=args.max_steps, **task_config)
+            run_agent(
+                agent,
+                query,
+                env,
+                os.path.join("results", args.exp_name),
+                max_steps=args.max_steps,
+                **task_config,
+            )
         except Exception as e:
             traceback.print_exc()
-            print(f'Error processing task: {e}')
+            print(f"Error processing task: {e}")
 
 
 def evaluate_results(args, test_result_list):
@@ -380,18 +410,19 @@ def evaluate_results(args, test_result_list):
         for test_result in test_result_list:
             f.write(json.dumps(test_result, ensure_ascii=False) + "\n")
 
-    with open(os.path.join(result_path, "results.jsonl"), 'r', encoding='utf-8') as f:
+    with open(os.path.join(result_path, "results.jsonl"), "r", encoding="utf-8") as f:
         lines = f.readlines()
         total_scores = 0
         total_tasks = 0
         for line in lines:
             data = json.loads(line)
-            metric = data.get('metric')
+            metric = data.get("metric")
             if metric is not None:
                 total_scores += metric
                 total_tasks += 1
     print(
-        f'Total tasks: {total_tasks}, Total scores: {total_scores}, average score: {total_scores / total_tasks if total_tasks > 0 else 0}')
+        f"Total tasks: {total_tasks}, Total scores: {total_scores}, average score: {total_scores / total_tasks if total_tasks > 0 else 0}"
+    )
 
 
 def main():

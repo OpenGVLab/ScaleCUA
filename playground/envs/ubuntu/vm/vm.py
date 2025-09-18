@@ -17,26 +17,27 @@ Getter = Callable[[gym.Env, Dict[str, Any]], Any]
 
 logger = logging.getLogger("vm")
 
+
 class VirtualMachine(gym.Env):
     """
     Environment Management, including setup, state transition, close.
     """
 
     def __init__(
-            self,
-            provider_name: str = "docker",
-            region: str = None,
-            path_to_vm: str = None,
-            snapshot_name: str = "init_state",
-            action_space: str = "pyautogui",
-            cache_dir: str = "/path/to/osworld_task/cache",
-            screen_size: Tuple[int, int] = (1920, 1080),
-            headless: bool = False,
-            require_a11y_tree: bool = False,
-            require_terminal: bool = False,
-            os_type: str = "Ubuntu",
-            reset_time: float = 2.0,
-            **kwargs
+        self,
+        provider_name: str = "docker",
+        region: str = None,
+        path_to_vm: str = None,
+        snapshot_name: str = "init_state",
+        action_space: str = "pyautogui",
+        cache_dir: str = "/path/to/osworld_task/cache",
+        screen_size: Tuple[int, int] = (1920, 1080),
+        headless: bool = False,
+        require_a11y_tree: bool = False,
+        require_terminal: bool = False,
+        os_type: str = "Ubuntu",
+        reset_time: float = 2.0,
+        **kwargs,
     ):
         """
         Args:
@@ -56,20 +57,25 @@ class VirtualMachine(gym.Env):
         self.region = region
 
         # Default
-        self.server_port = 5000 # 5000
-        self.chromium_port = 9222 # 9222
-        self.vnc_port = 5900 # 8006
-        self.vlc_port = 8080 # 8080
-        self.fastapi_port = 10500 # 10500
-        self.manager, self.provider = create_vm_manager_and_provider(provider_name, region, **kwargs)
+        self.server_port = 5000  # 5000
+        self.chromium_port = 9222  # 9222
+        self.vnc_port = 5900  # 8006
+        self.vlc_port = 8080  # 8080
+        self.fastapi_port = 10500  # 10500
+        self.manager, self.provider = create_vm_manager_and_provider(
+            provider_name, region, **kwargs
+        )
 
         self.os_type = os_type
         self.reset_time = reset_time
-        
+
         # Initialize environment variables
         if path_to_vm:
-            self.path_to_vm = os.path.abspath(os.path.expandvars(os.path.expanduser(path_to_vm))) \
-                if provider_name in {"vmware", "virtualbox"} else path_to_vm
+            self.path_to_vm = (
+                os.path.abspath(os.path.expandvars(os.path.expanduser(path_to_vm)))
+                if provider_name in {"vmware", "virtualbox"}
+                else path_to_vm
+            )
         else:
             self.path_to_vm = self.manager.get_vm_path(self.os_type, region)
 
@@ -82,7 +88,9 @@ class VirtualMachine(gym.Env):
         self.require_terminal = require_terminal
 
         # Initialize emulator and controller
-        if provider_name != "docker": # Check if this is applicable to other VM providers
+        if (
+            provider_name != "docker"
+        ):  # Check if this is applicable to other VM providers
             logger.info("Initializing...")
             self._start_emulator()
 
@@ -95,20 +103,30 @@ class VirtualMachine(gym.Env):
         self.provider.start_emulator(self.path_to_vm, self.headless, self.os_type)
 
         # Get the ip from the virtual machine, and setup the controller
-        vm_ip_ports = self.provider.get_ip_address(self.path_to_vm).split(':')
+        vm_ip_ports = self.provider.get_ip_address(self.path_to_vm).split(":")
         self.vm_ip = vm_ip_ports[0]
         if len(vm_ip_ports) > 1:
             self.server_port = int(vm_ip_ports[1])
             self.chromium_port = int(vm_ip_ports[2])
             self.vnc_port = int(vm_ip_ports[3])
             self.vlc_port = int(vm_ip_ports[4])
-        self.controller = PythonController(vm_ip=self.vm_ip, server_port=self.server_port)
-        self.setup_controller = SetupController(vm_ip=self.vm_ip, server_port=self.server_port, chromium_port=self.chromium_port, vlc_port=self.vlc_port, cache_dir=self.cache_dir_base)
+        self.controller = PythonController(
+            vm_ip=self.vm_ip, server_port=self.server_port
+        )
+        self.setup_controller = SetupController(
+            vm_ip=self.vm_ip,
+            server_port=self.server_port,
+            chromium_port=self.chromium_port,
+            vlc_port=self.vlc_port,
+            cache_dir=self.cache_dir_base,
+        )
 
     def _revert_to_snapshot(self):
         # Revert to certain snapshot of the virtual machine, and refresh the path to vm and ip of vm
         # due to the fact it could be changed when implemented by cloud services
-        path_to_vm = self.provider.revert_to_snapshot(self.path_to_vm, self.snapshot_name)
+        path_to_vm = self.provider.revert_to_snapshot(
+            self.path_to_vm, self.snapshot_name
+        )
         if path_to_vm and not path_to_vm == self.path_to_vm:
             # path_to_vm has to be a new path
             self.manager.delete_vm(self.path_to_vm, self.region)
@@ -117,11 +135,13 @@ class VirtualMachine(gym.Env):
             self.path_to_vm = path_to_vm
 
     def _set_task_info(self, task_config: Dict[str, Any]):
-        self.setup_meta = {k: v for k,v in task_config.items() if k not in ["config", "evaluator"]}
+        self.setup_meta = {
+            k: v for k, v in task_config.items() if k not in ["config", "evaluator"]
+        }
         self.task_id: str = task_config["id"]
         self.config = task_config["config"] if "config" in task_config else []
         self.cache_dir: str = os.path.join(self.cache_dir_base, self.task_id)
-        
+
         if "evaluator" not in task_config:
             logger.info("No evaluator found in task config, skip evaluation")
             return
@@ -137,41 +157,61 @@ class VirtualMachine(gym.Env):
         # import ipdb;ipdb.set_trace()
         print(f"evaluator: {task_config['evaluator']}")
         self.evaluator = task_config["evaluator"]
-        self.metric: Metric = [getattr(metrics, func) for func in self.evaluator["func"]] \
-            if isinstance(self.evaluator["func"], list) \
+        self.metric: Metric = (
+            [getattr(metrics, func) for func in self.evaluator["func"]]
+            if isinstance(self.evaluator["func"], list)
             else getattr(metrics, self.evaluator["func"])
-        self.metric_conj: str = self.evaluator.get("conj", "and")  # take conjunction of multiple metrics
+        )
+        self.metric_conj: str = self.evaluator.get(
+            "conj", "and"
+        )  # take conjunction of multiple metrics
         if "result" in self.evaluator and len(self.evaluator["result"]) > 0:
-            self.result_getter: Getter = [getattr(getters, "get_{:}".format(res["type"])) for res in
-                                          self.evaluator["result"]] \
-                if isinstance(self.evaluator["result"], list) \
-                else getattr(getters, "get_{:}".format(self.evaluator["result"]["type"]))
+            self.result_getter: Getter = (
+                [
+                    getattr(getters, "get_{:}".format(res["type"]))
+                    for res in self.evaluator["result"]
+                ]
+                if isinstance(self.evaluator["result"], list)
+                else getattr(
+                    getters, "get_{:}".format(self.evaluator["result"]["type"])
+                )
+            )
         else:
-            self.result_getter = [None] * len(self.metric) \
-                if isinstance(self.metric, list) \
-                else None
+            self.result_getter = (
+                [None] * len(self.metric) if isinstance(self.metric, list) else None
+            )
 
         if "expected" in self.evaluator and len(self.evaluator["expected"]) > 0:
-            self.expected_getter: Getter = [getattr(getters, "get_{:}".format(exp["type"])) if exp else None for exp in
-                                            self.evaluator["expected"]] \
-                if isinstance(self.evaluator["expected"], list) \
-                else getattr(getters, "get_{:}".format(self.evaluator["expected"]["type"]))
+            self.expected_getter: Getter = (
+                [
+                    getattr(getters, "get_{:}".format(exp["type"])) if exp else None
+                    for exp in self.evaluator["expected"]
+                ]
+                if isinstance(self.evaluator["expected"], list)
+                else getattr(
+                    getters, "get_{:}".format(self.evaluator["expected"]["type"])
+                )
+            )
         else:
-            self.expected_getter = [None] * len(self.metric) \
-                if isinstance(self.metric, list) \
-                else None
-        self.metric_options: Union[List[Dict[str, Any]], Dict[str, Any]] = [opt if opt else {} for opt in
-                                                                            self.evaluator["options"]] \
-            if isinstance(self.evaluator.get("options", {}), list) \
-            else self.evaluator["options"] \
-            if "options" in self.evaluator \
-            else [{}] * len(self.metric) \
-            if isinstance(self.metric, list) \
-            else {}
+            self.expected_getter = (
+                [None] * len(self.metric) if isinstance(self.metric, list) else None
+            )
+        self.metric_options: Union[List[Dict[str, Any]], Dict[str, Any]] = (
+            [opt if opt else {} for opt in self.evaluator["options"]]
+            if isinstance(self.evaluator.get("options", {}), list)
+            else (
+                self.evaluator["options"]
+                if "options" in self.evaluator
+                else [{}] * len(self.metric) if isinstance(self.metric, list) else {}
+            )
+        )
 
-        assert (not isinstance(self.evaluator["func"], list)
-                or (len(self.metric) == len(self.result_getter) == len(self.expected_getter) == len(
-                    self.metric_options)))
+        assert not isinstance(self.evaluator["func"], list) or (
+            len(self.metric)
+            == len(self.result_getter)
+            == len(self.expected_getter)
+            == len(self.metric_options)
+        )
 
     def _save_state(self, snapshot_name=None):
         # Save the current virtual machine state to a certain snapshot name
@@ -182,13 +222,21 @@ class VirtualMachine(gym.Env):
         # can be customized and scaled
         return {
             "screenshot": self.controller.get_screenshot(),
-            "accessibility_tree": self.controller.get_accessibility_tree() if self.require_a11y_tree else None,
-            "terminal": self.controller.get_terminal_output() if self.require_terminal else None,
+            "accessibility_tree": (
+                self.controller.get_accessibility_tree()
+                if self.require_a11y_tree
+                else None
+            ),
+            "terminal": (
+                self.controller.get_terminal_output() if self.require_terminal else None
+            ),
         }
 
-    def reset(self, task_config: Optional[Dict[str, Any]] = None, seed=None, options=None) -> Dict[str, Any]:
+    def reset(
+        self, task_config: Optional[Dict[str, Any]] = None, seed=None, options=None
+    ) -> Dict[str, Any]:
         """
-            Reset the virtual machine according to the config
+        Reset the virtual machine according to the config
         """
         logger.info("Resetting environment...")
         logger.info("Switching task...")
@@ -206,7 +254,9 @@ class VirtualMachine(gym.Env):
             self.setup_controller.setup(self.config)
             logger.info("Environment setup complete.")
         time.sleep(self.reset_time)
-        self.step('import pyautogui\npyautogui.click(960, 540)', 2) # in some apps we need to click at somewhere to get the correct a11y tree
+        self.step(
+            "import pyautogui\npyautogui.click(960, 540)", 2
+        )  # in some apps we need to click at somewhere to get the correct a11y tree
         observation = self._get_obs()
         return observation
 
@@ -218,13 +268,15 @@ class VirtualMachine(gym.Env):
         info = {}
 
         # handle the special actions
-        if action in ['WAIT', 'FAIL', 'DONE'] or (type(action) == dict and action['action_type'] in ['WAIT', 'FAIL', 'DONE']):
-            if action == 'WAIT':
+        if action in ["WAIT", "FAIL", "DONE"] or (
+            type(action) == dict and action["action_type"] in ["WAIT", "FAIL", "DONE"]
+        ):
+            if action == "WAIT":
                 time.sleep(pause)
-            elif action == 'FAIL':
+            elif action == "FAIL":
                 done = True
                 info = {"fail": True}
-            elif action == 'DONE':
+            elif action == "DONE":
                 done = True
                 info = {"done": True}
 
@@ -237,7 +289,7 @@ class VirtualMachine(gym.Env):
 
         time.sleep(pause)
         observation = self._get_obs()
-        
+
         return observation, reward, done, info
 
     def evaluate(self):
@@ -247,7 +299,7 @@ class VirtualMachine(gym.Env):
 
         self.setup_controller.setup(self.evaluator.get("postconfig", []))
 
-        if self.evaluator['func'] == "infeasible":
+        if self.evaluator["func"] == "infeasible":
             if len(self.action_history) > 0 and self.action_history[-1] == "FAIL":
                 return 1
             else:
@@ -259,32 +311,48 @@ class VirtualMachine(gym.Env):
         if type(self.metric) == list:
             # Multiple metrics to evaluate whether the task is successfully completed
             results = []
-            assert len(self.metric) == len(self.result_getter), "The number of metrics and result getters must be the same"
+            assert len(self.metric) == len(
+                self.result_getter
+            ), "The number of metrics and result getters must be the same"
             if "expected" in self.evaluator:
-                assert len(self.metric) == len(self.expected_getter), "The number of metrics and expected getters must be the same"
+                assert len(self.metric) == len(
+                    self.expected_getter
+                ), "The number of metrics and expected getters must be the same"
             for idx, metric in enumerate(self.metric):
                 try:
                     config = self.evaluator["result"][idx]
                     result_state = self.result_getter[idx](self, config)
                 except FileNotFoundError:
                     logger.error("File not found!")
-                    if self.metric_conj == 'and':
+                    if self.metric_conj == "and":
                         return 0
 
-                if "expected" in self.evaluator and self.expected_getter and self.evaluator["expected"]:
-                    expected_state = self.expected_getter[idx](self, self.evaluator["expected"][idx])
-                    metric: int = metric(result_state, expected_state, **self.metric_options[idx])
+                if (
+                    "expected" in self.evaluator
+                    and self.expected_getter
+                    and self.evaluator["expected"]
+                ):
+                    expected_state = self.expected_getter[idx](
+                        self, self.evaluator["expected"][idx]
+                    )
+                    metric: int = metric(
+                        result_state, expected_state, **self.metric_options[idx]
+                    )
                 else:
                     metric: int = metric(result_state, **self.metric_options[idx])
 
-                if self.metric_conj == 'and' and float(metric) == 0.0:
+                if self.metric_conj == "and" and float(metric) == 0.0:
                     return 0
-                elif self.metric_conj == 'or' and float(metric) == 1.0:
+                elif self.metric_conj == "or" and float(metric) == 1.0:
                     return 1
                 else:
                     results.append(metric)
 
-            return sum(results) / len(results) if self.metric_conj == 'and' else max(results)
+            return (
+                sum(results) / len(results)
+                if self.metric_conj == "and"
+                else max(results)
+            )
         else:
             # Single metric to evaluate whether the task is successfully completed
             try:
@@ -293,13 +361,20 @@ class VirtualMachine(gym.Env):
                 logger.error("File not found!")
                 return 0
 
-            if "expected" in self.evaluator and self.expected_getter and self.evaluator["expected"]:
+            if (
+                "expected" in self.evaluator
+                and self.expected_getter
+                and self.evaluator["expected"]
+            ):
                 expected_state = self.expected_getter(self, self.evaluator["expected"])
-                metric: float = self.metric(result_state, expected_state, **self.metric_options)
+                metric: float = self.metric(
+                    result_state, expected_state, **self.metric_options
+                )
             else:
                 metric: float = self.metric(result_state, **self.metric_options)
 
         return metric
+
     def close(self):
         # Close (release) the virtual machine
         self.provider.stop_emulator(self.path_to_vm)
@@ -312,10 +387,8 @@ class VirtualMachine(gym.Env):
     def vm_screen_size(self):
         return self.controller.get_vm_screen_size()
 
-    def render(self, mode='rgb_array'):
-        if mode == 'rgb_array':
+    def render(self, mode="rgb_array"):
+        if mode == "rgb_array":
             return self.controller.get_screenshot()
         else:
-            raise ValueError('Unsupported render mode: {}'.format(mode))
-
-
+            raise ValueError("Unsupported render mode: {}".format(mode))

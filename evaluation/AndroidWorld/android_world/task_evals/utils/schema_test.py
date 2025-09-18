@@ -18,35 +18,37 @@ from android_world.task_evals.utils import schema
 
 class SchemaTest(absltest.TestCase):
 
-  def test_create(self):
-    test_schema = schema.create([
-        schema.string("file_name", is_required=True),
-        schema.string("header"),
-        schema.string("footer"),
-        schema.string("replace_text"),
-        schema.enum(
-            "edit_type", ["header", "footer", "replace"], is_required=True
-        ),
-    ])
+    def test_create(self):
+        test_schema = schema.create(
+            [
+                schema.string("file_name", is_required=True),
+                schema.string("header"),
+                schema.string("footer"),
+                schema.string("replace_text"),
+                schema.enum(
+                    "edit_type", ["header", "footer", "replace"], is_required=True
+                ),
+            ]
+        )
 
-    self.assertEqual(
-        test_schema,
-        {
-            "type": "object",
-            "properties": {
-                "file_name": {"type": "string"},
-                "header": {"type": "string"},
-                "footer": {"type": "string"},
-                "replace_text": {"type": "string"},
-                "edit_type": {
-                    "type": "string",
-                    "enum": ["header", "footer", "replace"],
+        self.assertEqual(
+            test_schema,
+            {
+                "type": "object",
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "header": {"type": "string"},
+                    "footer": {"type": "string"},
+                    "replace_text": {"type": "string"},
+                    "edit_type": {
+                        "type": "string",
+                        "enum": ["header", "footer", "replace"],
+                    },
                 },
+                "required": ["file_name", "edit_type"],
             },
-            "required": ["file_name", "edit_type"],
-        },
-    )
+        )
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

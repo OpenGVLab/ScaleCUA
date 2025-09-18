@@ -9,6 +9,7 @@ from PIL import Image
 from io import BytesIO
 import requests
 import json
+
 # import pynput
 
 
@@ -16,16 +17,17 @@ import json
 # Testing code for MMBench-GUI Qwen2.5VL Model
 
 KEY_MAP = {
-    "enter":   "pynput.keyboard.Key.enter",
-    "space":   "pynput.keyboard.Key.space",
-    "shift":   "pynput.keyboard.Key.shift",
-    "ctrl":    "pynput.keyboard.Key.ctrl",
-    "alt":     "pynput.keyboard.Key.alt",
-    "cmd":     "pynput.keyboard.Key.cmd",
+    "enter": "pynput.keyboard.Key.enter",
+    "space": "pynput.keyboard.Key.space",
+    "shift": "pynput.keyboard.Key.shift",
+    "ctrl": "pynput.keyboard.Key.ctrl",
+    "alt": "pynput.keyboard.Key.alt",
+    "cmd": "pynput.keyboard.Key.cmd",
     "command": "pynput.keyboard.Key.cmd",
-    "tab":     "pynput.keyboard.Key.tab",
-    "esc":     "pynput.keyboard.Key.esc",
+    "tab": "pynput.keyboard.Key.tab",
+    "esc": "pynput.keyboard.Key.esc",
 }
+
 
 class SimpleQwenvlAgent:
     def __init__(
@@ -40,11 +42,11 @@ class SimpleQwenvlAgent:
         action_space: str = "pyautogui",
         observation_type: str = "screenshot",
         max_trajectory_length: int = 5,
-        user_id = "os_macos&task-macos-env"
+        user_id="os_macos&task-macos-env",
     ):
         self.platform = platform
         self.model = model
-        self.url = url 
+        self.url = url
         if self.url is not None:
             self.base_url = self.url
         else:
@@ -56,7 +58,7 @@ class SimpleQwenvlAgent:
                 self.base_url = "http://10.140.60.23:10019/v1"
         # else:
         #     raise ValueError("Unspported Model Name")
-            
+
         self.api_key = api_key
         self.max_tokens = max_tokens
         self.temperature = temperature
@@ -74,21 +76,13 @@ class SimpleQwenvlAgent:
     def encode_image_with_info(self, image_bytes: bytes, width=1920, height=1080):
         # NOTE: change image size here if needed
         img_base64 = base64.b64encode(image_bytes).decode("utf-8")
-        return {
-            "base64": img_base64,
-            "width": width,
-            "height": height,
-            "format": 'PNG'
-        }
-        
-
+        return {"base64": img_base64, "width": width, "height": height, "format": "PNG"}
 
     def key_mapping(self, key: str) -> str:
         k = key.lower()
         if k in KEY_MAP:
             return KEY_MAP[k]
         return repr(key)
-
 
     # def parse_response(self, content: str) -> Dict[str, List[str]]:
     #     think = self.parse_between_tags(content, THINK_START, THINK_END) or ""
@@ -103,17 +97,21 @@ class SimpleQwenvlAgent:
         Uses AST for robust parsing; falls back to regex if AST fails.
         """
         try:
-            tree = ast.parse(f"f({arg_str})", mode='eval').body
+            tree = ast.parse(f"f({arg_str})", mode="eval").body
             args = [ast.literal_eval(node) for node in tree.args]
             kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in tree.keywords}
             return args, kwargs
         except Exception:
-            parts = [p.strip() for p in re.split(r',(?=(?:[^\'\"]|\'[^\']*\'|\"[^\"]*\")*$)', arg_str) if p.strip()]
+            parts = [
+                p.strip()
+                for p in re.split(r",(?=(?:[^\'\"]|\'[^\']*\'|\"[^\"]*\")*$)", arg_str)
+                if p.strip()
+            ]
             args: List[Any] = []
             kwargs: Dict[str, Any] = {}
             for part in parts:
-                if '=' in part:
-                    key, val = part.split('=', 1)
+                if "=" in part:
+                    key, val = part.split("=", 1)
                     val = val.strip()
                     try:
                         parsed = ast.literal_eval(val)
@@ -149,16 +147,16 @@ class SimpleQwenvlAgent:
 
         # Mouse move
         if action == "mouse_move":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is None or y is None:
                 return ""
             return f"pyautogui.moveTo({x}, {y})"
 
         # Left click
         if action == "left_click":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is None or y is None:
                 return "mouse = pynput.mouse.Controller(); mouse.click(pynput.mouse.Button.left, 1)"
             return (
@@ -168,8 +166,8 @@ class SimpleQwenvlAgent:
 
         # Right click
         if action == "right_click":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is None or y is None:
                 return "mouse = pynput.mouse.Controller(); mouse.click(pynput.mouse.Button.right, 1)"
             return (
@@ -179,8 +177,8 @@ class SimpleQwenvlAgent:
 
         # Middle click
         if action == "middle_click":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is None or y is None:
                 return "mouse = pynput.mouse.Controller(); mouse.click(pynput.mouse.Button.middle, 1)"
             return (
@@ -190,8 +188,8 @@ class SimpleQwenvlAgent:
 
         # Double click
         if action == "double_click":
-            x = get_arg('x', 0, None)
-            y = get_arg('y', 1, None)
+            x = get_arg("x", 0, None)
+            y = get_arg("y", 1, None)
             if x is None or y is None:
                 return ""
             return (
@@ -201,15 +199,15 @@ class SimpleQwenvlAgent:
 
         # Drag with left click
         if action == "left_click_drag":
-            to_x = get_arg('to_x', 0, None)
-            to_y = get_arg('to_y', 1, None)
+            to_x = get_arg("to_x", 0, None)
+            to_y = get_arg("to_y", 1, None)
             if to_x is None or to_y is None:
                 return ""
             return f"pyautogui.dragTo({to_x}, {to_y}, button='left')"
 
         # Type text
         if action == "type":
-            text = get_arg('content', 0, '')
+            text = get_arg("content", 0, "")
             return f"keyboard.write({repr(text)})"
 
         # Key combination
@@ -235,41 +233,43 @@ class SimpleQwenvlAgent:
 
         # Scroll
         if action == "scroll":
-            pixels = get_arg('pixels', 0, 0)
+            pixels = get_arg("pixels", 0, 0)
             return f"mouse = pynput.mouse.Controller(); mouse.scroll(0, {pixels})"
 
         # Wait
         if action == "wait":
-            secs = get_arg('time', 0, 1)
+            secs = get_arg("time", 0, 1)
             return f"time.sleep({secs})"
 
         # Terminate
         if action == "terminate" or action == "stop":
-            status = get_arg('status', 0, 'success')
+            status = get_arg("status", 0, "success")
             return "DONE"
 
         return f"# Unhandled action: {a}"
 
     def chat_with_agent(self, image_info, task, task_id):
-        curr_screenshots_b64 = f"data:image/{image_info['format'].lower()};base64,{image_info['base64']}"
+        curr_screenshots_b64 = (
+            f"data:image/{image_info['format'].lower()};base64,{image_info['base64']}"
+        )
         payload = {
             "text": f"{task}",
             "image_base64": curr_screenshots_b64,
             "metadata": {
-                "height": image_info['height'],
-                "width": image_info['width'],
+                "height": image_info["height"],
+                "width": image_info["width"],
                 "min_pixels": 3136,
-                "max_pixels": 12845056
+                "max_pixels": 12845056,
             },
-            "user_id": task_id
+            "user_id": task_id,
         }
         try:
             response = requests.post(
                 f"{self.base_url}/v1/chat",
                 json=payload,
-                headers={"Authorization": f"Bearer {task_id}"}
+                headers={"Authorization": f"Bearer {task_id}"},
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 # print(f"low_level_action: {data['low_level_action']}")
@@ -288,18 +288,24 @@ class SimpleQwenvlAgent:
             print(f"raise error: {e}")
             return None
 
-    def predict(self, instruction: str, obs: Dict, last_action_after_obs: Optional[Dict] = None) -> Tuple[str, List[str]]:
+    def predict(
+        self, instruction: str, obs: Dict, last_action_after_obs: Optional[Dict] = None
+    ) -> Tuple[str, List[str]]:
         assert len(self.observations) == len(self.actions) == len(self.thoughts)
         self.observations.append(obs)
         message = None
         try:
-            message = self.chat_with_agent(self.encode_image_with_info(obs['screenshot']), task=instruction, task_id=self.user_id)
-            raw = message['actions_params']
+            message = self.chat_with_agent(
+                self.encode_image_with_info(obs["screenshot"]),
+                task=instruction,
+                task_id=self.user_id,
+            )
+            raw = message["actions_params"]
         except:
             raw = "[wait(3)]"
         print(f"raw action params: {raw!r}")
         # if it's already a list, leave it; if it's a string like "['foo', 'bar']", literal_eval it
-        if isinstance(raw, str) and raw.strip().startswith('['):
+        if isinstance(raw, str) and raw.strip().startswith("["):
             try:
                 content_list = ast.literal_eval(raw)
             except Exception:
@@ -317,11 +323,15 @@ class SimpleQwenvlAgent:
         self.operations.append(content_list)
         # truncate
         if len(self.actions) > self.max_trajectory_length:
-            self.observations = self.observations[-self.max_trajectory_length:]
-            self.thoughts = self.thoughts[-self.max_trajectory_length:]
-            self.actions = self.actions[-self.max_trajectory_length:]
-            self.operations = self.operations[-self.max_trajectory_length:]
-        return message.get("original_content", "") if message is not None else "Error Occurred", execs
+            self.observations = self.observations[-self.max_trajectory_length :]
+            self.thoughts = self.thoughts[-self.max_trajectory_length :]
+            self.actions = self.actions[-self.max_trajectory_length :]
+            self.operations = self.operations[-self.max_trajectory_length :]
+        return (
+            message.get("original_content", "")
+            if message is not None
+            else "Error Occurred"
+        ), execs
 
     def reset(self) -> None:
         self.thoughts.clear()
@@ -329,12 +339,12 @@ class SimpleQwenvlAgent:
         self.observations.clear()
         self.operations.clear()
         self.clear_task_session(self.user_id)
-        
+
     def clear_task_session(self, task_id):
         clear_response = requests.post(
             f"{self.base_url}/v1/clear",
             json={"user_id": task_id},
-            headers={"Authorization": f"Bearer {task_id}"}
+            headers={"Authorization": f"Bearer {task_id}"},
         )
         if clear_response.status_code == 200:
             data = clear_response.json()
@@ -342,15 +352,17 @@ class SimpleQwenvlAgent:
         else:
             print(f"Error: {clear_response.status_code}")
             print(f"Error info: {clear_response.text}")
-        
+
+
 if __name__ == "__main__":
     import os
+
     # Configure logging
     logging.basicConfig(level=logging.INFO)
 
     # Initialize the agent
     agent = SimpleQwenvlAgent()
-    print(agent.transform_action("type(\"haha\")"))
+    print(agent.transform_action('type("haha")'))
 
     # # Load test screenshot
     # img_path = "/home/pipiwu/macos_env/Codes/evalkit_macos/tmp/snapshot.png"

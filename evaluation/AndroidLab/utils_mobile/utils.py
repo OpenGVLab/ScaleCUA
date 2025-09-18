@@ -22,7 +22,7 @@ from utils_mobile.xml_tool import UIXMLTree
 
 def get_compressed_xml(xml_path, type="json"):
     xml_parser = UIXMLTree()
-    with open(xml_path, 'r', encoding='utf-8') as f:
+    with open(xml_path, "r", encoding="utf-8") as f:
         xml_str = f.read()
     try:
         compressed_xml = xml_parser.process(xml_str, level=1, str_type=type).strip()
@@ -31,25 +31,30 @@ def get_compressed_xml(xml_path, type="json"):
         print(f"XML compressed failure: {e}")
     return compressed_xml
 
+
 def handle_backoff(details):
     print(f"Retry {details['tries']} for Exception: {details['exception']}")
 
 
 def handle_giveup(details):
     print(
-        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}"
-        .format(**details))
+        "Backing off {wait:0.1f} seconds afters {tries} tries calling fzunction {target} with args {args} and kwargs {kwargs}".format(
+            **details
+        )
+    )
 
 
-@backoff.on_exception(backoff.expo,
-                      Exception, 
-                      max_tries=5,
-                      on_backoff=handle_backoff, 
-                      giveup=handle_giveup)  
+@backoff.on_exception(
+    backoff.expo,
+    Exception,
+    max_tries=5,
+    on_backoff=handle_backoff,
+    giveup=handle_giveup,
+)
 def get_completion_glm4(prompt, glm4_key):
     client = ZhipuAI(api_key=glm4_key)
     response = client.chat.completions.create(
-        model="glm-4", 
+        model="glm-4",
         messages=[
             {"role": "user", "content": prompt},
         ],
@@ -61,7 +66,7 @@ def time_within_ten_secs(time1, time2):
     def parse_time(t):
         if "+" in t:
             t = t.split()[1]
-            t = t.split('.')[0] + '.' + t.split('.')[1][:6]
+            t = t.split(".")[0] + "." + t.split(".")[1][:6]
             format = "%H:%M:%S.%f"
         else:
             format = "%H:%M:%S"
@@ -97,7 +102,9 @@ def print_with_color(text: str, color=""):
     print(Style.RESET_ALL)
 
 
-def draw_bbox_multi(img_path, output_path, elem_list, record_mode=False, dark_mode=False):
+def draw_bbox_multi(
+    img_path, output_path, elem_list, record_mode=False, dark_mode=False
+):
     imgcv = cv2.imread(img_path)
     count = 1
     for elem in elem_list:
@@ -114,19 +121,39 @@ def draw_bbox_multi(img_path, output_path, elem_list, record_mode=False, dark_mo
                     color = (0, 0, 250)
                 else:
                     color = (0, 250, 0)
-                imgcv = ps.putBText(imgcv, label, text_offset_x=(left + right) // 2 + 10,
-                                    text_offset_y=(top + bottom) // 2 + 10,
-                                    vspace=10, hspace=10, font_scale=1, thickness=2, background_RGB=color,
-                                    text_RGB=(255, 250, 250), alpha=0.5)
+                imgcv = ps.putBText(
+                    imgcv,
+                    label,
+                    text_offset_x=(left + right) // 2 + 10,
+                    text_offset_y=(top + bottom) // 2 + 10,
+                    vspace=10,
+                    hspace=10,
+                    font_scale=1,
+                    thickness=2,
+                    background_RGB=color,
+                    text_RGB=(255, 250, 250),
+                    alpha=0.5,
+                )
             else:
                 text_color = (10, 10, 10) if dark_mode else (255, 250, 250)
                 bg_color = (255, 250, 250) if dark_mode else (10, 10, 10)
-                imgcv = ps.putBText(imgcv, label, text_offset_x=(left + right) // 2 + 10,
-                                    text_offset_y=(top + bottom) // 2 + 10,
-                                    vspace=10, hspace=10, font_scale=1, thickness=2, background_RGB=bg_color,
-                                    text_RGB=text_color, alpha=0.5)
+                imgcv = ps.putBText(
+                    imgcv,
+                    label,
+                    text_offset_x=(left + right) // 2 + 10,
+                    text_offset_y=(top + bottom) // 2 + 10,
+                    vspace=10,
+                    hspace=10,
+                    font_scale=1,
+                    thickness=2,
+                    background_RGB=bg_color,
+                    text_RGB=text_color,
+                    alpha=0.5,
+                )
         except Exception as e:
-            print_with_color(f"ERROR: An exception occurs while labeling the image\n{e}", "red")
+            print_with_color(
+                f"ERROR: An exception occurs while labeling the image\n{e}", "red"
+            )
         count += 1
     cv2.imwrite(output_path, imgcv)
     return imgcv
@@ -159,17 +186,31 @@ def draw_grid(img_path, output_path):
             right = int((j + 1) * unit_width)
             bottom = int((i + 1) * unit_height)
             cv2.rectangle(image, (left, top), (right, bottom), color, thick // 2)
-            cv2.putText(image, str(label), (left + int(unit_width * 0.05) + 3, top + int(unit_height * 0.3) + 3), 0,
-                        int(0.01 * unit_width), (0, 0, 0), thick)
-            cv2.putText(image, str(label), (left + int(unit_width * 0.05), top + int(unit_height * 0.3)), 0,
-                        int(0.01 * unit_width), color, thick)
+            cv2.putText(
+                image,
+                str(label),
+                (left + int(unit_width * 0.05) + 3, top + int(unit_height * 0.3) + 3),
+                0,
+                int(0.01 * unit_width),
+                (0, 0, 0),
+                thick,
+            )
+            cv2.putText(
+                image,
+                str(label),
+                (left + int(unit_width * 0.05), top + int(unit_height * 0.3)),
+                0,
+                int(0.01 * unit_width),
+                color,
+                thick,
+            )
     cv2.imwrite(output_path, image)
     return rows, cols
 
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 import os
@@ -178,18 +219,18 @@ import subprocess
 
 def start_screen_record(self, file_name):
     print("Starting screen record")
-    command = f'adb shell screenrecord /sdcard/{file_name}.mp4'
+    command = f"adb shell screenrecord /sdcard/{file_name}.mp4"
     self.process = subprocess.Popen(command, shell=True)
 
 
 def write_jsonl(data: List[dict], path: str, append: bool = False):
-    with jsonlines.open(path, mode='a' if append else 'w') as writer:
+    with jsonlines.open(path, mode="a" if append else "w") as writer:
         for item in data:
             writer.write(item)
 
 
 def del_file(path):
-    for elm in Path(path).glob('*'):
+    for elm in Path(path).glob("*"):
         elm.unlink() if elm.is_file() else shutil.rmtree(elm)
     if os.path.exists(path):
         os.rmdir(path)
@@ -210,15 +251,15 @@ def copy_directory(source_dir, target_dir):
 
 
 def remove_punctuation(input_string):
-    punc = u'[\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]'
+    punc = "[\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]"
     punc_en = r"[!\"#$%&\'()*+,-./:;<=>?@\[\\\]^_`{|}~\n]"
-    st = re.sub(punc, ' ', input_string)
+    st = re.sub(punc, " ", input_string)
     st = re.sub(punc_en, " ", st)
     return st
 
 
 def contains_chinese(text):
-    pattern = re.compile('[\u4e00-\u9fff]+')
+    pattern = re.compile("[\u4e00-\u9fff]+")
     match = pattern.search(text)
     return bool(match)
 
@@ -230,7 +271,7 @@ def split_chunks(lst, num_chunks):
     i = 0
     for _ in range(num_chunks):
         chunk_size = avg + (1 if remainder > 0 else 0)
-        chunks.append(lst[i:i + chunk_size])
+        chunks.append(lst[i : i + chunk_size])
         i += chunk_size
         remainder -= 1
     return chunks
@@ -261,14 +302,14 @@ def glm_call(prompt, temperature=0.7, top_p=0.9):
         except Exception as e:
             if "404" in e:
                 exit(0)
-            print(f'Api error, retry times: {i + 1}, error: {e}')
+            print(f"Api error, retry times: {i + 1}, error: {e}")
             time.sleep(0.2)
     return res
 
 
 def get_xml_list(xml_path):
     xml_parser = UIXMLTree()
-    with open(xml_path, 'r', encoding='utf-8') as f:
+    with open(xml_path, "r", encoding="utf-8") as f:
         xml_str = f.read()
     try:
         compressed_xml = xml_parser.process(xml_str, level=1, str_type="list")
@@ -293,16 +334,16 @@ def dump_xml(controller, device_name=None, accessiblity=False, task_id="0"):
     return json.loads(xml_compressed)
 
 
-def load_json(path, encoding='utf-8'):
+def load_json(path, encoding="utf-8"):
     return json.load(open(path, encoding=encoding))
 
 
 def save_json(obj, path):
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)
 
 
-def load_jsonl(path, encoding='utf-8'):
+def load_jsonl(path, encoding="utf-8"):
     res = []
     with open(path, encoding=encoding) as f:
         for line in f:
@@ -311,19 +352,19 @@ def load_jsonl(path, encoding='utf-8'):
 
 
 def save_jsonl(obj, path):
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         for item in obj:
-            f.write(json.dumps(item, ensure_ascii=False) + '\n')
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 
 def write_jsonl(data: List[dict], path: str, append: bool = False):
-    with jsonlines.open(path, mode='a' if append else 'w') as writer:
+    with jsonlines.open(path, mode="a" if append else "w") as writer:
         for item in data:
             writer.write(item)
 
 
 def del_file(path):
-    for elm in Path(path).glob('*'):
+    for elm in Path(path).glob("*"):
         elm.unlink() if elm.is_file() else shutil.rmtree(elm)
     if os.path.exists(path):
         os.rmdir(path)
@@ -344,15 +385,15 @@ def copy_directory(source_dir, target_dir):
 
 
 def remove_punctuation(input_string):
-    punc = u'[\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]'
+    punc = "[\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]"
     punc_en = r"[!\"#$%&\'()*+,-./:;<=>?@\[\\\]^_`{|}~\n]"
-    st = re.sub(punc, ' ', input_string)
+    st = re.sub(punc, " ", input_string)
     st = re.sub(punc_en, " ", st)
     return st
 
 
 def contains_chinese(text):
-    pattern = re.compile('[\u4e00-\u9fff]+')
+    pattern = re.compile("[\u4e00-\u9fff]+")
     match = pattern.search(text)
     return bool(match)
 
@@ -364,7 +405,7 @@ def split_chunks(lst, num_chunks):
     i = 0
     for _ in range(num_chunks):
         chunk_size = avg + (1 if remainder > 0 else 0)
-        chunks.append(lst[i:i + chunk_size])
+        chunks.append(lst[i : i + chunk_size])
         i += chunk_size
         remainder -= 1
     return chunks
@@ -395,23 +436,23 @@ def glm_call(prompt, temperature=0.7, top_p=0.9):
         except Exception as e:
             if "404" in e:
                 exit(0)
-            print(f'Api error, retry times: {i + 1}, error: {e}')
+            print(f"Api error, retry times: {i + 1}, error: {e}")
             time.sleep(0.2)
     return res
 
 
 class OpenAIEngine:
     def __init__(
-            self,
-            api_key: str,
-            api_base: str,
-            model_name: str = 'gpt-4-turbo-2024-04-09',
-            max_new_tokens: int = 2048,
-            temperature: float = 0.7,
-            top_p: float = 0.9,
-            retries: int = 3,  # Adding a parameter for retries
-            backoff_factor: float = 1.0,  # Adding a parameter for backoff
-            **kwargs
+        self,
+        api_key: str,
+        api_base: str,
+        model_name: str = "gpt-4-turbo-2024-04-09",
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+        top_p: float = 0.9,
+        retries: int = 3,  # Adding a parameter for retries
+        backoff_factor: float = 1.0,  # Adding a parameter for backoff
+        **kwargs,
     ) -> None:
         self.client = openai.OpenAI(api_key=api_key, base_url=api_base)
         self.model_name = model_name
@@ -431,7 +472,7 @@ class OpenAIEngine:
                     messages=messages,
                     max_tokens=self.max_new_tokens,
                     temperature=self.temperature,
-                    top_p=self.top_p
+                    top_p=self.top_p,
                 )
                 return r.choices[0].message.content
             except Exception as e:

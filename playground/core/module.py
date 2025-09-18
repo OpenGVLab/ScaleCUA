@@ -15,7 +15,12 @@ class BaseModule:
         if system_prompt:
             model.add_system_prompt(system_prompt)
         return model
-    
+
     @staticmethod
-    def format_history(self, instruction: Optional[str] = None, observation: Optional[Dict] = None, history: Optional[list] = None) -> str:
+    def format_history(
+        self,
+        instruction: Optional[str] = None,
+        observation: Optional[Dict] = None,
+        history: Optional[list] = None,
+    ) -> str:
         pass

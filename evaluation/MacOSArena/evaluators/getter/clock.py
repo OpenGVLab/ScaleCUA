@@ -8,26 +8,27 @@ import pytz
 
 logger = ProjectLogger().get()
 
+
 def force_close_clock(env: MacOSEnv):
     env.connect_ssh()
     cmds = [
         "sudo pkill -9 'Clock'",
-        "sudo pkill -9 securityagent"
-        "sudo pkill -9 'Clock.app'",
+        "sudo pkill -9 securityagent" "sudo pkill -9 'Clock.app'",
         "sudo pkill -9 'Clock Widgets'",
         "sudo pkill -9 'com.apple.clock'",
-        "sudo pkill -9 'application.com.apple.clock.*'"
+        "sudo pkill -9 'application.com.apple.clock.*'",
     ]
     for cmd in cmds:
         env.run_command(f"{cmd}")
     time.sleep(3)
-    
+
+
 def clock_reset_window_status(env: MacOSEnv):
-    send_esc_script = '''
+    send_esc_script = """
     tell application "System Events"
         key code 53 -- Esc key
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{send_esc_script.strip()}'")
     time.sleep(0.5)
     env.connect_ssh()
@@ -37,7 +38,9 @@ def clock_reset_window_status(env: MacOSEnv):
     stdout, _ = env.run_command(f"osascript -e '{send_esc_script.strip()}'")
     time.sleep(5)
 
+
 # click radio button 2 of radio group 1 of group 1 of toolbar 1 of window 1 -- ALARMS
+
 
 def clock_debug(env: MacOSEnv) -> str:
     """
@@ -50,7 +53,7 @@ def clock_debug(env: MacOSEnv) -> str:
     # force_close_clock(env)
     clock_reset_window_status(env)
 
-    apple_script = '''
+    apple_script = """
     tell application "System Events"
         tell application process "Clock"
             if (count of windows) = 0 then
@@ -98,82 +101,86 @@ def clock_debug(env: MacOSEnv) -> str:
             return output
         end tell
     end tell
-    '''
-    
-#     apple_script = '''
-#     tell application "System Events"
-#         tell application process "Clock"
-#             if (count of windows) = 0 then
-#                 return "No window found"
-#             end if
+    """
 
-#             set output to ""
-#             set current_group to window 1
-#             set path_desc to "window 1"
-#             set max_depth to 20
-#             repeat with depth from 1 to max_depth
-#                 try
-#                     set current_group to group 1 of current_group
-#                     set path_desc to path_desc & " -> group 1"
-#                 on error
-#                     set output to output & "Reached max or no group 1 at depth " & depth & "\\n"
-#                     exit repeat
-#                 end try
+    #     apple_script = '''
+    #     tell application "System Events"
+    #         tell application process "Clock"
+    #             if (count of windows) = 0 then
+    #                 return "No window found"
+    #             end if
 
-#                 set elems to every UI element of current_group
-#                 set class_list to {}
+    #             set output to ""
+    #             set current_group to window 1
+    #             set path_desc to "window 1"
+    #             set max_depth to 20
+    #             repeat with depth from 1 to max_depth
+    #                 try
+    #                     set current_group to group 1 of current_group
+    #                     set path_desc to path_desc & " -> group 1"
+    #                 on error
+    #                     set output to output & "Reached max or no group 1 at depth " & depth & "\\n"
+    #                     exit repeat
+    #                 end try
 
-#                 repeat with elem in elems
-#                     set elem_class to (class of elem as string)
-#                     copy elem_class to the end of class_list
-#                 end repeat
+    #                 set elems to every UI element of current_group
+    #                 set class_list to {}
 
-#                 -- group search 
-#                 if class_list contains "static text" or class_list contains "button" or class_list contains "checkbox" or class_list contains "text field" or class_list contains "image" then
-#                     set output to output & "⤵ Found mixed content at: " & path_desc & "\\n"
+    #                 repeat with elem in elems
+    #                     set elem_class to (class of elem as string)
+    #                     copy elem_class to the end of class_list
+    #                 end repeat
 
-#                     repeat with elem in elems
-#                         set elem_class to (class of elem as string)
-#                         try
-#                             set elem_name to name of elem
-#                             if (class of elem_name is not text) then set elem_name to "<non-text name>"
-#                         on error
-#                             set elem_name to "<no name>"
-#                         end try
+    #                 -- group search
+    #                 if class_list contains "static text" or class_list contains "button" or class_list contains "checkbox" or class_list contains "text field" or class_list contains "image" then
+    #                     set output to output & "⤵ Found mixed content at: " & path_desc & "\\n"
 
-#                         try
-#                             set elem_desc to description of elem
-#                             if (class of elem_desc is not text) then set elem_desc to "<non-text description>"
-#                         on error
-#                             set elem_desc to "<no description>"
-#                         end try
+    #                     repeat with elem in elems
+    #                         set elem_class to (class of elem as string)
+    #                         try
+    #                             set elem_name to name of elem
+    #                             if (class of elem_name is not text) then set elem_name to "<non-text name>"
+    #                         on error
+    #                             set elem_name to "<no name>"
+    #                         end try
 
-#                         try
-#                             set elem_value to value of elem
-#                             if (class of elem_value is not text) then set elem_value to "<non-text value>"
-#                         on error
-#                             set elem_value to "<no value>"
-#                         end try
+    #                         try
+    #                             set elem_desc to description of elem
+    #                             if (class of elem_desc is not text) then set elem_desc to "<non-text description>"
+    #                         on error
+    #                             set elem_desc to "<no description>"
+    #                         end try
 
-#                         set output to output & "[class: " & elem_class & "] "
-#                         set output to output & "[name: " & elem_name & "] "
-#                         set output to output & "[description: " & elem_desc & "] "
-#                         set output to output & "[value: " & elem_value & "]\\n"
-#                     end repeat
+    #                         try
+    #                             set elem_value to value of elem
+    #                             if (class of elem_value is not text) then set elem_value to "<non-text value>"
+    #                         on error
+    #                             set elem_value to "<no value>"
+    #                         end try
 
-#                     exit repeat
-#                 end if
-#             end repeat
+    #                         set output to output & "[class: " & elem_class & "] "
+    #                         set output to output & "[name: " & elem_name & "] "
+    #                         set output to output & "[description: " & elem_desc & "] "
+    #                         set output to output & "[value: " & elem_value & "]\\n"
+    #                     end repeat
 
-#             return output
-#         end tell
-#     end tell    
-# '''
+    #                     exit repeat
+    #                 end if
+    #             end repeat
+
+    #             return output
+    #         end tell
+    #     end tell
+    # '''
 
     try:
         stdout, stderr = env.run_command(f"osascript -e '{apple_script.strip()}'")
         logger.info(stderr)
-        output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         # logger.info(f"[clock_debug] Clock UI detailed structure:\n{output}")
         return output
     except Exception as e:
@@ -201,7 +208,7 @@ def clock_list_alarms(env) -> list[dict]:
     env.run_command("open -a 'Clock'")
     time.sleep(2)
 
-    apple_script = '''
+    apple_script = """
     tell application "System Events"
         tell application process "Clock"
             if (count of windows) = 0 then
@@ -262,12 +269,16 @@ def clock_list_alarms(env) -> list[dict]:
             return output
         end tell
     end tell
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e '{apple_script.strip()}'")
         logger.info(_)
-        raw_output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        raw_output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         logger.info(f"[clock_list_alarms] Raw AppleScript output:\n{raw_output}")
 
         # Convert to JSON
@@ -287,8 +298,8 @@ def clock_get_world_clock_order(env) -> list[str]:
         list of city names in order of appearance (top to bottom).
     """
     env.connect_ssh()
-    
-    open_script = '''
+
+    open_script = """
     tell application "System Events"
         tell application process "Clock"
             if (count of windows) = 0 then
@@ -297,11 +308,11 @@ def clock_get_world_clock_order(env) -> list[str]:
             click menu item "World Clock" of menu "View" of menu bar 1
         end tell
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{open_script.strip()}'")
     time.sleep(3)
 
-    apple_script = '''
+    apple_script = """
     tell application "System Events"
         tell application process "Clock"
             if (count of windows) = 0 then
@@ -324,11 +335,15 @@ def clock_get_world_clock_order(env) -> list[str]:
             return output
         end tell
     end tell
-    '''
+    """
 
     try:
         stdout, _ = env.run_command(f"osascript -e '{apple_script.strip()}'")
-        raw_output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+        raw_output = (
+            stdout.read().decode().strip()
+            if hasattr(stdout, "read")
+            else stdout.strip()
+        )
         # logger.info(f"[clock_get_world_clock_order] Raw output: {raw_output}")
 
         if raw_output == "No window found":
@@ -342,12 +357,13 @@ def clock_get_world_clock_order(env) -> list[str]:
         logger.error(f"Failed to get world clock order: {e}")
         return []
 
+
 def clock_get_world_clock_top_item(env):
     clock_list = clock_get_world_clock_order(env)
     if clock_list != []:
         return clock_list[0]
-    
-    
+
+
 def clock_check_korea_alarm(env) -> bool:
     """
     Check whether the first alarm in Clock app is named 'Korea' and its time matches current Korea time (±3 minutes).
@@ -381,14 +397,18 @@ def clock_check_korea_alarm(env) -> bool:
 
         # Validate label
         if alarm_label.lower() != "korea":
-            logger.warning(f"[clock_check_korea_alarm] First alarm label is not 'Korea': {alarm_label}")
+            logger.warning(
+                f"[clock_check_korea_alarm] First alarm label is not 'Korea': {alarm_label}"
+            )
             return False
 
         # Parse alarm time string (e.g., '3:00PM')
         try:
             alarm_dt = datetime.datetime.strptime(alarm_time_str.strip(), "%I:%M%p")
         except ValueError:
-            logger.error(f"[clock_check_korea_alarm] Invalid alarm time format: {alarm_time_str}")
+            logger.error(
+                f"[clock_check_korea_alarm] Invalid alarm time format: {alarm_time_str}"
+            )
             return False
 
         # Convert alarm time to 24-hour
@@ -397,14 +417,16 @@ def clock_check_korea_alarm(env) -> bool:
 
         # Step 3: Compare time with Korea time (±3 min)
         delta = abs((alarm_hour * 60 + alarm_minute) - (korea_hour * 60 + korea_minute))
-        logger.info(f"[clock_check_korea_alarm] Korea time: {korea_hour}:{korea_minute:02d}, "
-                    f"Alarm: {alarm_hour}:{alarm_minute:02d}, Δ={delta}min")
+        logger.info(
+            f"[clock_check_korea_alarm] Korea time: {korea_hour}:{korea_minute:02d}, "
+            f"Alarm: {alarm_hour}:{alarm_minute:02d}, Δ={delta}min"
+        )
 
         return delta <= 3
     except Exception as e:
         logger.error(f"[clock_check_korea_alarm] Failed to evaluate alarm: {e}")
         return False
-    
+
 
 def clock_check_clock_timer_value(env: MacOSEnv, hours=0, minutes=0, seconds=0) -> bool:
     """
@@ -421,7 +443,7 @@ def clock_check_clock_timer_value(env: MacOSEnv, hours=0, minutes=0, seconds=0) 
     """
     env.connect_ssh()
 
-    open_timer_script = '''
+    open_timer_script = """
     tell application "Clock" to activate
     delay 1
     tell application "System Events"
@@ -429,11 +451,11 @@ def clock_check_clock_timer_value(env: MacOSEnv, hours=0, minutes=0, seconds=0) 
             click menu item "Timers" of menu "View" of menu bar 1
         end tell
     end tell
-    '''
+    """
     env.run_command(f"osascript -e '{open_timer_script.strip()}'")
     time.sleep(2)
 
-    read_timer_script = '''
+    read_timer_script = """
     tell application "System Events"
         tell process "Clock"
             try
@@ -444,10 +466,12 @@ def clock_check_clock_timer_value(env: MacOSEnv, hours=0, minutes=0, seconds=0) 
             end try
         end tell
     end tell
-    '''
+    """
 
     stdout, stderr = env.run_command(f"osascript -e '{read_timer_script.strip()}'")
-    output = stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    output = (
+        stdout.read().decode().strip() if hasattr(stdout, "read") else stdout.strip()
+    )
     logger.info(f"[settings_check_clock_timer_value] Raw output: {output}")
 
     try:
@@ -459,23 +483,25 @@ def clock_check_clock_timer_value(env: MacOSEnv, hours=0, minutes=0, seconds=0) 
             return False
 
         actual_h, actual_m, actual_s = map(int, timer_parts)
-        return (actual_h == hours and actual_m == minutes and actual_s == seconds)
+        return actual_h == hours and actual_m == minutes and actual_s == seconds
 
     except Exception as e:
         logger.error(f"Failed to parse timer output: {e}")
         return False
 
+
 if __name__ == "__main__":
     # Initialize the environment with default config
     macos_env = MacOSEnv()
-    
+
     # Connect to Docker container
     macos_env.connect_ssh()
-    
+
     # prop = "ShowFavorites"
     value = clock_check_clock_timer_value(macos_env, minutes=1, seconds=20)
     logger.info(value)
-    
+
     import time
+
     time.sleep(3)
     macos_env.close_connection()

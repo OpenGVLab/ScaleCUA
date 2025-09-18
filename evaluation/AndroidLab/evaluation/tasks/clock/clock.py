@@ -43,7 +43,19 @@ def extract_alarms(data):
             if "Label" in key:
                 alarm["label"] = key
 
-            days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Not scheduled", "Today", "Tomorrow", "Every day"]
+            days = [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun",
+                "Not scheduled",
+                "Today",
+                "Tomorrow",
+                "Every day",
+            ]
             for day in days:
                 if day in key and "TextView" in key:
                     alarm["days"].append(day)
@@ -54,7 +66,7 @@ def extract_alarms(data):
                     alarm["vibrate"] = "unchecked"
                 else:
                     alarm["vibrate"] = "checked"
-            
+
         alarms.append(alarm)
     print(alarms)
     return alarms
@@ -84,28 +96,37 @@ class SingleTask_Clock_1(SingleTask_Clock_General):
             return {"judge_page": False}
 
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
-        outcome = {"judge_page": True, "1": False, "2": False, "3": False, "complete": False}
+        outcome = {
+            "judge_page": True,
+            "1": False,
+            "2": False,
+            "3": False,
+            "complete": False,
+        }
 
         for out in outs:
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '3:00\u200aPM' in alarm['time']:
+                    if "3:00\u200aPM" in alarm["time"]:
                         outcome["1"] = True
                         try:
-                            if self.split_string(alarm['label'], 'Label') == 'meeting':
+                            if self.split_string(alarm["label"], "Label") == "meeting":
                                 outcome["2"] = True
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 outcome["3"] = True
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked' and self.split_string(alarm['label'],
-                                                                                  'Label') == 'meeting' and '3:00\u200aPM' in \
-                                    alarm['time']:
+                            if (
+                                alarm["status"] == "checked"
+                                and self.split_string(alarm["label"], "Label")
+                                == "meeting"
+                                and "3:00\u200aPM" in alarm["time"]
+                            ):
                                 outcome["complete"] = True
                         except KeyError:
                             pass
@@ -130,10 +151,10 @@ class SingleTask_Clock_2(SingleTask_Clock_General):
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '6:45\u200aAM' in alarm['time']:
+                    if "6:45\u200aAM" in alarm["time"]:
                         self.time_flag = True
                         try:
-                            if alarm['vibrate'] == 'unchecked':
+                            if alarm["vibrate"] == "unchecked":
                                 self.vibrate_flag = True
                             else:
                                 self.vibrate_flag = False
@@ -141,14 +162,17 @@ class SingleTask_Clock_2(SingleTask_Clock_General):
                             pass
                         try:
                             if "ringtone" in alarm:
-                                if self.split_string(alarm["ringtone"], "Ringtone") == 'Argon':
+                                if (
+                                    self.split_string(alarm["ringtone"], "Ringtone")
+                                    == "Argon"
+                                ):
                                     self.ringtone_flag = True
                                 else:
                                     self.ringtone_flag = False
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 self.status_flag = True
                             else:
                                 self.status_flag = False
@@ -157,8 +181,17 @@ class SingleTask_Clock_2(SingleTask_Clock_General):
                 except KeyError:
                     pass
 
-        
-        outcome = {"judge_page": True, "1": self.time_flag, "2": self.vibrate_flag, "3": self.ringtone_flag, "4": self.status_flag, "complete": self.time_flag and self.vibrate_flag and self.ringtone_flag and self.status_flag}
+        outcome = {
+            "judge_page": True,
+            "1": self.time_flag,
+            "2": self.vibrate_flag,
+            "3": self.ringtone_flag,
+            "4": self.status_flag,
+            "complete": self.time_flag
+            and self.vibrate_flag
+            and self.ringtone_flag
+            and self.status_flag,
+        }
         return outcome
 
 
@@ -174,15 +207,17 @@ class SingleTask_Clock_3(SingleTask_Clock_General):
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '7:00\u200aAM' in alarm['time']:
+                    if "7:00\u200aAM" in alarm["time"]:
                         self.time_flag = True
                         try:
-                            if set(alarm['days']) == set(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']):
+                            if set(alarm["days"]) == set(
+                                ["Mon", "Tue", "Wed", "Thu", "Fri"]
+                            ):
                                 self.days_flag = True
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 self.status_flag = True
                             else:
                                 self.status_flag = False
@@ -190,8 +225,14 @@ class SingleTask_Clock_3(SingleTask_Clock_General):
                             pass
                 except KeyError:
                     pass
-        
-        outcome = {"judge_page": True, "1": self.time_flag, "2": self.days_flag, "3": self.status_flag, "complete": self.time_flag and self.days_flag and self.status_flag}
+
+        outcome = {
+            "judge_page": True,
+            "1": self.time_flag,
+            "2": self.days_flag,
+            "3": self.status_flag,
+            "complete": self.time_flag and self.days_flag and self.status_flag,
+        }
         return outcome
 
 
@@ -202,21 +243,27 @@ class SingleTask_Clock_4(SingleTask_Clock_General):
             return {"judge_page": False}
 
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
-        outcome = {"judge_page": True, "1": False, "2": False, "3": False, "complete": False}
+        outcome = {
+            "judge_page": True,
+            "1": False,
+            "2": False,
+            "3": False,
+            "complete": False,
+        }
 
         for out in outs:
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '9:00\u200aAM' in alarm['time']:
+                    if "9:00\u200aAM" in alarm["time"]:
                         self.time_flag = True
                         try:
-                            if alarm['days'] == ['Every day']:
+                            if alarm["days"] == ["Every day"]:
                                 self.days_flag = True
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 self.status_flag = True
                             else:
                                 self.status_flag = False
@@ -225,7 +272,13 @@ class SingleTask_Clock_4(SingleTask_Clock_General):
                 except KeyError:
                     pass
 
-        outcome = {"judge_page": True, "1": self.time_flag, "2": self.days_flag, "3": self.status_flag, "complete": self.time_flag and self.days_flag and self.status_flag}
+        outcome = {
+            "judge_page": True,
+            "1": self.time_flag,
+            "2": self.days_flag,
+            "3": self.status_flag,
+            "complete": self.time_flag and self.days_flag and self.status_flag,
+        }
         return outcome
 
 
@@ -241,17 +294,17 @@ class SingleTask_Clock_5(SingleTask_Clock_General):
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '10:30\u200aAM' in alarm['time']:
+                    if "10:30\u200aAM" in alarm["time"]:
                         self.time_flag = True
                         try:
-                            if alarm['days'] == ['Tomorrow']:
+                            if alarm["days"] == ["Tomorrow"]:
                                 self.days_flag = True
                             else:
                                 self.days_flag = False
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 self.status_flag = True
                             else:
                                 self.status_flag = False
@@ -260,7 +313,13 @@ class SingleTask_Clock_5(SingleTask_Clock_General):
                 except KeyError:
                     pass
 
-        outcome = {"judge_page": True, "1": self.time_flag, "2": self.days_flag, "3": self.status_flag, "complete": self.time_flag and self.days_flag and self.status_flag}
+        outcome = {
+            "judge_page": True,
+            "1": self.time_flag,
+            "2": self.days_flag,
+            "3": self.status_flag,
+            "complete": self.time_flag and self.days_flag and self.status_flag,
+        }
         return outcome
 
 
@@ -271,30 +330,40 @@ class SingleTask_Clock_6(SingleTask_Clock_General):
             return {"judge_page": False}
 
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
-        outcome = {"judge_page": True, "1": False, "2": False, "3": False, "4": False, "complete": False}
+        outcome = {
+            "judge_page": True,
+            "1": False,
+            "2": False,
+            "3": False,
+            "4": False,
+            "complete": False,
+        }
 
         for out in outs:
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '10:30\u200aPM' in alarm['time']:
+                    if "10:30\u200aPM" in alarm["time"]:
                         self.time_flag = True
                         try:
-                            if set(alarm['days']) == set(['Sat', 'Sun']):
+                            if set(alarm["days"]) == set(["Sat", "Sun"]):
                                 self.days_flag = True
                             else:
                                 self.days_flag = False
                         except KeyError:
                             pass
                         try:
-                            if self.split_string(alarm['label'], 'Label') == 'Watch Football Games':
+                            if (
+                                self.split_string(alarm["label"], "Label")
+                                == "Watch Football Games"
+                            ):
                                 self.label_flag = True
                             else:
                                 self.label_flag = False
                         except KeyError:
                             pass
                         try:
-                            if alarm['status'] == 'checked':
+                            if alarm["status"] == "checked":
                                 self.status_flag = True
                             else:
                                 self.status_flag = False
@@ -303,7 +372,17 @@ class SingleTask_Clock_6(SingleTask_Clock_General):
                 except KeyError:
                     pass
 
-        outcome = {"judge_page": True, "1": self.time_flag, "2": self.days_flag, "3": self.label_flag, "4": self.status_flag, "complete": self.time_flag and self.days_flag and self.label_flag and self.status_flag}
+        outcome = {
+            "judge_page": True,
+            "1": self.time_flag,
+            "2": self.days_flag,
+            "3": self.label_flag,
+            "4": self.status_flag,
+            "complete": self.time_flag
+            and self.days_flag
+            and self.label_flag
+            and self.status_flag,
+        }
         return outcome
 
 
@@ -316,14 +395,16 @@ class SingleTask_Clock_7(SingleTask_Clock_General):
         # outs = find_matching_subtrees(xml_compressed_tree, "Alarm")
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
         outcome = {"judge_page": True, "1": False, "complete": False}
-        if len(outs) == 0 or (len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))):
+        if len(outs) == 0 or (
+            len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))
+        ):
             return outcome
 
         for out in outs:
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if alarm['status'] != 'unchecked':
+                    if alarm["status"] != "unchecked":
                         return outcome
                 except KeyError:
                     break
@@ -352,15 +433,22 @@ class SingleTask_Clock_8(SingleTask_Clock_General):
         # outs = find_matching_subtrees(xml_compressed_tree, "Alarm")
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
         outcome = {"judge_page": True, "1": False, "complete": False}
-        if len(outs) == 0 or (len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))):
+        if len(outs) == 0 or (
+            len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))
+        ):
             return outcome
 
         for out in outs:
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if "PM" in alarm["time"] and (self.get_time(alarm["time"])[0] > 2 or (
-                            self.get_time(alarm["time"])[0] == 2 and self.get_time(alarm["time"])[1] > 0)):
+                    if "PM" in alarm["time"] and (
+                        self.get_time(alarm["time"])[0] > 2
+                        or (
+                            self.get_time(alarm["time"])[0] == 2
+                            and self.get_time(alarm["time"])[1] > 0
+                        )
+                    ):
                         return outcome
                 except KeyError:
                     pass
@@ -380,7 +468,9 @@ class SingleTask_Clock_9(SingleTask_Clock_General):
         # outs = find_matching_subtrees(xml_compressed_tree, "Alarm")
         outs = find_subtrees_of_parents_with_key(xml_compressed_tree, "CardView")
         outcome = {"judge_page": True, "1": False, "complete": False}
-        if len(outs) == 0 or (len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))):
+        if len(outs) == 0 or (
+            len(outs) == 1 and "click ; ;;Alarm" in next(iter(outs[0]))
+        ):
             return outcome
 
         for out in outs:
@@ -388,7 +478,7 @@ class SingleTask_Clock_9(SingleTask_Clock_General):
             for alarm in alarms_data:
                 try:
                     if "4:00\u200aPM" in alarm["time"]:
-                        if alarm['status'] == 'unchecked':
+                        if alarm["status"] == "unchecked":
                             outcome["1"] = True
                             outcome["complete"] = True
                             break
@@ -481,7 +571,9 @@ class SingleTask_Clock_15(SingleTask_Clock_General):
 
         outcome = {"judge_page": True, "1": False, "2": False, "complete": False}
         outs_london = find_subtrees_of_parents_with_key(xml_compressed_tree, "London")
-        outs_barcelona = find_subtrees_of_parents_with_key(xml_compressed_tree, "Barcelona")
+        outs_barcelona = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Barcelona"
+        )
 
         if len(outs_london) > 0:
             outcome["1"] = True
@@ -514,9 +606,13 @@ class SingleTask_Clock_17(SingleTask_Clock_General):
             return {"judge_page": False}
 
         outcome = {"judge_page": True, "1": False, "complete": False}
-        outs_barcelona = find_subtrees_of_parents_with_key(xml_compressed_tree, "Barcelona")
+        outs_barcelona = find_subtrees_of_parents_with_key(
+            xml_compressed_tree, "Barcelona"
+        )
         try:
-            selected_dict = find_matching_subtrees(xml_compressed_tree, "focusable ; selected ; selected")[0]
+            selected_dict = find_matching_subtrees(
+                xml_compressed_tree, "focusable ; selected ; selected"
+            )[0]
             selected = next(iter(selected_dict))
             if "Clock" not in selected:
                 return outcome
@@ -542,10 +638,22 @@ class SingleTask_Clock_18(SingleTask_Clock_General):
         # timer has not started
         flag_outs = find_matching_subtrees(xml_compressed_tree, "Start")
         if len(flag_outs) == 0:
-            return {"judge_page": True, "1": self.hour_flag, "2": self.minute_flag, "3": self.second_flag, "complete": False}
+            return {
+                "judge_page": True,
+                "1": self.hour_flag,
+                "2": self.minute_flag,
+                "3": self.second_flag,
+                "complete": False,
+            }
 
         outs = find_matching_subtrees(xml_compressed_tree, "TextView")
-        outcome = {"judge_page": True, "1": False, "2": False, "3": False, "complete": False}
+        outcome = {
+            "judge_page": True,
+            "1": False,
+            "2": False,
+            "3": False,
+            "complete": False,
+        }
 
         for out in outs:
             for key, value in out.items():
@@ -588,16 +696,16 @@ class SingleTask_Clock_19(SingleTask_Clock_General):
                             continue
 
                         b_hour, b_min = b_time_split[0], b_time_split[1]
-                        if m_or_n == 'PM':
-                            outcome["1"] = (b_hour == "10" and b_min == "00")
+                        if m_or_n == "PM":
+                            outcome["1"] = b_hour == "10" and b_min == "00"
                         else:
                             outcome["1"] = False
                     if "Wake-up" in key:
                         wake_time = key.split("Wake-up")[-1].split()
                         w_time, m_or_n = wake_time[0], wake_time[1]
                         w_hour, w_min = w_time.split(":")
-                        if m_or_n == 'AM':
-                            outcome["2"] = (w_hour == "7" and w_min == "00")
+                        if m_or_n == "AM":
+                            outcome["2"] = w_hour == "7" and w_min == "00"
                         else:
                             outcome["2"] = False
 
@@ -747,8 +855,8 @@ class SingleTask_Clock_26(SingleTask_Clock_General):
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '7:30' in alarm['time'] and "AM" in alarm["time"]:
-                        if alarm['status'] == 'unchecked':
+                    if "7:30" in alarm["time"] and "AM" in alarm["time"]:
+                        if alarm["status"] == "unchecked":
                             outcome["1"] = True
                             outcome["complete"] = True
                             break
@@ -771,8 +879,8 @@ class SingleTask_Clock_27(SingleTask_Clock_General):
             alarms_data = extract_alarms(out)
             for alarm in alarms_data:
                 try:
-                    if '3:00' in alarm["time"] and "PM" in alarm["time"]:
-                        if alarm['status'] == 'checked':
+                    if "3:00" in alarm["time"] and "PM" in alarm["time"]:
+                        if alarm["status"] == "checked":
                             outcome["1"] = True
                             outcome["complete"] = True
                 except KeyError:
