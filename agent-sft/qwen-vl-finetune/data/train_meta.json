@@ -1,0 +1,11 @@
+{
+    "your-custom-dataset-1": {
+      "root": "path/to/the/image/",
+      "annotation": "path/to/the/jsonl/annotation",
+      "conv_style": "internvl2_5_mobile_planning_cot_v1",
+      "data_augment": false,
+      "max_dynamic_patch": 12,
+      "repeat_time": 1,
+      "length": "number of samples in the dataset"
+    }
+}
