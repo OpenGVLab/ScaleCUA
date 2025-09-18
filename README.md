@@ -88,7 +88,7 @@ Our evaluation suite covers desktop, mobile, and web environments:
 
 ## 💻 Training
 
-The directory `agent-sft/` contains all the necessary code and configuration files to train the ScaleCUA from scratch using our ScaleCUD dataset. We support training Computer Use Agents with both [InternVL](agent-sft/internvl_chat/README.md) and [Qwen-VL](agent-sft/qwen-vl-finetune/README.md).
+The directory `agent-sft/` contains all the necessary code and configuration files to train the ScaleCUA from scratch using our ScaleCUA-Data. We support training Computer Use Agents with both [InternVL](agent-sft/internvl_chat/README.md) and [Qwen-VL](agent-sft/qwen-vl-finetune/README.md).
 
 
 ## 💐 Acknowledgements
@@ -119,6 +119,6 @@ If you find our work useful, please consider citing our paper:
   author       = {Liu, Zhaoyang and Xie, Jingjing and Ding, Zichen and Li, Zehao and Yang, Bowen and Wu, Zhenyu and Wang, Xuehui and Sun, Qiushi and Liu, Shi and Wang, Weiyun and Ye, Shenglong and Li, Qingyun and Dong, Xuan and Yu, Yue and Lu, Chenyu and Mo, YunXiang and Yan, Yao and Tian, Zeyue and Zhang, Xiao and Huang, Yuan and Liu, Yiqian and Su, Weijie and Luo, Gen and Yue, Xiangyu and Qi, Biqing and Chen, Kai and Zhou, Bowen and Qiao, Yu and Chen, Qifeng and Wang, Wenhai},
   year         = {2025},
   note         = {Preprint},
-  url          = {https://github.com/OpenGVLab/OpenCUA}
+  url          = {https://github.com/OpenGVLab/ScaleCUA}
 }
 ```
