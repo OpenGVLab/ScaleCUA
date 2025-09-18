@@ -5,10 +5,13 @@
 </p>
 
 <div style="max-width:900px;margin:0 auto;">
-  
-In this work, we introduce **ScaleCUA**, a step toward scaling open-source Computer Use Agents (**CUAs**). It offers a large-scale dataset spanning 6 operating systems and 3 task domains, built via a closed-loop pipeline uniting automated agents with human experts. Trained on this scaled-up data, our agent can operate seamlessly across platforms. 
-Specifically, ScaleCUA delivers strong gains over baselines (+**26.6** on WebArena-Lite-v2, +**10.7** on ScreenSpot-Pro) and sets new state-of-the-art results (**94.4**\% on MMBench-GUI L1-Hard, **60.6**\% on OSWorld-G, **47.4**\% on WebArena-Lite-v2). These findings underscore the power of data-driven scaling for general-purpose computer use agents.
 
+Vision-Language Models (VLMs) have enabled computer use agents (**CUAs**) that operate GUIs autonomously with great potential. 
+However, developing robust CUAs requires extensive in-domain knowledge about software interfaces and operations. 
+Unlike image–text pairs that are widely available on the Internet, computer-use data, particularly operation trajectories, are rare, costly to collect. 
+Consequently, progress in this field remains constrained by both data scale and the limited transferability of existing VLMs. 
+In this work, we introduce **ScaleCUA**, a step toward scaling open-source CUAs. It offers a large-scale dataset spanning 6 operating systems and 3 task domains, via a closed-loop pipeline uniting automated agents with human experts. Trained on this scaled-up data, ScaleCUA can operate seamlessly across platforms. 
+Specifically, it delivers strong gains over baselines (+**26.6** on WebArena-Lite-v2, +**10.7** on ScreenSpot-Pro) and sets new state-of-the-art results (**94.4**\% on MMBench-GUI L1-Hard, **60.6**\% on OSWorld-G, **47.4**\% on WebArena-Lite-v2). These findings underscore the power of data-driven scaling for general-purpose cross-platform CUAs. 
 
 <img width="3762" height="2558" alt="scalecua_teaser" src="https://github.com/user-attachments/assets/1c05d713-33d2-4705-9941-053572ccf699" />
 
