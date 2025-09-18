@@ -40,11 +40,22 @@ The jsonl annotation looks like:
 ...
 ```
 
-# Training
+## Training
 Using 8 GPUs to finetnun VLM:
 ```bash
 GPUS=8 bash shell/internvl3_8b_dynamic_res_stage1.sh \
 ./data/train_meta.json \ # Training data
 work_dirs/InternVL3-8B-CUA-exp1 \ # output dir
 pretrained/InternVL3-8B-MPO # Based on this pretrained model to finetune the model
+```
+
+## Citation
+
+```bibtex
+@article{liu2025scalecua,
+  title = {ScaleCUA: Scaling Open-Source Computer Use Agents with Cross-Platform Data},
+  author = {Liu, Zhaoyang and Xie, Jingjing and Ding, Zichen and Li, Zehao and Yang, Bowen and Wu, Zhenyu and Wang, Xuehui and Sun, Qiushi and Liu, Shi and Wang, Weiyun and Ye, Shenglong and Li, Qingyun and Dong, Xuan and Yu, Yue and Lu, Chenyu and Mo, YunXiang and Yan, Yao and Tian, Zeyue and Zhang, Xiao and Huang, Yuan and Liu, Yiqian and Su, Weijie and Luo, Gen and Yue, Xiangyu and Qi, Biqing and Chen, Kai and Zhou, Bowen and Qiao, Yu and Chen, Qifeng and Wang, Wenhai},
+  year = {2025},
+  url = {https://github.com/OpenGVLab/ScaleCUA}
+}
 ```
