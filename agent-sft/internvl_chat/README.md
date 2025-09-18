@@ -16,7 +16,7 @@ huggingface-cli download --resume-download --local-dir-use-symlinks False OpenGV
 ```
 
 ## Prepare Customized Data
-After downloading the pre-trained model, prepare your customized SFT (Supervised Fine-Tuning) data. Update the JSON file in agent-sft/internvl_chat/data/train_meta.json similar to [aaa](bbb)
+After downloading the pre-trained model, prepare your customized SFT (Supervised Fine-Tuning) data. Update the JSON file in agent-sft/internvl_chat/data/train_meta.json similar to [`train_meta.json`](data/train_meta.json)
 
 The format for the JSON file should be:
 ```json
