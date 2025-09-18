@@ -5,7 +5,7 @@ WebArena-Lite-v2 is a truthful benchmark that provides a more suitable  framewor
 ## 📥Preparation 
 
 ### Download and Extract the "launcher" Code
-Since the folder is quite large, you need to download the ["launcher" code](https://github.com/OpenGVLab/ScaleCUA/releases/download/launch_zip_v1/launcher.zip) first, then place the extracted contents in the WebArenaLiteV2 directory.
+Since the folder is quite large, you need to download the ["launcher" code](https://github.com/OpenGVLab/ScaleCUA/releases/download/launch_zip_v1/launcher.zip) first, then place the extracted contents in the `WebArenaLiteV2` directory.
 
 After completion, the project structure will be as follows:
 
