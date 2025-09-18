@@ -72,9 +72,9 @@ This repository is organized into three main components:
 The Playground allows you to interactively experience the ScaleCUA agent's capabilities firsthand across Ubuntu, Android, and Web platforms. For a complete guide, please see the [[Playground]](playground/README.md).
 
 Follow these two steps to begin:
-1.  Deploy the ScaleCUA models with [vLLM](https://github.com/vllm-project/vllm) following our [model deployment guidance](evaluation/README.md#-model-development). We support two modes of operation: **Native Agentic Model** using a single model for both UI grounding and planning, and **Agentic Workflow** supporting two different models for UI planning and grounding.
+1.  Deploy the ScaleCUA models with [vLLM](https://github.com/vllm-project/vllm) following our [[Model Deployment]](evaluation/README.md#-model-development). We support two modes of operation: **Native Agentic Model** using a single model for both UI grounding and planning, and **Agentic Workflow** supporting two different models for UI planning and grounding.
 
-2. Set up your environment following [Playground Environment](playground/README.md#environment-configuration). We provide pre-configured, interactive virtual machines for Ubuntu, Android, and Web to simplify this process.
+2. Set up your environment following [[Playground Environment]](playground/README.md#environment-configuration). We provide pre-configured, interactive virtual machines for Ubuntu, Android, and Web to simplify this process.
 
 Now, you can try our agent in the interactive environment!
 
