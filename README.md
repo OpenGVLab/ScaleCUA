@@ -87,7 +87,7 @@ Our evaluation suite covers desktop, mobile, and web environments:
   * **Web**: `WebArenaLiteV2` (A refined version of WebArena-Lite suitable for visual-based agents)
   * **Windows**: `WindowsAgentArena`
 
-## 💻 Training
+## 🧠 Training
 
 The directory `agent-sft/` contains all the necessary code and configuration files to train the ScaleCUA from scratch using our ScaleCUA-Data. We support training Computer Use Agents with both [InternVL](agent-sft/internvl_chat/README.md) and [Qwen-VL](agent-sft/qwen-vl-finetune/README.md).
 
