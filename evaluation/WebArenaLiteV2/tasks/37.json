@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the minimum travel time by car from Animal Rescue League of Pittsburgh to Schenley park?",
+    "task_config": {
+        "example_id": "37.json",
+        "file_path": "config/env/webarena/tasks/37.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

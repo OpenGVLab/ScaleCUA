@@ -1,0 +1,30 @@
+{
+    "id": "finder_multi_1",
+    "system_img": "default",
+    "instruction": "Please open a Finder window, navigate to the path /Users/Shared/1/11/11/1, create an empty file named \"empty.txt\" if it does not already exist, and tag the file with the \"Red\" tag.",
+    "config": [
+    ],
+    "related_apps": [
+      "finder",
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["finder_check_file_tag"],
+      "conj": "and",
+      "parameters": [
+        {
+          "file_path": "/Users/Shared/1/11/11/1/empty.txt",
+          "target_tag": "Red"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

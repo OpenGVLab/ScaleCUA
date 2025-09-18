@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "set the homepage URL on my GitLab profile to https://egg.tart.com",
+    "task_config": {
+        "example_id": "101.json",
+        "file_path": "config/env/webarena/tasks/101.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

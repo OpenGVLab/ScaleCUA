@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Where is the nearest cafe(s) to University of Pittsburgh, and what is the walking distance to it?",
+    "task_config": {
+        "example_id": "23.json",
+        "file_path": "config/env/webarena/tasks/23.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

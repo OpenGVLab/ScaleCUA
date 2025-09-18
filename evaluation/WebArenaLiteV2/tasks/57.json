@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I am doing a market survey for one stop market, show me the most expensive product from Competative Swimwear category",
+    "task_config": {
+        "example_id": "57.json",
+        "file_path": "config/env/webarena/tasks/57.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

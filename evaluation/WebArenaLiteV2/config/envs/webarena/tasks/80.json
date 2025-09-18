@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 80,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "List products from Living Room Furtniture category by descending price",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6666/home-kitchen/furniture/living-room-furniture.html?product_list_order=price&product_list_dir=desc |OR| http://10.140.52.49:6666/home-kitchen.html?cat=154&product_list_order=price&product_list_dir=desc",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 354
+}

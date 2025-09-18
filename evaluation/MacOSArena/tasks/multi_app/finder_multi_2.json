@@ -1,0 +1,48 @@
+{
+    "id": "finder_multi_2",
+    "system_img": "default",
+    "instruction": "Please use the terminal to check the file sizes in the /Users/Shared/example_test directory. Then, in Finder, tag the files larger than 100KB with the \"Red\" tag.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Finder'"
+          ]
+        }
+      },
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "finder",
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["finder_check_tagged_files_strict"],
+      "conj": "and",
+      "parameters": [
+        {
+          "directory": "/Users/Shared/example_test",
+          "expected_tagged_files": ["file_b.dat", "file_d.dat"], 
+          "target_tag": "Red"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }
+        ]
+    }
+  }
+  

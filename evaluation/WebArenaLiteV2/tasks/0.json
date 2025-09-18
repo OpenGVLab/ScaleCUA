@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What are the top-3 best-selling product in Jan 2023",
+    "task_config": {
+        "example_id": "0.json",
+        "file_path": "config/env/webarena/tasks/0.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

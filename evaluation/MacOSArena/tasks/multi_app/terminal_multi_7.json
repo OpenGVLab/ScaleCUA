@@ -1,0 +1,38 @@
+{
+    "id": "multiapp_10",
+    "system_img": "default",
+    "instruction": "Please help me check the existing users, and record them in the notes titled 'user'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a Safari"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal",
+      "notes"
+    ],
+    "evaluator": {
+        "func": ["notes_get_note_plaintext_by_name"],
+        "conj": "and",
+        "parameters": [
+          {
+            "name": "user",
+            "folder": null
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "find_str_in_list",
+            "parameters": [["pipiwu"]] 
+          }
+          }
+        ]
+      }
+}

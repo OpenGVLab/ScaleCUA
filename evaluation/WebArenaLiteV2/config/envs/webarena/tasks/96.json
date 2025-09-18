@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 96,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Upvote the newest post in books subreddit",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/f/books/124260/adults-reading-to-each-other-out-loud",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-upvoted"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 404
+}

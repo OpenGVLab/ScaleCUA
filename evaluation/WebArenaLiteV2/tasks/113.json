@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Buy the highest rated product from the Meat Substitute category within a budget between 100 and 200.",
+    "task_config": {
+        "example_id": "113.json",
+        "file_path": "config/env/webarena/tasks/113.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

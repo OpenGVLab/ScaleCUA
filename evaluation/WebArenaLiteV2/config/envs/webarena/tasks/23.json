@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 23,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Where is the nearest cafe(s) to University of Pittsburgh, and what is the walking distance to it?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "Fuku Tea, 3716, Forbes Avenue, Oakland, Central Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States",
+        "653m"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Fuku Tea, 3716, Forbes Avenue, Oakland, Central Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States\n653m"
+  },
+  "old_task_id": 98
+}

@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 24,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Display the list of open issues in the \"Karl Kroening/ffmpeg-python\" repository that have label named question",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6669/kkroening/ffmpeg-python/-/issues/?sort=created_date&state=opened&label_name%5B%5D=question&first_page_size=20",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 103
+}

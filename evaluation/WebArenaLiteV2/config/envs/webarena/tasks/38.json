@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 38,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Checkout merge requests assigned to me",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6669/dashboard/merge_requests?assignee_username=byteblaze |OR| http://10.140.52.49:6669/dashboard/merge_requests?scope=all&state=opened&assignee_username=byteblaze |OR| http://10.140.52.49:6669/dashboard/merge_requests?scope=all&state=all&assignee_username=byteblaze",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 156
+}

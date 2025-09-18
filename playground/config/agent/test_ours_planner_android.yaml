@@ -1,0 +1,8 @@
+planner_model: 
+  engine_type: openai
+  model: gui_v123
+  base_url: http://10.140.66.139:10026/v1
+  grounding_width: 1
+  grounding_height: 1
+  prompt_template: config/prompt_template/ours_android.json
+  enable_thinking: true

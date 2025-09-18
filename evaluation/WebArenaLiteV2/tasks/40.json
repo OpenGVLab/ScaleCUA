@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I have a lot of Nintendo Switch game cards now, help me find the best storage option to fit all 40 cards",
+    "task_config": {
+        "example_id": "40.json",
+        "file_path": "config/env/webarena/tasks/40.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

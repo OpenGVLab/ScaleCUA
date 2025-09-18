@@ -1,0 +1,82 @@
+{
+    "Home": {
+        "tag": "label",
+        "coords_str": "(1833, 1037)",
+        "size_str": "(40, 17)"
+    },
+    "System": {
+        "tag": "menu",
+        "coords_str": "(1814, 0)",
+        "size_str": "(106, 27)"
+    },
+    "Google Chrome": {
+        "tag": "push-button",
+        "coords_str": "(0, 33)",
+        "size_str": "(70, 64)"
+    },
+    "Thunderbird Mail": {
+        "tag": "push-button",
+        "coords_str": "(0, 101)",
+        "size_str": "(70, 64)"
+    },
+    "Visual Studio Code": {
+        "tag": "push-button",
+        "coords_str": "(0, 169)",
+        "size_str": "(70, 64)"
+    },
+    "VLC media player": {
+        "tag": "push-button",
+        "coords_str": "(0, 237)",
+        "size_str": "(70, 64)"
+    },
+    "LibreOffice Writer": {
+        "tag": "push-button",
+        "coords_str": "(0, 305)",
+        "size_str": "(70, 64)"
+    },
+    "LibreOffice Calc": {
+        "tag": "push-button",
+        "coords_str": "(0, 373)",
+        "size_str": "(70, 64)"
+    },
+    "LibreOffice Impress": {
+        "tag": "push-button",
+        "coords_str": "(0, 441)",
+        "size_str": "(70, 64)"
+    },
+    "GNU Image Manipulation Program": {
+        "tag": "push-button",
+        "coords_str": "(0, 509)",
+        "size_str": "(70, 64)"
+    },
+    "Files": {
+        "tag": "push-button",
+        "coords_str": "(0, 577)",
+        "size_str": "(70, 64)"
+    },
+    "Ubuntu Software": {
+        "tag": "push-button",
+        "coords_str": "(0, 645)",
+        "size_str": "(70, 64)"
+    },
+    "Help": {
+        "tag": "push-button",
+        "coords_str": "(0, 713)",
+        "size_str": "(70, 64)"
+    },
+    "Trash": {
+        "tag": "push-button",
+        "coords_str": "(0, 784)",
+        "size_str": "(70, 64)"
+    },
+    "Show Applications": {
+        "tag": "toggle-button",
+        "coords_str": "(0, 1010)",
+        "size_str": "(70, 70)"
+    },
+    "": {
+        "tag": "icon",
+        "coords_str": "(1821, 969)",
+        "size_str": "(64, 64)"
+    }
+}

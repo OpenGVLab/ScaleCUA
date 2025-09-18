@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 85,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Pull up the description page of Carnegie Music Hall on Map",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": null,
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
+        "required_contents": {
+          "must_include": [
+            "Carnegie Music Hall"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 369
+}

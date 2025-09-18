@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Get the date of the most recent canceled order",
+    "task_config": {
+        "example_id": "47.json",
+        "file_path": "config/env/webarena/tasks/47.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

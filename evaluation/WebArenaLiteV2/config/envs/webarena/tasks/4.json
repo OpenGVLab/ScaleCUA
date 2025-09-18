@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 4,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666/3-pack-samsung-galaxy-s6-screen-protector-nearpow-tempered-glass-screen-protector-with-9h-hardness-crystal-clear-easy-bubble-free-installation-scratch-resist.html",
+  "intent": "List out reviewers, if exist, who mention about good fingerprint resistant",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Rachel",
+        "T. Gannon"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Rachel, T. Gannon, "
+  },
+  "old_task_id": 23
+}

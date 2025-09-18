@@ -1,0 +1,64 @@
+APP: Pi Music Player
+package: com.Project100Pi.themusicplayer
+tasks:
+  # query
+  - task_id: pimusic_1
+    task: Tell me how many songs do I have in total?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_2
+    task: Help me check how many Pink Floyd's songs do I have?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_3
+    task: What is the album name of the song Wish You Were Here?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_4
+    task: What is the duration time of the longest song by Pink Floyd?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_5
+    task: Sort the songs by title in ascending order. What are the second and fourth songs?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_6
+    task: What is the total duration time of all of Eason Chan's songs?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.pimusic
+
+  # operation
+  - task_id: pimusic_7
+    task: Play the first song in 'Favorite' playlist.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_8
+    task: Sort Pink Floyd's songs by duration time in descending order.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_9
+    task: Create a playlist named 'Creepy' for me.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_10
+    task: Pause the currently playing song and seek to 1 minute and 27 seconds.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_11
+    task: Play Lightship by Sonny Boy.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic
+
+  - task_id: pimusic_12
+    task: Sort the songs by duration time in ascending order.
+    metric_type: operation
+    metric_func: evaluation.tasks.pimusic

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the walking distance from nearby hotels to Gardner Steel Conference Center, that take at most 5 minutes?",
+    "task_config": {
+        "example_id": "51.json",
+        "file_path": "config/env/webarena/tasks/51.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

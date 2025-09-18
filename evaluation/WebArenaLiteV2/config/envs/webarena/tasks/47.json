@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 47,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Get the date of the most recent canceled order",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "May 23 2023"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "May 23, 2023"
+  },
+  "old_task_id": 202
+}

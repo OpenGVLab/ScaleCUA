@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Get the order number of my most recent under delivery order",
+    "task_config": {
+        "example_id": "55.json",
+        "file_path": "config/env/webarena/tasks/55.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

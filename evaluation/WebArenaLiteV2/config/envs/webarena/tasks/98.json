@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 98,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Set my gitlab status as Enjoying life.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/byteblaze",
+        "locator": "document.querySelector('.cover-status').lastChild.textContent",
+        "required_contents": {
+          "exact_match": "\nEnjoying life\n"
+        }
+      }
+    ]
+  },
+  "old_task_id": 419
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the price range of mouth guard in the One Stop Market?",
+    "task_config": {
+        "example_id": "30.json",
+        "file_path": "config/env/webarena/tasks/30.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,29 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 41,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666/photosmart-plus-b209-clr-inkjetfb-p-s-c-usb-wrls-1.html",
+  "intent": "What are the main criticisms of this product? Please extract the relevant sentences.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "The wireless connection works on a whim (about 40% of the time I've owned it)",
+        "It seems to constantly run out of ink",
+        "Cartridge prices are less than some printers I've had",
+        "This printer seems to have more reasons NOT to work (none that are findable or correctable) Ex: error boxes saying that it's out of paper when it automatically switches to photo printing for some reason",
+        "Scanner is as slow as my first scanner I ever owned in the mid-90's",
+        "For the $176 I paid, there isn't even a fax component on it. I guess the \"PLUS\" part of it's name is in reference to the migraines it causes when you can't figure out the new reason why it's not working for the 10th time in the past 2 months."
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "The wireless connection works on a whim (about 40% of the time I've owned it). It seems to constantly run out of ink. Cartridge prices are less than some printers I've had, but now I understand why. This printer seems to have more reasons NOT to work (none that are findable or correctable) Ex: error boxes saying that it's out of paper when it automatically switches to photo printing for some reason. Scanner is as slow as my first scanner I ever owned in the mid-90's. For the $176 I paid, there isn't even a fax component on it. I guess the \"PLUS\" part of it's name is in reference to the migraines it causes when you can't figure out the new reason why it's not working for the 10th time in the past 2 months."
+  },
+  "old_task_id": 167
+}

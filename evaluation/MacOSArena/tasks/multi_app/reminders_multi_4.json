@@ -1,0 +1,49 @@
+{
+    "id": "reminders_7",
+    "system_img": "default",
+    "instruction": "In the Contacts app, find the contact named \"Alice\" and copy her phone number; then in the Reminders app, create a reminder titled \"Call Alice at {phone number}\"(without any hyphens or parentheses) that is due next week at 3:00 PM.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_check_work_due_next_week", "reminders_check_due_time"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "Call Alice at 123456788"
+        },
+        {
+          "reminder_name": "Call Alice at 123456788",
+          "target_hour": 15,
+          "target_minute": 0   
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          }
+      ]
+    }
+  }
+  

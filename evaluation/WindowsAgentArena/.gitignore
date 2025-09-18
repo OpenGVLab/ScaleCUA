@@ -1,0 +1,285 @@
+# a few testing images
+*.proposed_region_screenbert_test.png
+*.proposed_region_screenbert_test.png
+*.temp_output_image.png
+**rendered_text.txt
+src/win-arena-container/vm/setup/server/screenshots/screenshot.png
+
+# Model checkpoints
+*.pth
+*.pt
+
+# Credential files
+evaluation_examples/settings/googledrive/credentials.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# PyCharm
+**/.idea/**/*
+
+# Mac OS
+.DS_Store
+
+# data
+!**/utils/data/**/*
+
+# tmp files
+**/tmp/**/*
+api_key.py
+tmp.*
+
+## Server logging
+**/.logging/**/*
+
+# DB cache
+**/.db_cache/**/*
+
+**/debugging/**/*
+
+# embedding repo
+instructor-embedding
+
+# plugin cache
+**/static/**/*
+
+# frontend cache
+frontend/node_modules/
+frontend/.next/
+frontend/.idea
+
+tags
+tags-opts
+snapshots
+branch_flag
+branch-config
+*.syncthing.*.tmp
+cache
+version.folder
+at_processing
+
+test.xlsx
+test2.xlsx
+
+**/custom.iso
+
+ssh-keys
+
+config.json
+
+compute-config.yml
+
+
+# ignora all windows image files
+
+**/storage/windows.*
+**/storage/windows_secure.*
+**/storage/data.img
+**/storage/windows_image
+**/storage/shared/er_demo_1
+**/storage/shared/tmp
+**/storage/shared/*.mp4
+**/*.img
+**/*.iso
+**/storage_local/*
+**/storage_*/*
+**/storage_azure_gold/*
+
+# add results folder
+**/client/results/
+**/vm/setup/server/recordings/*
+**/vm/setup/server/screenshots/*
+
+**/setup/ps_script_log.txt
+**/setup/server_log.txt
+
+
+**/sessions.json
+
+**/.vscode
+
+# perception models
+**/navi/models/**/*
+**/client/models/**/*
+**/win-arena-container/client/results/*
+**/win-arena-container/vm/setup/server/screenshots/screenshot.png
+# Temp copies of the win-arena-container in the win-arena-orchestrator
+**/win-arena-orchestrator/win-arena-container
+**/win-arena-orchestratorsrc/win-arena-container/client/results/*
+**/win-arena-orchestratorsrc/win-arena-container/vm/setup/server/screenshots/screenshot.png
+# Temp copies of the win-arena-container in the win-arena-orchestrator
+**/microsoft.gpg
+
+**/data/template
+**/data/sessions
+
+**/data/settings.json
+src/win-arena-container/vm/setup/server/screenshots/screenshot.png
+src/win-arena-container/client/mm_agents/navi/screenparsing_oss/figs/test_parser_out.png
+
+# vs code python debugger stuff
+src/win-arena-container/client/.vscode/launch.json
+
+# problematic tasks that work for some people and not for others
+# src/win-arena-container/client/evaluation_examples_windows/examples/libreoffice_calc/3a7c8185-25c1-4941-bd7b-96e823c9f21f-wos.json
+# src/win-arena-container/client/evaluation_examples_windows/examples/libreoffice_calc/5b5434c6-560c-47a1-a89f-929c688448f5-wos.json
+# src/win-arena-container/client/evaluation_examples_windows/examples/libreoffice_calc/8fa9072b-ea9b-4679-84c6-420f3fe4c697-wos.json
+# src/win-arena-container/client/evaluation_examples_windows/examples/libreoffice_calc/9b6c0b72-3ecc-482d-a240-8ceab861d46e-wos.json
+# src/win-arena-container/client/evaluation_examples_windows/examples/libreoffice_calc/26a8440e-c166-4c50-aef4-bfb77314b46b-wos.json
+
+# problematic tasks that are ill-defined, invalid, or do not account for important cases that result in bad evaluation
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/82bc8d6a-36eb-4d2d-8801-ef714fb1e55a-wos.json
+
+# tasks that require further debugging until fixed or discarded
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/47543840-672a-467d-80df-8f7c3b9788c9-wos.json
+
+# tasks that require testing/re-testing due to constant image updates
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/c1fa57f3-c3db-4596-8f09-020701085416-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/9f3f70fc-5afc-4958-a7b7-3bb4fcb01805-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/b4f95342-463e-4179-8c3f-193cd7241fb2-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/9f935cce-0a9f-435f-8007-817732bfc0a5-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/82279c77-8fc6-46f6-9622-3ba96f61b477-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/a728a36e-8bf1-4bb6-9a03-ef039a5233f0-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/f5d96daf-83a8-4c86-9686-bada31fc66ab-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/f79439ad-3ee8-4f99-a518-0eb60e5652b0-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/fc6d8143-9452-4171-9459-7f515143419a-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/59155008-fe71-45ec-8a8f-dc35497b6aa8-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/b7895e80-f4d1-4648-bee0-4eb45a6f1fa8-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/f0b971a1-6831-4b9b-a50e-22a6e47f45ba-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/da46d875-6b82-4681-9284-653b0c7ae241-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/2ad9387a-65d8-4e33-ad5b-7580065a27ca-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/0d8b7de3-e8de-4d86-b9fd-dd2dce58a217-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/2888b4e6-5b47-4b57-8bf5-c73827890774-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/f3b19d1e-2d48-44e9-b4e1-defcae1a0197-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/1704f00f-79e6-43a7-961b-cedd3724d5fd-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/12086550-11c0-466b-b367-1d9e75b3910e-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/6c4c23a1-42a4-43cc-9db1-2f86ff3738cc-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/7f52cab9-535c-4835-ac8c-391ee64dc930-wos.json 
+# src/win-arena-container/client/evaluation_examples_windows/examples/chrome/cabb3bae-cccb-41bd-9f5d-0f3a9fecd825-wos.json 

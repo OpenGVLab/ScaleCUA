@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 97,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Go to the merge request on verification functions assigned to me, find if the author of the merge request responded at the end, and reply \"Thank you\" if he did. Otherwise remind him with a simple @.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/byteblaze/a11y-webring.club/-/merge_requests/40",
+        "locator": "document.querySelector('[id=\"notes-list\"').lastElementChild.querySelector('.timeline-discussion-body').outerText",
+        "required_contents": {
+          "exact_match": "@davepgreene"
+        }
+      }
+    ]
+  },
+  "old_task_id": 415
+}

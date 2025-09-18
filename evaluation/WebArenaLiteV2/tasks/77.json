@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me when I last ordered my body butter?",
+    "task_config": {
+        "example_id": "77.json",
+        "file_path": "config/env/webarena/tasks/77.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

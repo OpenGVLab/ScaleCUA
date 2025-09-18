@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Change the page title of \"Home Page\" page on my site to \"This is the home page!! Leave here!!\".",
+    "task_config": {
+        "example_id": "109.json",
+        "file_path": "config/env/webarena/tasks/109.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

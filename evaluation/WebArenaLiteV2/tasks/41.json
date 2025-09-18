@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What are the main criticisms of this product? Please extract the relevant sentences.",
+    "task_config": {
+        "example_id": "41.json",
+        "file_path": "config/env/webarena/tasks/41.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

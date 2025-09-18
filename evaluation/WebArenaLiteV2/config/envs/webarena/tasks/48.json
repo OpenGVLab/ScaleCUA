@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 48,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com",
+  "intent": "How many commits did kilian make on 3/5/2023?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "1"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "1"
+  },
+  "old_task_id": 205
+}

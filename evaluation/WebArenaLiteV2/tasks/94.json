@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post \"Good idea\" for the merge request related to color ulitity in a11yproject.com project",
+    "task_config": {
+        "example_id": "94.json",
+        "file_path": "config/env/webarena/tasks/94.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

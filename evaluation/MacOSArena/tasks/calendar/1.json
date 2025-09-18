@@ -1,0 +1,36 @@
+{
+    "id": "calendar_1",
+    "system_img": "default",
+    "instruction": "In the Calendar App, create a recurring event called 'Lab Meeting' every Monday at 10:00AM.\nHint: The recurrence must be set using the 'Custom' option in the repeat settings.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar"
+    ],
+    "evaluator": {
+      "func": ["calendar_check_weekly_event"],
+      "conj": "and",
+      "parameters": [
+        {
+          "event_name": "Lab Meeting"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

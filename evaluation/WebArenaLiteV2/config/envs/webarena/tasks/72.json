@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 72,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Which number to call for the customer service?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "There is no phone number in the website"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "There is no phone number in the website",
+    "reference_answer_raw_annotation": "N/A"
+  },
+  "old_task_id": 313
+}

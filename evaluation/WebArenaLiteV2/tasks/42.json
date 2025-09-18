@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the full names of the repositories where I made contributions and they got the most stars?",
+    "task_config": {
+        "example_id": "42.json",
+        "file_path": "config/env/webarena/tasks/42.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

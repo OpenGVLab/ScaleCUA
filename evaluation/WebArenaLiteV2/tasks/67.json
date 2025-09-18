@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How much time does it take from Pittsburgh to Philadelphia by car?",
+    "task_config": {
+        "example_id": "67.json",
+        "file_path": "config/env/webarena/tasks/67.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

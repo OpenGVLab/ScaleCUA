@@ -1,0 +1,22 @@
+{
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+          "command": [
+              "gimp"
+          ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters":{
+        "command": [
+          "python",
+          "-c",
+          "import pyautogui; import time; pyautogui.click(1654,558);time.sleep(1.5);"
+      ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 26,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Show me the name of the customers who have expressed dissatisfaction with Chloe Compete Tank",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Teofila"
+      ],
+      "must_exclude": [
+        "Emerald",
+        "Concepcion"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "There is no negative review for Chloe tank",
+    "reference_answer_raw_annotation": ""
+  },
+  "old_task_id": 115
+}

@@ -1,0 +1,36 @@
+{
+    "id": "terminal_2",
+    "system_img": "default",
+    "instruction": "Under the /Users/Shared directory, create a .tar.gz archive named archive_YYYYMMDD.tar.gz  (where YYYYMMDD is today's date). The archive should contain at least five files. Make sure that only the current user has permission to execute the archive file, and that no read or write permissions are granted to anyone (including the user themselves), nor to any other users or groups.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["terminal_check_archive_validity_count_name_mod"],
+      "conj": "and",
+      "parameters": [
+        {
+          "base_path": "/Users/Shared"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

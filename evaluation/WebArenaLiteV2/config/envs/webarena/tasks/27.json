@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 27,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "What is the date when I made my first purchase on this site?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "3/2/22"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "3/2/22"
+  },
+  "old_task_id": 117
+}

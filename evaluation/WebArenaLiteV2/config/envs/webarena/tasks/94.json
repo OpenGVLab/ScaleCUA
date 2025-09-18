@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 94,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Post \"Good idea\" for the merge request related to color ulitity in a11yproject.com project",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/merge_requests/1071",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[id=\"notes-list\"').lastElementChild.querySelector('.timeline-discussion-body').outerText",
+        "required_contents": {
+          "exact_match": "Good idea"
+        }
+      }
+    ]
+  },
+  "old_task_id": 392
+}

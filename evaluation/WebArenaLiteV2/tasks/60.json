@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the phone number of Western Pennsylvania Hospital",
+    "task_config": {
+        "example_id": "60.json",
+        "file_path": "config/env/webarena/tasks/60.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Checkout merge requests assigned to me",
+    "task_config": {
+        "example_id": "38.json",
+        "file_path": "config/env/webarena/tasks/38.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

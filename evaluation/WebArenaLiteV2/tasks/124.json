@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I recently moved, my address is 111 Magnolia Path, Atlanta, GA, 30303, update my information on OneStopShopping accordingly",
+    "task_config": {
+        "example_id": "124.json",
+        "file_path": "config/env/webarena/tasks/124.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

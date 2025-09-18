@@ -1,0 +1,38 @@
+{
+    "id": "clock_safari_3",
+    "system_img": "default",
+    "instruction": "In the Clock App, set a world clock for the capital city of 'the country that hosted the 2018 League of Legends World Championship', and drag it to the top of the current list.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Clock'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "clock",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["clock_get_world_clock_top_item"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+      {
+        "type": "common",
+        "rules": {
+          "func": "exact_match",
+          "parameters": ["Seoul"]
+        }
+      }
+      ]
+    }
+  }
+  

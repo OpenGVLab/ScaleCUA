@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "List the customer names who complain about the quality of EYZUTAK phone cases",
+    "task_config": {
+        "example_id": "91.json",
+        "file_path": "config/env/webarena/tasks/91.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

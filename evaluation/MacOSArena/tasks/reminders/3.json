@@ -1,0 +1,38 @@
+{
+    "id": "reminders_3",
+    "system_img": "default",
+    "instruction": "In the Reminders app, Mark all reminders in the list \"Groceries\" as completed.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_check_all_completed_with_expected_items"],
+      "conj": "and",
+      "parameters": [
+        {
+          "list_name": "Groceries",
+          "preset_items": ["Milk", "Eggs", "Bread", "Apples", "Bananas", "Chicken Breast", "Rice", "Toilet Paper"]
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }
+      ]
+    }
+  }
+  

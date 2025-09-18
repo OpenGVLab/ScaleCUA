@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Who else have access to my repo gimmiethat.space, show me their usernames",
+    "task_config": {
+        "example_id": "79.json",
+        "file_path": "config/env/webarena/tasks/79.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show me products under $100 in \"Men Shoes\" category",
+    "task_config": {
+        "example_id": "63.json",
+        "file_path": "config/env/webarena/tasks/63.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

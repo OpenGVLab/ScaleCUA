@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Reply to the post with my comment \"???\"",
+    "task_config": {
+        "example_id": "136.json",
+        "file_path": "config/env/webarena/tasks/136.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

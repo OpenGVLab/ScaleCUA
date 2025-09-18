@@ -1,0 +1,37 @@
+{
+    "id": "multiapp_7",
+    "system_img": "default",
+    "instruction": "Read the content of the file 'ddl.txt' Located at Desktop and use it as the note body for a reminder titled 'abs ddl' in the macOS Reminders app. If a reminder with that title does not exist, create it first.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "echo '20250512' > ~/Desktop/ddl.txt"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal",
+      "reminder"
+    ],
+    "evaluator": {
+        "func": ["reminders_get_body_by_name"], 
+        "conj": "and",
+        "parameters": [
+          {
+            "reminder_name": "abs ddl"
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "exact_match",
+            "parameters": "20250512"
+          }
+          }
+        ]
+      }
+}

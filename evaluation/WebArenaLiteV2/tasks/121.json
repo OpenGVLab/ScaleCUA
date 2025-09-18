@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Modify the address of order #299 to 456 Oak Avenue, New York, NY, 10001",
+    "task_config": {
+        "example_id": "121.json",
+        "file_path": "config/env/webarena/tasks/121.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

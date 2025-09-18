@@ -1,0 +1,37 @@
+{
+    "id": "terminal_1",
+    "system_img": "default",
+    "instruction": "In the Terminal app on macOS, create a new Conda environment named macos_eval and install the spotify package within that environment.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["terminal_check_package_in_conda_env"],
+      "conj": "and",
+      "parameters": [
+        {
+          "env_name": "macos_eval",
+          "package_name": "spotify"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

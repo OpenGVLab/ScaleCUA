@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Display the list of open issues in the \"Karl Kroening/ffmpeg-python\" repository that have label named question",
+    "task_config": {
+        "example_id": "24.json",
+        "file_path": "config/env/webarena/tasks/24.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

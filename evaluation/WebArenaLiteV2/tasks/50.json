@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What are the key aspects that the customers don't like about Circe Hooded Ice Fleece",
+    "task_config": {
+        "example_id": "50.json",
+        "file_path": "config/env/webarena/tasks/50.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

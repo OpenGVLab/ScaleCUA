@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 89,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "I am arriving at Carnegie Mellon University. Find the nearby US Citizenship and Immigration Services and tell me the walking distance to the nearest Social Security Administration from US Citizenship and Immigration Services",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "4.8 km"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "US Social Security Administration, Garrison Place, Cultural District, Downtown, Pittsburgh, Allegheny County, \u5bbe\u5915\u6cd5\u5c3c\u4e9a / \u8cd3\u5915\u6cd5\u5c3c\u4e9e\u5dde, 15222, \u7f8e\u5229\u575a\u5408\u4f17\u56fd/\u7f8e\u5229\u5805\u5408\u773e\u570b; USCIS Pittsburgh Field Office, South Side, 3000, Sidney Street, South Side Flats, Pittsburgh, Allegheny County, \u5bbe\u5915\u6cd5\u5c3c\u4e9a / \u8cd3\u5915\u6cd5\u5c3c\u4e9e\u5dde, 15203, \u7f8e\u5229\u575a\u5408\u4f17\u56fd/\u7f8e\u5229\u5805\u5408\u773e\u570b",
+    "reference_answer_raw_annotation": "N/A"
+  },
+  "old_task_id": 382
+}

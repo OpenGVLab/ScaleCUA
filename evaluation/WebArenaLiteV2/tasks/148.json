@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Start a private project web_agent_android_xl with Android template and add primer, convexegg, abishek as members",
+    "task_config": {
+        "example_id": "148.json",
+        "file_path": "config/env/webarena/tasks/148.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

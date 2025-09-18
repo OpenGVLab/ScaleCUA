@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 99,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Mark all Hollister Backyard Sweatshirt on sale",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/126/",
+        "locator": "document.querySelector('input[name=\"product[sale]\"]').value",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      }
+    ]
+  },
+  "old_task_id": 423
+}

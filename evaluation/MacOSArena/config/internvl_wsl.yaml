@@ -1,0 +1,8 @@
+mode: docker
+platform: wsl
+docker_name: evalkit_macos_auto_internvl
+host_ip: localhost
+port: 52250
+username: pipiwu
+password: "1234"
+action_space: "pyautogui"

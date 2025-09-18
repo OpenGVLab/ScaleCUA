@@ -1,0 +1,2 @@
+{"id": 0, "metric": 0, "query": "Check out my todos", "task_config": {"application": null, "url": null, "task_config": {"example_id": "1.json", "file_path": "test/test_config/1.json"}, "benchmark": "vab_webarena_lite"}, "save_folder": "results/test_0721_1/1"}
+{"id": 0, "metric": 0, "query": "Check out my todos", "task_config": {"application": null, "url": null, "task_config": {"example_id": "1.json", "file_path": "test/test_config/1.json"}, "benchmark": "vab_webarena_lite"}, "save_folder": "results/test_0721_1/1"}

@@ -1,0 +1,126 @@
+APP: Settings
+package: com.android.settings
+tasks:
+  - task_id: setting_0
+    category: Network
+    task: Turn on airplane mode of my phone
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell settings get global airplane_mode_on
+  - task_id: setting_1
+    category: Network
+    task: I do not want turn on wifi automatically, turn it off
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_2
+    category: Network
+    task: set private DNS to dns.google
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_3
+    category: Bluetooth
+    task: Turn off my bluetooth
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell settings get global bluetooth_on
+  - task_id: setting_4
+    category: Bluetooth
+    task: change my bluetooth device name to "my AVD"
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_5
+    category: Battery
+    task: Show battery percentage in status bar
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_6
+    category: Storage
+    task: How much storage does Apps use
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_7
+    category: Display
+    task: Turn my phone to Dark theme
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_8
+    category: Display
+    task: Change my Brightness level to 0%
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_9
+    category: Sound
+    task: I need to close down my Ring & notification volume to 0%
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell settings list system | grep volume_ring_speaker
+  - task_id: setting_10
+    category: Sound
+    task: Set my alarm volume to max
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell settings list system | grep volume_alarm_speaker
+  - task_id: setting_11
+    category: Sound
+    task: Change text-to-speech language to Chinese
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_12
+    category: Time
+    task: Set current time of my phone to 2024-5-1
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_13
+    category: Sound
+    task: Turn off Ring vibration
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_14
+    category: Time
+    task: What is my time zone
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell 'getprop persist.sys.timezone'
+  - task_id: setting_15
+    category: Language
+    task: Add Español (Estados Unidos) as second favorite languages
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_16
+    category: Language
+    task: What is the primary language of my phone
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_17
+    category: Language
+    task: Check Android Version
+    metric_type: query_detect
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell getprop ro.build.version.release
+  - task_id: setting_18
+    category: App notifications
+    task: Disable Contacts' APP notifications
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_19
+    category: APP
+    task: Check my default browser and change it to firefox
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_20
+    category: APP
+    task: uninstall booking app
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell pm list packages | grep 'com.booking'
+  - task_id: setting_21
+    category: APP
+    task: Open settings
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+  - task_id: setting_22
+    category: APP
+    task: Does my airplane mode open or not
+    metric_type: operation
+    metric_func: evaluation.tasks.setting
+    adb_query: adb shell settings get global airplane_mode_on

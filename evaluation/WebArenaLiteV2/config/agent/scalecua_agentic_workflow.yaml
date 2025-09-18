@@ -1,0 +1,16 @@
+planner_model: 
+  engine_type: openai
+  base_url: https://api.openai.com/v1
+  model: gpt-4o-2024-11-20
+  prompt_template: config/prompt_template/gpt_planner.json
+
+ui_grounding_model:
+  engine_type: openai
+  base_url: http://10.140.66.52:8003/v1
+  model: gui_v99
+  model_name: scalecua
+  grounding_coord: 1
+  smart_resize: true
+  max_pixels: 2109744
+  min_pixels: 3136
+  prompt_template: config/prompt_template/ours_web.json

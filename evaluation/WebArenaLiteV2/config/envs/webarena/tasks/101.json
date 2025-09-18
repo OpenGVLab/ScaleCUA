@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 101,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "set the homepage URL on my GitLab profile to https://egg.tart.com",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/byteblaze",
+        "locator": "document.querySelector('.profile-header [itemprop=\"url\"]').outerText",
+        "required_contents": {
+          "exact_match": "egg.tart.com"
+        }
+      }
+    ]
+  },
+  "old_task_id": 448
+}

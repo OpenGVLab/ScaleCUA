@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Create a shipping report from 08/05/2022 to 03/01/2023",
+    "task_config": {
+        "example_id": "142.json",
+        "file_path": "config/env/webarena/tasks/142.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

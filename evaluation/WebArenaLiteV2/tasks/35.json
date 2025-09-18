@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+    "task_config": {
+        "example_id": "35.json",
+        "file_path": "config/env/webarena/tasks/35.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

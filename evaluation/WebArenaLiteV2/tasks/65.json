@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Look up the most recent models of XBox controllers released between 2020-2021?",
+    "task_config": {
+        "example_id": "65.json",
+        "file_path": "config/env/webarena/tasks/65.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,22 @@
+{
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "/usr/bin/thunderbird"
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import pyautogui; import time; time.sleep(15.0); pyautogui.click(808, 127); time.sleep(1.0)"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+mode: docker
+platform: linux
+docker_name: evalkit_macos_uitars72bdpo
+host_ip: localhost
+port: 50925
+username: pipiwu
+password: "1234"
+action_space: "pyautogui"

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Which US states border New Hampshire?",
+    "task_config": {
+        "example_id": "20.json",
+        "file_path": "config/env/webarena/tasks/20.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

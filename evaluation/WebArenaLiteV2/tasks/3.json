@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Compare the difference in time for walking and driving route from Randyland to Carnegie Mellon University",
+    "task_config": {
+        "example_id": "3.json",
+        "file_path": "config/env/webarena/tasks/3.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

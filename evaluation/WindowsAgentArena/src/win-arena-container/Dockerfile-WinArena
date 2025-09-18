@@ -1,0 +1,90 @@
+# Define build argument for deployment mode (defaults to azure, can also be dev)
+ARG DEPLOY_MODE="azure"
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+
+# Base stage for dev - ONBUILD prepares for future builds that use this image as a base
+FROM windowsarena/winarena-base:latest AS build_dev
+# These ONBUILD ENV lines will set environment variables in the image that *uses* build_dev as a base,
+# not in the *current* build_dev stage itself.
+ONBUILD COPY src/win-arena-container/vm/setup/. /shared/
+ONBUILD COPY src/win-arena-container/vm/unattend-files/dev_win11x64-enterprise-eval.xml /run/assets/win11x64-enterprise-eval.xml
+ONBUILD ENV FOLDER_NAME=shared
+# Set proxy environment variables, which will be used if this stage itself runs commands, 
+# or by subsequent stages that inherit directly from this stage.
+ENV http_proxy=$HTTP_PROXY
+ENV https_proxy=$HTTPS_PROXY
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+
+# Base stage for azure - ONBUILD prepares for future builds that use this image as a base
+FROM windowsarena/winarena-base:latest AS build_azure
+ONBUILD COPY src/win-arena-container/vm/setup/. /oem/
+ONBUILD COPY src/win-arena-container/vm/unattend-files/azure_win11x64-enterprise-eval.xml /run/assets/win11x64-enterprise-eval.xml
+ONBUILD COPY src/win-arena-container/fix_az_network.sh /run/network.sh
+ONBUILD ENV FOLDER_NAME=oem
+# Set proxy environment variables for this stage as well
+ENV http_proxy=$HTTP_PROXY
+ENV https_proxy=$HTTPS_PROXY
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+
+# This is the key part: select the build stage based on DEPLOY_MODE
+# The top-level ARGs HTTP_PROXY and HTTPS_PROXY are still in scope here.
+FROM build_${DEPLOY_MODE} AS final_stage
+
+# ARGs can be re-declared within this specific stage to be used for setting ENVs,
+# or if their values might change depending on the context (not usually the case for proxies here).
+# However, the ENV variables set in the base stages (build_dev or build_azure) should be inherited.
+# For clarity and to ensure they are set for this stage's RUN commands:
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ENV http_proxy=$HTTP_PROXY
+ENV https_proxy=$HTTPS_PROXY
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+
+# This ARG DEPLOY_MODE will be populated by the global one declared at the top.
+# Re-declaring it here makes its value available within this stage for use, for example in the ENV instruction below.
+# It gets its value from the build command or the default at the top.
+ARG DEPLOY_MODE 
+ENV DEPLOY_MODE=${DEPLOY_MODE} 
+
+RUN echo "FOLDER_NAME: ${FOLDER_NAME}" 
+RUN echo "DEPLOY_MODE: ${DEPLOY_MODE}"
+
+# If in azure mode, replace the windows data folder with the oem folder
+RUN if [ "${DEPLOY_MODE}" = "azure" ]; then \
+        WINDOWS_DATA_FOLDER='\\\\host.lan\\Data'; \
+        WINDOWS_OEM_FOLDER='C:\\oem'; \
+        OEM_FOLDER='oem'; \
+        sed -i "s|${WINDOWS_DATA_FOLDER}|${WINDOWS_OEM_FOLDER}|g" "/${OEM_FOLDER}/install.bat"; \
+        sed -i "s|${WINDOWS_DATA_FOLDER}|${WINDOWS_OEM_FOLDER}|g" "/${OEM_FOLDER}/on-logon.ps1"; \
+        sed -i "s|${WINDOWS_DATA_FOLDER}|${WINDOWS_OEM_FOLDER}|g" "/${OEM_FOLDER}/setup.ps1"; \
+    fi
+
+# Copy the client application
+COPY src/win-arena-container/client /client
+
+COPY src/win-arena-container/entry_setup.sh /entry_setup.sh
+COPY src/win-arena-container/start_client.sh /start_client.sh
+COPY src/win-arena-container/start_vm.sh /start_vm.sh
+COPY src/win-arena-container/entry.sh /entry.sh
+
+RUN find / -maxdepth 3 -type f -name "*.sh" -exec dos2unix {} \; && chmod +x /*.sh
+
+# Install fuse - proxy is needed here
+# By now, the ENV http_proxy and https_proxy should have been set.
+RUN apt-get update && apt-get install -y fuse3 
+
+ENV YRES="900"
+ENV XRES="1440"
+ENV RAM_SIZE="8G"
+ENV CPU_CORES="8"
+ENV VERSION="win11x64-enterprise-eval"
+ENV DISK_SIZE="30G"
+
+# Enable QEMU's JSON-based QEMU Machine Protocol (QMP)
+ENV ARGUMENTS="-qmp tcp:0.0.0.0:7200,server,nowait"
+
+ENTRYPOINT ["/bin/bash", "-c"]

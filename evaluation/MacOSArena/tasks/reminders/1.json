@@ -1,0 +1,49 @@
+{
+    "id": "reminders_1",
+    "system_img": "default",
+    "instruction": "In the Reminders app, create a reminder named 'work' that is due at 11:59 PM, and set its due date to 'Next Week'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_check_work_due_next_week", "reminders_check_due_time"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "work"
+        },
+        {
+          "reminder_name": "work",
+          "target_hour": 23,
+          "target_minute": 59     
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          }
+      ]
+    }
+  }
+  

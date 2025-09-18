@@ -1,0 +1,48 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 149,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Get directions from Carnegie Hall in NYC to Carnegie Mellon University using driving options.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div#content select.routing_engines\").selectedIndex",
+        "required_contents": {
+          "exact_match": "1"
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_from\"').value",
+        "required_contents": {
+          "must_include": [
+            "Carnegie Hall",
+            "West 57th Street",
+            "Manhattan",
+            "New York"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[name=\"route_to\"').value",
+        "required_contents": {
+          "must_include": [
+            "Carnegie Mellon University",
+            "Pittsburgh"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 762
+}

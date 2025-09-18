@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 61,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "See all public projects",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6669/explore |OR| http://10.140.52.49:6669/explore?sort=name_asc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=latest_activity_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=created_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=name_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=stars_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=latest_activity_asc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=created_asc&visibility_level=20",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 258
+}

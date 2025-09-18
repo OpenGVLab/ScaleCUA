@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Add a new color blue to size S and M of Frankie Sweatshirt",
+    "task_config": {
+        "example_id": "122.json",
+        "file_path": "config/env/webarena/tasks/122.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

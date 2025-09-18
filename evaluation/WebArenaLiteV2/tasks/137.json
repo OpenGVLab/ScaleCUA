@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Fill the \"contact us\" form in the site for a refund on the speaker I bought, stating that it broke after just three days of use. Also, ensure to include the order number #148 and the product SKU. Don't submit yet, I will check.",
+    "task_config": {
+        "example_id": "137.json",
+        "file_path": "config/env/webarena/tasks/137.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

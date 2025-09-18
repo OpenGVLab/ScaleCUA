@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How much refund I should expect from my order canceled in 2022, including shipping fee",
+    "task_config": {
+        "example_id": "74.json",
+        "file_path": "config/env/webarena/tasks/74.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

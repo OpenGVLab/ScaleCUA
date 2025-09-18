@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
+    "task_config": {
+        "example_id": "90.json",
+        "file_path": "config/env/webarena/tasks/90.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 140,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Draft and submit an email to the shop owner via their contact us function for a coupon as my refund is suppoed to be replaced by a coupon",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6666/contact/index/",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 693
+}

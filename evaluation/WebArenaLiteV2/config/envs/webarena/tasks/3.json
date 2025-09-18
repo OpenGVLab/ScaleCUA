@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 3,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Compare the difference in time for walking and driving route from Randyland to Carnegie Mellon University",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "driving: 13min",
+        "walking: 1h 44min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "driving: 13min, walking: 1h 45min."
+  },
+  "old_task_id": 20
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Buy the best rating product from \"Men's Shoe\" category with at least 5 reviews and the product is least expensive",
+    "task_config": {
+        "example_id": "114.json",
+        "file_path": "config/env/webarena/tasks/114.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,36 @@
+{
+    "id": "mac_system_settings_multi_2",
+    "system_img": "default",
+    "instruction": "Please download a photo of Stephen Curry using Safari, save it as curry.jpg, and set it as the desktop wallpaper.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'System Settings'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "mac_system_settings",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["settings_set_desktop_wallpaper"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str",
+          "parameters": ["curry.jpg"]
+        }
+        }]
+    }
+  }
+  

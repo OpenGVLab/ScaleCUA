@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me who has made the most contributions, in terms of number of commits, to the Pytorch GAN project",
+    "task_config": {
+        "example_id": "71.json",
+        "file_path": "config/env/webarena/tasks/71.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

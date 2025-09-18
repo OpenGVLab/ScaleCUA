@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Go to the merge request on verification functions assigned to me, find if the author of the merge request responded at the end, and reply \"Thank you\" if he did. Otherwise remind him with a simple @.",
+    "task_config": {
+        "example_id": "97.json",
+        "file_path": "config/env/webarena/tasks/97.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

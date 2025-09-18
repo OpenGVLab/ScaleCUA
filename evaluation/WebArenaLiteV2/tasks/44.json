@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Open my latest created issue that has homepage content in its title to check if it is closed",
+    "task_config": {
+        "example_id": "44.json",
+        "file_path": "config/env/webarena/tasks/44.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

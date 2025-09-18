@@ -1,0 +1,37 @@
+{
+    "id": "notes_3",
+    "system_img": "default",
+    "instruction": "Create a new folder named \"Homework\" in the Notes app. Then, create a note titled \"homework_1\" inside that folder and add the following content to the note:\n\nMath exercises:\n(1) Solve problems 1-5 on page 42\n(2) Show all your steps\n(3) Submit by Friday",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_get_note_plaintext_by_name"],
+      "conj": "and",
+      "parameters": [
+        {
+          "name": "homework_1",
+          "folder": "Homework"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": ["Math exercises:\n(1) Solve problems 1-5 on page 42\n(2) Show all your steps\n(3) Submit by Friday"]
+        }
+        }]
+    }
+  }
+  

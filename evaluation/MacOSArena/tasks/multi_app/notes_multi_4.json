@@ -1,0 +1,37 @@
+{
+    "id": "notes_7",
+    "system_img": "default",
+    "instruction": "In the Safari app, search for the official website of Shanghai Jiao Tong University and locate its postal code listed there; then in the Notes app, create a folder named \"Shanghai Jiao Tong University\", add a note titled \"Postal Code\", and enter only the numeric postal code (no other information).",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_get_note_plaintext_by_name"],
+      "conj": "and",
+      "parameters": [
+        {
+          "name": "Postal Code",
+          "folder": "Shanghai Jiao Tong University"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": ["200240"]
+        }
+        }]
+    }
+  }
+  

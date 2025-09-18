@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 145,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "DisLike all submissions created by AdamCannon in subreddit UpliftingNews",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/f/UpliftingNews/16087/same-sex-marriage-is-now-legal-in-all-of-mexico-s-states",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-downvoted"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 729
+}

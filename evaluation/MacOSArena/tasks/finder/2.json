@@ -1,0 +1,39 @@
+{
+    "id": "finder_2",
+    "system_img": "default",
+    "instruction": "In Finder, navigate to the folder located at /Users/Shared/example_test. Then, tag the files larger than 100KB with the \"Red\" tag.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Finder'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "finder"
+    ],
+    "evaluator": {
+      "func": ["finder_check_tagged_files_strict"],
+      "conj": "and",
+      "parameters": [
+        {
+          "directory": "/Users/Shared/example_test",
+          "expected_tagged_files": ["file_b.dat", "file_d.dat"], 
+          "target_tag": "Red"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }
+        ]
+    }
+  }
+  

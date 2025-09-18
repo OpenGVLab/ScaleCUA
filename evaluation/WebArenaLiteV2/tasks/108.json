@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Vinta wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+    "task_config": {
+        "example_id": "108.json",
+        "file_path": "config/env/webarena/tasks/108.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

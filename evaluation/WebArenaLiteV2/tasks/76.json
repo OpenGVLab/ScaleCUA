@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How much did I spend on shopping at One Stop Market on November 2022? They gave me a 20% discount on the total amount for orders exceeding $200 in cash",
+    "task_config": {
+        "example_id": "76.json",
+        "file_path": "config/env/webarena/tasks/76.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

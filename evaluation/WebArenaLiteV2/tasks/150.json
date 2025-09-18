@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "5 blue Cronus yoga pants with size 33 arrived, update the stock",
+    "task_config": {
+        "example_id": "150.json",
+        "file_path": "config/env/webarena/tasks/150.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

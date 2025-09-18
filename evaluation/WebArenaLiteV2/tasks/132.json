@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Create a discussion post about \"Iphone 14\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
+    "task_config": {
+        "example_id": "132.json",
+        "file_path": "config/env/webarena/tasks/132.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

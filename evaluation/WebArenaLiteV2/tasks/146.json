@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Edit my post on Star Trek Starfleet Academy series by adding a line to the body that says \"Every watch makes me feel like a kid again\"",
+    "task_config": {
+        "example_id": "146.json",
+        "file_path": "config/env/webarena/tasks/146.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

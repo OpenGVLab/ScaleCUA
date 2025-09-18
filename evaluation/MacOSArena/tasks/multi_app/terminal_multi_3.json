@@ -1,0 +1,56 @@
+{
+    "id": "multiapp_3",
+    "system_img": "default",
+    "instruction": "Check the contents of path.txt, and delete files in the ~/Documents directory that are not listed in path.txt",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "echo -e \"~/Documents/test1.txt\n~/Documents/test2.txt\" > ~/Desktop/path.txt"
+          ]
+        }
+      },
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "touch ~/Documents/test1.txt ~/Documents/test2.txt ~/Documents/test3.txt"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "finder",
+      "terminal"
+    ],
+    "evaluator": {
+        "func": ["terminal_check_files_in_directory", "terminal_check_files_in_directory"],
+        "conj": "and",
+        "parameters": [
+          {
+            "folder_path": "~/Documents",
+            "required_files": ["test1.txt", "test2.txt"] 
+          },
+          {
+            "folder_path": "~/Documents",
+            "required_files": ["test3.txt"] 
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          },
+          {
+            "type": "common",
+            "rules": {
+              "func": "is_false",
+              "parameters": []
+            }
+            }]
+      }
+}

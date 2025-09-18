@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 17,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "What is the total count of Pending reviews amongst all the reviews?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "5"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "5"
+  },
+  "old_task_id": 77
+}

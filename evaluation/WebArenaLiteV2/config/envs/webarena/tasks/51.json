@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 51,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Tell me the walking distance from nearby hotels to Gardner Steel Conference Center, that take at most 5 minutes?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "Courtyard Pittsburgh University Center: 375m",
+        "The Oaklander Hotel: 351m"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Courtyard Pittsburgh University Center: 375m\nThe Oaklander Hotel: 351m"
+  },
+  "old_task_id": 220
+}

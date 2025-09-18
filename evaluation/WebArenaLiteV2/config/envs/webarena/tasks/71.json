@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 71,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Tell me who has made the most contributions, in terms of number of commits, to the Pytorch GAN project",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Erik Linder-Nor\u00e9n"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Erik Linder-Nor\u00e9n"
+  },
+  "old_task_id": 311
+}

@@ -1,0 +1,36 @@
+{
+    "id": "calendar_2",
+    "system_img": "default",
+    "instruction": "In the Calendar App, create a new calendar named 'group meeting'. Then, create at least three events in this calendar",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar"
+    ],
+    "evaluator": {
+      "func": ["calendar_check_calendar_with_at_least_3_events"],
+      "conj": "and",
+      "parameters": [
+        {
+          "calendar_name": "group meeting"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

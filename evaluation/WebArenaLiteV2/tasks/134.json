@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post a notice on a virtual meetup for Harry Potter enthusiasts on July 8th in the books subreddit",
+    "task_config": {
+        "example_id": "134.json",
+        "file_path": "config/env/webarena/tasks/134.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

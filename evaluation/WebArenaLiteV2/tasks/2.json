@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the the number of reviews that our store received by far that mention term \"best\" in review body",
+    "task_config": {
+        "example_id": "2.json",
+        "file_path": "config/env/webarena/tasks/2.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

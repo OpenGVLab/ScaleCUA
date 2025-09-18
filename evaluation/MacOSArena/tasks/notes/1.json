@@ -1,0 +1,35 @@
+{
+    "id": "notes_1",
+    "system_img": "default",
+    "instruction": "Create a new note titled \"Diary\" in the Notes app, and then lock the note with password '1234'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_list_locked_note_titles"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "contains_element",
+          "parameters": ["Diary"]
+        }
+        }]
+    }
+  }
+  

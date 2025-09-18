@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Upvote the newest post in books subreddit",
+    "task_config": {
+        "example_id": "96.json",
+        "file_path": "config/env/webarena/tasks/96.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

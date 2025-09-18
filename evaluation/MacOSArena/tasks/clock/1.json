@@ -1,0 +1,44 @@
+{
+    "id": "clock_1",
+    "system_img": "default",
+    "instruction": "In the Clock App, set an alarm for 6:30 AM on weekdays (Monday through Friday) labeled 'Morning run', using the 'Waves' sound. Then, turn off this alarm.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Clock'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "clock"
+    ],
+    "evaluator": {
+      "func": ["clock_list_alarms"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+      {
+        "type": "common",
+        "rules": {
+          "func": "find_dict",
+          "parameters": [
+            {
+              "time": "6:30AM",
+              "label": "Morning run",
+              "repeat": "Weekdays",
+              "sound": "Waves",
+              "enabled": false
+            }
+          ]
+        }
+      }
+      ]
+    }
+  }
+  

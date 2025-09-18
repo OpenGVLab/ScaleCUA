@@ -1,0 +1,24 @@
+agent:
+    name: OpenAIAgent
+    args:
+        api_key: sk-
+        api_base: "https://api.openai.com/v1"
+        model_name: "gpt-4o"
+        max_new_tokens: 512
+
+task:
+  class: ScreenshotMobileTask_AutoTest
+  args:
+    save_dir: "./logs/evaluation"
+    max_rounds: 25
+    request_interval: 3
+
+eval:
+  avd_name: Pixel_7_Pro_API_33
+  avd_log_dir: ./logs/evaluation
+  docker: True
+  docker_args:
+    image_name: android_eval:latest
+    port: 6060
+
+

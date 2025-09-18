@@ -1,0 +1,35 @@
+{
+    "id": "vscode_3",
+    "system_img": "default",
+    "instruction": "In VS Code, install the official Python extension. Then, set the user-level conda path setting to '/opt/anaconda3/bin/conda'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Visual Studio Code'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "vscode"
+    ],
+    "evaluator": {
+      "func": ["vscode_check_python_extension_and_conda_path"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

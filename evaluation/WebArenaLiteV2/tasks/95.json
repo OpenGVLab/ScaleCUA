@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Change my reddit bio to \"Seeking SDE positions\"",
+    "task_config": {
+        "example_id": "95.json",
+        "file_path": "config/env/webarena/tasks/95.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

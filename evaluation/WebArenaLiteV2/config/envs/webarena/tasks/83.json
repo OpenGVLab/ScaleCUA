@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 83,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Measure distance between Carnegie Mellon University and CVS (closet one) by walking",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "1.4 km"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "1.4km, CVS Pharmacy, 4610, Centre Avenue, North"
+  },
+  "old_task_id": 367
+}

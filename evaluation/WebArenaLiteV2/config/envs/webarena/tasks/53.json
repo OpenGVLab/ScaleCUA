@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 53,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "What do customers say about brush from sephora",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "No reviews available for the sephora brushes."
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "The sephora brushes don't have reviews",
+    "reference_answer_raw_annotation": "N/A"
+  },
+  "old_task_id": 225
+}

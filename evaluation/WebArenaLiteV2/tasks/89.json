@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I am arriving at Carnegie Mellon University. Find the nearby US Citizenship and Immigration Services and tell me the walking distance to the nearest Social Security Administration from US Citizenship and Immigration Services",
+    "task_config": {
+        "example_id": "89.json",
+        "file_path": "config/env/webarena/tasks/89.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

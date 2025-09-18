@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the color configuration of the artifical plants I bought Feb 2023",
+    "task_config": {
+        "example_id": "36.json",
+        "file_path": "config/env/webarena/tasks/36.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

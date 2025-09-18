@@ -1,0 +1,46 @@
+{
+    "id": "finder_multi_3",
+    "system_img": "default",
+    "instruction": "I would like to find all PDF files that have been modified in the last 7 days. Please use the terminal to locate these PDFs and write their file paths into a text file named \"PDF_modified_in_last_7_days.txt\" in the ~/Library/Saved directory.",
+    "config": [
+      {
+        "type": "cmd",
+          "parameters": {
+            "command": [
+              "mkdir ~/Library/Saved",
+              "echo 'This is Document A' > ~/Documents/docA.txt",
+              "echo 'This is Document B' > ~/Documents/docB.txt",
+              "echo 'This is Shared A' > /Users/Shared/sharedA.txt",
+              "echo 'This is Shared B' > /Users/Shared/sharedB.txt",
+              "cupsfilter -o ~/Documents/docA.txt  ~/Documents/docA.pdf",
+              "cupsfilter -o ~/Documents/docB.txt  ~/Documents/docB.pdf",
+              "cupsfilter -o /Users/Shared/sharedA.txt  /Users/Shared/sharedA.pdf",
+              "cupsfilter -o /Users/Shared/sharedB.txt  /Users/Shared/sharedB.pdf"
+            ]
+          }
+      }
+    ],
+    "related_apps": [
+      "finder",
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["finder_read_file_contents"],
+      "conj": "and",
+      "parameters": [
+        {
+          "file_path": "~/Library/Saved/PDF_modified_in_last_7_days.txt"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": [["Documents/docA.pdf", "Documents/docB.pdf", "/Users/Shared/sharedA.pdf", "/Users/Shared/sharedB.pdf"]]
+        }
+        }
+        ]
+    }
+  }
+  

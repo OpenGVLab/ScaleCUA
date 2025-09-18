@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 35,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "0"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "0"
+  },
+  "old_task_id": 144
+}

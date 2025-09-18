@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 113,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Buy the highest rated product from the Meat Substitute category within a budget between 100 and 200.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "func:shopping_get_latest_order_url()",
+        "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+        "required_contents": {
+          "must_include": [
+            "B01CTR3DLE"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 506
+}

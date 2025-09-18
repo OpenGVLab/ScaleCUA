@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "List the top 3 search terms in my store",
+    "task_config": {
+        "example_id": "8.json",
+        "file_path": "config/env/webarena/tasks/8.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,28 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 143,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Thumbs down the top 1 post ever in gadgets.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/f/gadgets/19459/a-custom-gaming-pc-built-inside-a-vintage-1940s-motorola",
+        "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+        "required_contents": {
+          "must_include": [
+            "vote vote--user-downvoted"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 714
+}

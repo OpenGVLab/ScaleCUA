@@ -1,0 +1,80 @@
+APP: bluecoins
+package: com.rammigsoftware.bluecoins
+tasks:
+  # query
+  - task_id: bluecoins_1
+    task: Could you tell me how much I spent on May 10, 2024?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_2
+    task: What was the reason behind the 388.88 CNY I spent on May 3, 2024?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_3
+    task: How much did I shell out in total on May 6, 2024?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_4
+    task: How many transactions did I make all together on May 6, 2024?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_5
+    task: What's the total amount I spent on taxis this week?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.bluecoins
+
+  # operation_create
+  - task_id: bluecoins_6
+    task: Log an expenditure of 512 CNY in the books.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_7
+    task: Record an income of 8000 CNY in the books, and mark it as 'salary'.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_8
+    task: Note down an expense of 768 CNY for May 11, 2024.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_9
+    task: For March 8, 2024, jot down an income of 3.14 CNY with 'Weixin red packet' as the note.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_10
+    task: For May 14, 2024, record an expenditure of 256 CNY, marked as 'eating'.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  # operation_edit
+  - task_id: bluecoins_11
+    task: Adjust the expenditure on May 15, 2024, to 500 CNY.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_12
+    task: Shift the income entry from May 12th, 2024, to May 10th, 2024, and update the amount to 18,250 CNY.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_13
+    task: Switch the May 13, 2024, transaction from 'expense' to 'income' and add 'Gift' as the note.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_14
+    task: Change the type of the transaction on May 2, 2024, from 'income' to 'expense', adjust the amount to 520 CNY, and change the note to 'Wrong Operation'.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins
+
+  - task_id: bluecoins_15
+    task: Move the expense entry from May 12, 2024, to May 13, 2024, adjust the amount to 936.02 CNY, and update the note to 'Grocery Shopping'.
+    metric_type: operation
+    metric_func: evaluation.tasks.bluecoins

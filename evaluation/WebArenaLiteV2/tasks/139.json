@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Lookup orders that are canceled",
+    "task_config": {
+        "example_id": "139.json",
+        "file_path": "config/env/webarena/tasks/139.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

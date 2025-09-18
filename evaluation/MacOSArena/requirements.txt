@@ -1,0 +1,11 @@
+paramiko
+pyautogui
+pyyaml
+openai>=1.77.0
+requests
+backoff
+dashscope>=1.23.2
+google-generativeai>=0.8.5
+groq>=0.24.0
+tiktoken
+astor

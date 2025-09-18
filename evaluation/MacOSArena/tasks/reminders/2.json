@@ -1,0 +1,38 @@
+{
+    "id": "reminders_2",
+    "system_img": "default",
+    "instruction": "In the Reminders app, create a new reminder list named 'Schedule' and add a reminder 'study' due in year 2100.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_get_due_year"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "study",
+          "list_name": "Schedule"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "exact_match",
+          "parameters": [2100]
+        }
+        }
+      ]
+    }
+  }
+  

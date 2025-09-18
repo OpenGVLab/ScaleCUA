@@ -1,0 +1,36 @@
+{
+  "id": "multiapp_2",
+  "system_img": "default",
+  "instruction": "Can you help me copy the command shown in Safari and run it in the terminal to show top 10 largest files?",
+  "config": [
+    {
+      "type": "cmd",
+      "parameters": {
+        "command": [
+          "open -a Safari https://unix.stackexchange.com/questions/37221/finding-files-that-use-the-most-disk-space"
+        ]
+      }
+    }
+  ],
+  "related_apps": [
+    "safari",
+    "terminal"
+  ],
+  "evaluator": {
+      "func": ["terminal_check_command_in_history"],
+      "conj": "and",
+      "parameters": [
+        {
+        "target_command": "du . | sort -nr | head -n10"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How many reviews our shop received in May 2023?",
+    "task_config": {
+        "example_id": "78.json",
+        "file_path": "config/env/webarena/tasks/78.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

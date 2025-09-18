@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show the least expensive switch card holder with a minimum storage capacity of 15 cards.",
+    "task_config": {
+        "example_id": "66.json",
+        "file_path": "config/env/webarena/tasks/66.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

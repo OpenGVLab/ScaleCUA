@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 12,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Tell me the closest cafe(s) to Hunt library, Pittsburgh",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "De Fer Coffee & Tea"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "De Fer Coffee & Tea"
+  },
+  "old_task_id": 58
+}

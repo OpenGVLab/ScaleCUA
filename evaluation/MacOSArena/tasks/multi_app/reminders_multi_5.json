@@ -1,0 +1,38 @@
+{
+    "id": "reminders_8",
+    "system_img": "default",
+    "instruction": "In the Terminal app, find the current macOS version and determine its version name (e.g., “Ventura”); in the Safari app, look up the release year of that macOS version; then in the Reminders app, create a list named “Apple Systems” and add a reminder titled “{macOS Version} Release” (with the first letter capitalized) with its due date set to that release year.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_get_due_year"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "Apple Systems”",
+          "list_name": "Sonoma"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "exact_match",
+          "parameters": [2025] 
+        }
+        }
+      ]
+    }
+  }
+  

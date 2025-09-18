@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I have jaw bruxism problem, show me something that could alleviate the problem.",
+    "task_config": {
+        "example_id": "28.json",
+        "file_path": "config/env/webarena/tasks/28.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

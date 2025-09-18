@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Like all submissions created by CameronKelsey in subreddit earthporn",
+    "task_config": {
+        "example_id": "144.json",
+        "file_path": "config/env/webarena/tasks/144.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

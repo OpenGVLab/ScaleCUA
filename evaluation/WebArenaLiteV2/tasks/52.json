@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I am at CMU Pittsburgh, how long it takes to the nearest United States Postal Service with different transportation methods?",
+    "task_config": {
+        "example_id": "52.json",
+        "file_path": "config/env/webarena/tasks/52.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

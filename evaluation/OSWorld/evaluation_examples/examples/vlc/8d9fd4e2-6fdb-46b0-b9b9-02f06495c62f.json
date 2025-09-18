@@ -1,0 +1,55 @@
+{
+  "id": "8d9fd4e2-6fdb-46b0-b9b9-02f06495c62f",
+  "snapshot": "base_setup",
+  "instruction": "Can you make the video fill up the whole screen? It's a bit too small to see right now, and I'd like to see it better.",
+  "source": "https://www.youtube.com/watch?v=XHprwDJ0-fU&t=436s",
+  "config":  [
+    {
+      "type": "download",
+      "parameters": {
+        "files": [
+          {
+            "url": "https://drive.usercontent.google.com/download?id=13OhDRuINzQ-w0qmzdGJ8ZSWnKyKnTRje&export=download&authuser=0&confirm=t&uuid=39cf0297-23eb-47df-a642-fd6c2f981eff&at=APZUnTUR83eI1tenMxVdyFxNeBo7:1706275408621",
+            "path": "/home/user/Desktop/Gen 2.mp4"
+          }
+        ]
+      }
+    },
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "vlc",
+          "--aout",
+          "dummy",
+          "--start-time=15",
+          "/home/user/Desktop/Gen 2.mp4"
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import pyautogui; import time; pyautogui.click(960, 540); time.sleep(0.5);"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "vlc"
+  ],
+  "evaluator": {
+    "func": "is_vlc_fullscreen",
+    "expected": {
+      "type": "vm_window_size",
+      "app_class_name": "vlc"
+    },
+    "result": {
+      "type": "vm_screen_size"
+    }
+  }
+}

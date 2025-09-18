@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 151,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Change the delivery address for my most recent order to 77 Massachusetts Ave, Cambridge, MA.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "The shipping address cannot be changed after an order is placed in the website."
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "The shipping address cannot be changed after an order is placed in the website.",
+    "reference_answer_raw_annotation": "N/A"
+  },
+  "old_task_id": 798
+}

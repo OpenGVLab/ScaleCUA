@@ -1,0 +1,64 @@
+# Declare all global build arguments at the beginning of the Dockerfile
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG PROFILE_MODE=false 
+
+# Stage 1: Pull Python from the official Python Docker image
+FROM python:3.9-slim AS python-stage
+# This stage has no network operations in this Dockerfile, so setting proxy ENVs here is not strictly necessary.
+
+# Optional: Stage 2: Pull CUDA 11.8
+FROM nvidia/cuda:11.8.0-base-ubuntu22.04 AS cuda-stage
+# This stage has no network operations in this Dockerfile.
+
+# Stage 3: Start from the windows-local base image
+FROM windowsarena/windows-local:latest
+
+# Set proxy environment variables for this stage (using the global ARGs)
+# This needs to be done before any RUN command that requires network access.
+ENV http_proxy=$HTTP_PROXY
+ENV https_proxy=$HTTPS_PROXY
+ENV HTTP_PROXY=$HTTP_PROXY 
+ENV HTTPS_PROXY=$HTTPS_PROXY 
+
+# Install necessary packages and clean up in one layer to reduce image size
+RUN apt-get update && apt-get install -y \
+    dos2unix \
+    libgl1 \
+    libevdev-dev \
+    python3-dev \
+    build-essential \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Optional: Copy CUDA libraries and binaries from the CUDA stage
+COPY --from=cuda-stage /usr/local/cuda-11.8 /usr/local/cuda-11.8
+ENV PATH="/usr/local/cuda-11.8/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda-11.8/lib64:${LD_LIBRARY_PATH}"
+
+# Copy Python binaries and libraries from the Python stage
+COPY --from=python-stage /usr/local /usr/local
+
+# Ensure scripts are callable by creating symbolic links
+RUN ln -s /usr/local/bin/python /usr/bin/python && \
+    ln -s /usr/local/bin/pip /usr/bin/pip
+
+# Copy the client application and requirements file
+COPY src/win-arena-container/client/requirements.txt /client/requirements.txt
+
+# Install Python dependencies from requirements.txt
+# Consolidate all Python package installations into a single RUN statement to minimize layers
+RUN pip install --no-cache-dir -r /client/requirements.txt && \
+    pip install --no-cache-dir requests easyocr tenacity onnxruntime pyOpenSSL sentencepiece anytree
+
+# Download model weights
+# Note: wget, apt-get install git, and git clone will all use the proxy set above
+RUN mkdir -p /models/groundingDINO/ && \
+    wget -q https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth -O /models/groundingDINO/groundingdino_swint_ogc.pth && \
+    apt-get update && apt-get install -y git git-lfs && git lfs install && \
+    git clone https://huggingface.co/microsoft/OmniParser /models/omni
+
+# Conditionally run disk usage analysis if PROFILE_MODE is true
+RUN if [ "$PROFILE_MODE" = "true" ]; then \
+        du -ah / | sort -rh | head -n 50 > /du_output.txt; \
+    fi

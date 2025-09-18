@@ -1,0 +1,37 @@
+{
+    "id": "notes_5",
+    "system_img": "default",
+    "instruction": "In the Calendar app, locate the event scheduled on June 10, 2050; then in the Notes app, create a folder named after that event's title and add at least two notes inside it.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'",
+            "osascript -e 'tell application \"Calendar\"' -e 'if not (exists calendar \"Team Presentations\") then make new calendar with properties {name:\"Team Presentations\"}' -e 'tell calendar \"Team Presentations\"' -e 'make new event with properties {summary:\"Team Presentation\", start date:date \"June 10, 2050 at 10:00 AM\", end date:date \"June 10, 2050 at 11:00 AM\"}' -e 'end tell' -e 'end tell'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_count_notes_in_folder"],
+      "conj": "and",
+      "parameters": [
+        {
+          "folder_name": "Team Presentation"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "compare_numbers",
+          "parameters": [">=", 2]
+        }
+        }]
+    }
+  }
+  

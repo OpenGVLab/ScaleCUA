@@ -1,0 +1,8 @@
+mode: docker
+platform: linux
+docker_name: evalkit_macos_uitars-gpt_single
+host_ip: localhost
+port: 50946
+username: pipiwu
+password: "1234"
+action_space: "pyautogui"

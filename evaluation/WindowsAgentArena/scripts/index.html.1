@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Debian mirrors backed by Fastly CDN</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Debian mirrors backed by Fastly CDN</H1>
+
+<p>
+This is <code>deb.debian.org</code>.
+
+This service provides mirrors for the following Debian archive repositories:
+<ul>
+  <li><code>/debian/</code></li>
+  <li><code>/debian-debug/</code></li>
+  <li><code>/debian-ports/</code></li>
+  <li><code>/debian-security/</code></li>
+  <li><code>/debian-security-debug/</code></li>
+</ul>
+
+<p>
+The server <code>deb.debian.org</code> does not have packages itself, but the
+name has SRV records in DNS that lets apt <em>in stretch and later</em> find places.
+
+<p>
+To use it with a sufficiently recent apt, you for instance can put
+<pre>
+deb http://deb.debian.org/debian unstable main
+deb http://deb.debian.org/debian-debug unstable-debug main
+deb http://deb.debian.org/debian-ports unstable main
+</pre>
+in your <code>sources.list</code>.
+
+
+<p>
+As of July 2022 the SRV record is
+<pre>
+_http._tcp.deb.debian.org.    IN      SRV     10 1 80 prod.debian.map.fastly.net.
+</pre>
+
+If you hit the server behind <code>deb.debian.org</code> directly, either because you
+use an older apt or because you use a HTTP proxy that does not support SRV records,
+your requests will get HTTP redirected to one of the CDN instances.
+
+If you want to avoid the redirects, you can pick one instance directly.  For instance,
+this also works in your <code>sources.list</code>:
+<pre>
+deb http://cdn-fastly.deb.debian.org/debian stable main
+deb http://cdn-fastly.deb.debian.org/debian-security stable-security main
+deb http://cdn-fastly.deb.debian.org/debian-security-debug stable-security-debug main
+</pre>
+
+This service is sponsored by <a href="https://www.fastly.com/">Fastly</a>.
+
+<P>
+<HR NOSHADE />
+<FONT size="-1"><a href="mailto:dsa@debian.org">DSA</a></FONT>
+
+</BODY>
+</HTML>

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post a review of my recent reading \"big little lies\" in the r/books with my comment \"can't stop it\".",
+    "task_config": {
+        "example_id": "130.json",
+        "file_path": "config/env/webarena/tasks/130.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

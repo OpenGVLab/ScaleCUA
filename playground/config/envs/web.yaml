@@ -1,0 +1,22 @@
+platform: web
+# Pure Web don't need server_path, Ubuntu Web need server_path
+server_path:
+# Actual Screenshot Width
+width: 1280
+# Actual Screenshot Height
+height: 720
+# Device Pixel Rate
+dpr: 1
+# Page Load Timeout
+wait_timeout: 60
+# Format: http://{name}:{key}@{ip}:{port}
+web_proxy:
+# web_proxy: http://xxx:xxx@xxx:xxx
+# Explicitly Allowed Ports (Playwright only exposes HTTP, HTTPS port default)
+explicitly_allowed_ports:
+  - 6666
+  - 6667
+  - 6668
+  - 6669
+  - 6670
+  - 6671

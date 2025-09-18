@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the all international airports that are within a driving distance of 50 km to Carnegie Mellon University",
+    "task_config": {
+        "example_id": "1.json",
+        "file_path": "config/env/webarena/tasks/1.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

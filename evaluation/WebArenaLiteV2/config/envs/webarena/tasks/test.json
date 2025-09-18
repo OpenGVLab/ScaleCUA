@@ -1,0 +1,4100 @@
+[
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 0,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "What are the top-3 best-selling product in Jan 2023",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Impulse Duffle",
+                    "Overnight Duffle",
+                    "Hawkeye Yoga Short-32-Blue"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Impulse Duffle, Overnight Duffle, Hawkeye Yoga Short-32-Blue"
+        },
+        "old_task_id": 4
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 1,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Tell me the all international airports that are within a driving distance of 50 km to Carnegie Mellon University",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Pittsburgh International Airport"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Pittsburgh International Airport People Movers, Airport Boulevard, Findlay Township, Allegheny County, Pennsylvania, 15231, United States"
+        },
+        "old_task_id": 7
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 2,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Tell me the the number of reviews that our store received by far that mention term \"best\" in review body",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "2"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "2"
+        },
+        "old_task_id": 15
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 3,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Compare the difference in time for walking and driving route from Randyland to Carnegie Mellon University",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "driving: 13min",
+                    "walking: 1h 44min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "driving: 13min, walking: 1h 45min."
+        },
+        "old_task_id": 20
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 4,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666/3-pack-samsung-galaxy-s6-screen-protector-nearpow-tempered-glass-screen-protector-with-9h-hardness-crystal-clear-easy-bubble-free-installation-scratch-resist.html",
+        "intent": "List out reviewers, if exist, who mention about good fingerprint resistant",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Rachel",
+                    "T. Gannon"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Rachel, T. Gannon, "
+        },
+        "old_task_id": 23
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 5,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the Showerthoughts forum.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "0"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "0"
+        },
+        "old_task_id": 27
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 6,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the shortest walking distance to a supermarket from the hotel.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "DoubleTree by Hilton Hotel Pittsburgh Airport",
+                    "1.4km"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 1.4km"
+        },
+        "old_task_id": 33
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 7,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Check if the Pittsburgh Bureau of Police can be reached in one hour by car from gates building at CMU",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Yes"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Yes"
+        },
+        "old_task_id": 37
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 8,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "List the top 3 search terms in my store",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "hollister",
+                    "Joust Bag",
+                    "nike"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "hollister, Joust Bag, nike"
+        },
+        "old_task_id": 43
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 9,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Check out my todos",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/dashboard/todos",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 44
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 10,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past three days, and the total amount of money I spent.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "0 order",
+                    "$0 total spend"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "0 order, $0 total spend"
+        },
+        "old_task_id": 48
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 11,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "How long does it take to walk from Carnegie Museum of Art to Sorrells Library?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "11 min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "11 min"
+        },
+        "old_task_id": 56
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 12,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Tell me the closest cafe(s) to Hunt library, Pittsburgh",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "De Fer Coffee & Tea"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "De Fer Coffee & Tea"
+        },
+        "old_task_id": 58
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 13,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Which customer has completed the fifth most number of orders in the entire history?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Matt Baker"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Matt Baker"
+        },
+        "old_task_id": 65
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 14,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Among the top 10 post in \"books\" forum, is there any post talks about supporting local book stores? If so, tell me the organizations involved",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "bookshop.org"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "bookshop.org"
+        },
+        "old_task_id": 69
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 15,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "What is the zip code of Chatham University?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "15232 |OR| 15208"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "15232"
+        },
+        "old_task_id": 71
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 16,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Given the following locations, ['Massachusetts Institute of Technology', 'Harvard University', 'Boston Logan International Airport'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "The order is Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
+        },
+        "old_task_id": 75
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 17,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "What is the total count of Pending reviews amongst all the reviews?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "5"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "5"
+        },
+        "old_task_id": 77
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 18,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "What is the duration required to first walk from Massachusetts Institute of Technology to Harvard University, and then drive to Boston Logan International Airport?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "54 min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "63 min"
+        },
+        "old_task_id": 82
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 19,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "From my stay at Homewood Suites Southpointe, what's the estimated driving time to reach PPG Paints Arena?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "34 minutes"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "34 minutes"
+        },
+        "old_task_id": 88
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 20,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Which US states border New Hampshire?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Massachusetts",
+                    "Vermont",
+                    "Maine"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Massachusetts, Vermont, Maine"
+        },
+        "old_task_id": 93
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 21,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Tell me the grand total of invoice 000000002.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "39.64"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "$39.64"
+        },
+        "old_task_id": 95
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 22,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Tell me the status of my latest order and when will it arrive",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "The last order was canceled. It will never arrive."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "reference_answer_raw_annotation": "The last order was canceled. It will never arrive.",
+            "string_note": ""
+        },
+        "old_task_id": 96
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 23,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Where is the nearest cafe(s) to University of Pittsburgh, and what is the walking distance to it?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Fuku Tea, 3716, Forbes Avenue, Oakland, Central Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States",
+                    "653m"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Fuku Tea, 3716, Forbes Avenue, Oakland, Central Oakland, Pittsburgh, Allegheny County, Pennsylvania, 15213, United States\n653m"
+        },
+        "old_task_id": 98
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 24,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Display the list of open issues in the \"Karl Kroening/ffmpeg-python\" repository that have label named question",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/kkroening/ffmpeg-python/-/issues/?sort=created_date&state=opened&label_name%5B%5D=question&first_page_size=20",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 103
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 25,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "01(Jan):11",
+                    "02(Feb):16",
+                    "03(Mar):14",
+                    "04(Apr):8",
+                    "05(May):8",
+                    "06(Jun):13",
+                    "07(Jul):9",
+                    "08(Aug):8",
+                    "09(Sep):10",
+                    "10(Oct):4",
+                    "11(Nov):5",
+                    "12(Dec):10"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "01:11 02:16 03:14 04:8 05:8 06:13 07:9 08:8 09:10 10:4 11:5 12:10"
+        },
+        "old_task_id": 109
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 26,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Show me the name of the customers who have expressed dissatisfaction with Chloe Compete Tank",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Teofila"
+                ],
+                "must_exclude": [
+                    "Emerald",
+                    "Concepcion"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "There is no negative review for Chloe tank",
+            "reference_answer_raw_annotation": ""
+        },
+        "old_task_id": 115
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 27,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What is the date when I made my first purchase on this site?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "3/2/22"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "3/2/22"
+        },
+        "old_task_id": 117
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 28,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "I have jaw bruxism problem, show me something that could alleviate the problem.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": null,
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "jaw bruxism",
+                            "mouth guard"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 118
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 29,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Tell me the reasons why customers like Circe's products",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Warm and comfortable. True to size."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Warm and comfortable. True to size."
+        },
+        "old_task_id": 123
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 30,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What is the price range of mouth guard in the One Stop Market?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "1.13",
+                    "89"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "$1.46 - $85"
+        },
+        "old_task_id": 125
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 31,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "What brands appear most frequently among the top search terms?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Hollister"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Hollister"
+        },
+        "old_task_id": 127
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 32,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "What's the total number of items sold in the most recent 7 orders (no matter orders' status)?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "25"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "25"
+        },
+        "old_task_id": 131
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 33,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "How many commits did Eric and Kilian make to a11yproject on 1/3/2023?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "0 commit"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "0"
+        },
+        "old_task_id": 135
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 34,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "What is the estimated driving time between the hometown of Joe Biden(New Castle County, Delaware) and Bridgeport?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "3h 56min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "3h 20min"
+        },
+        "old_task_id": 139
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 35,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "How much I spent on food shopping during from mid Jan to the end Jan 2023",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "0"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "0"
+        },
+        "old_task_id": 144
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 36,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What is the color configuration of the artifical plants I bought Feb 2023",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Green-vines"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Green-vines"
+        },
+        "old_task_id": 149
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 37,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "What is the minimum travel time by car from Animal Rescue League of Pittsburgh to Schenley park?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "16 min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "9min"
+        },
+        "old_task_id": 155
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 38,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Checkout merge requests assigned to me",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/dashboard/merge_requests?assignee_username=byteblaze |OR| http://10.140.52.49:6669/dashboard/merge_requests?scope=all&state=opened&assignee_username=byteblaze |OR| http://10.140.52.49:6669/dashboard/merge_requests?scope=all&state=all&assignee_username=byteblaze",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 156
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 39,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Show all customers",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6667/admin/customer/index/",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 157
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 40,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "I have a lot of Nintendo Switch game cards now, help me find the best storage option to fit all 40 cards",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/game-card-holder-storage-case-for-nintendo-switch-games-or-ps-vita-game-case-or-sd-memory-cards-black.html",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 162
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 41,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666/photosmart-plus-b209-clr-inkjetfb-p-s-c-usb-wrls-1.html",
+        "intent": "What are the main criticisms of this product? Please extract the relevant sentences.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "The wireless connection works on a whim (about 40% of the time I've owned it)",
+                    "It seems to constantly run out of ink",
+                    "Cartridge prices are less than some printers I've had",
+                    "This printer seems to have more reasons NOT to work (none that are findable or correctable) Ex: error boxes saying that it's out of paper when it automatically switches to photo printing for some reason",
+                    "Scanner is as slow as my first scanner I ever owned in the mid-90's",
+                    "For the $176 I paid, there isn't even a fax component on it. I guess the \"PLUS\" part of it's name is in reference to the migraines it causes when you can't figure out the new reason why it's not working for the 10th time in the past 2 months."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "The wireless connection works on a whim (about 40% of the time I've owned it). It seems to constantly run out of ink. Cartridge prices are less than some printers I've had, but now I understand why. This printer seems to have more reasons NOT to work (none that are findable or correctable) Ex: error boxes saying that it's out of paper when it automatically switches to photo printing for some reason. Scanner is as slow as my first scanner I ever owned in the mid-90's. For the $176 I paid, there isn't even a fax component on it. I guess the \"PLUS\" part of it's name is in reference to the migraines it causes when you can't figure out the new reason why it's not working for the 10th time in the past 2 months."
+        },
+        "old_task_id": 167
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 42,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Tell me the full names of the repositories where I made contributions and they got the most stars?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "a11yproject.com",
+                    "design"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "a11yproject.com, Primer/design"
+        },
+        "old_task_id": 169
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 43,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Open my latest updated issue that has keyword \"better\" in its title to check if it is closed",
+        "eval": {
+            "eval_types": [
+                "string_match",
+                "url_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "No, it is open"
+                ]
+            },
+            "reference_url": "http://10.140.52.49:6669/byteblaze/empathy-prompts/-/issues/8",
+            "program_html": [],
+            "reference_answer_raw_annotation": "Not closed",
+            "string_note": "",
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 173
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 44,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Open my latest created issue that has homepage content in its title to check if it is closed",
+        "eval": {
+            "eval_types": [
+                "string_match",
+                "url_match"
+            ],
+            "reference_answers": {
+                "exact_match": "Yes"
+            },
+            "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/issues/719",
+            "program_html": [],
+            "reference_answer_raw_annotation": "closed",
+            "string_note": ""
+        },
+        "old_task_id": 182
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 45,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Tell me the total cost of my latest complete order?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "65.32"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "65.32"
+        },
+        "old_task_id": 190
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 46,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Compare the payment difference of the last 4 canceled orders and last 4 completed orders",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "194.25"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "194.25"
+        },
+        "old_task_id": 196
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 47,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Get the date of the most recent canceled order",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "May 23 2023"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "May 23, 2023"
+        },
+        "old_task_id": 202
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 48,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com",
+        "intent": "How many commits did kilian make on 3/5/2023?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "1"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "1"
+        },
+        "old_task_id": 205
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 49,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Find the customer name and email with phone number 8015551212",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Sean Miller",
+                    "sean.miller@gmail.com"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Sean Miller, sean.miller@gmail.com"
+        },
+        "old_task_id": 211
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 50,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "What are the key aspects that the customers don't like about Circe Hooded Ice Fleece",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "material quality",
+                    "strange fit",
+                    "insufficient warmth"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 215
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 51,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Tell me the walking distance from nearby hotels to Gardner Steel Conference Center, that take at most 5 minutes?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Courtyard Pittsburgh University Center: 375m",
+                    "The Oaklander Hotel: 351m"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Courtyard Pittsburgh University Center: 375m\nThe Oaklander Hotel: 351m"
+        },
+        "old_task_id": 220
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 52,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "I am at CMU Pittsburgh, how long it takes to the nearest United States Postal Service with different transportation methods?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Walk: about 10 minute",
+                    "Drive: about 1-2 minute",
+                    "Bike(Bicycle): about 7 minute"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "from USPS, Fifth Avenue, Shadyside, Pittsburgh to Carnegie Mellon University"
+        },
+        "old_task_id": 221
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 53,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What do customers say about brush from sephora",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "No reviews available for the sephora brushes."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "The sephora brushes don't have reviews",
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 225
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 54,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What is the price range for products from EYZUTAK?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "9.99"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "$9.99"
+        },
+        "old_task_id": 227
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 55,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Get the order number of my most recent under delivery order",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "There is no under delivery order"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "There is no under delivery order"
+        },
+        "old_task_id": 235
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 56,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Where is the nearest pharmacy from Carnegie Mellon I can walk within 20mins",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Schiller's Pharmacy, 811, South Aiken Avenue, Shadyside, Pittsburgh"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Schiller's Pharmacy, 811, South Aiken Avenue, Shadyside, Pittsburgh, Allegheny County, 15232, United States"
+        },
+        "old_task_id": 236
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 57,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "I am doing a market survey for one stop market, show me the most expensive product from Competative Swimwear category",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/clothing-shoes-jewelry/sport-specific-clothing/competitive-swimwear.html?product_list_order=price&product_list_dir=desc |OR| http://10.140.52.49:6666/clothing-shoes-jewelry.html?cat=149&product_list_order=price&product_list_dir=desc |OR| http://10.140.52.49:6666/women-cross-flower-beachwear-tankini-bandeau-bandage-bikini-set-push-up-swimwear-bathing-suit-two-pieces-swimsuits.html",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 240
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 58,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Show me the email address of the customer who is the most unhappy with the style of Zoe products",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Valorie doesn't have a email in the system"
+                ]
+            },
+            "reference_url": "Valorie doesn't have a email in the system",
+            "program_html": [],
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 247
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 59,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Tell me the coordinates of Apple Store near Pittsburgh in DD format (keep all decimal places)",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "40.4511693",
+                    "-79.9334241"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "40.4511693, -79.9334241"
+        },
+        "old_task_id": 250
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 60,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "What is the phone number of Western Pennsylvania Hospital",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "+1 412 578 5000"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "4125785000"
+        },
+        "old_task_id": 254
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 61,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "See all public projects",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/explore |OR| http://10.140.52.49:6669/explore?sort=name_asc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=latest_activity_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=created_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=name_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=stars_desc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=latest_activity_asc&visibility_level=20 |OR| http://10.140.52.49:6669/explore?sort=created_asc&visibility_level=20",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 258
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 62,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Tell me my RSS feed token",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "TMN_bBn9Z48qVbUFZV45"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "TMN_bBn9Z48qVbUFZV45"
+        },
+        "old_task_id": 259
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 63,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Show me products under $100 in \"Men Shoes\" category",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/clothing-shoes-jewelry/men/shoes.html?price=0-100 |OR| http://10.140.52.49:6666/clothing-shoes-jewelry.html?cat=145&price=0-100",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 270
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 64,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Search for \"switch accessories\"",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/catalogsearch/result/?q=switch+accessories |OR| http://10.140.52.49:6666/catalogsearch/advanced/result/?name=switch+accessories&sku=&description=&short_description=&price[from]=&price[to]=&price[currency]=USD",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 276
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 65,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Look up the most recent models of XBox controllers released between 2020-2021?",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/microsoft-xbox-controller-carbon-black-for-series-x-series-s-xbox-one-windows-10-android-ios-bundled-with-dual-port-charging-dock-xbox-controller-skin-voucher-premgear-cloth.html",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 283
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 66,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Show the least expensive switch card holder with a minimum storage capacity of 15 cards.",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/game-card-holder-storage-case-for-nintendo-switch-games-or-ps-vita-game-case-or-sd-memory-cards-black.html",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 285
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 67,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "How much time does it take from Pittsburgh to Philadelphia by car?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "5h 47min"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "5h 47min"
+        },
+        "old_task_id": 287
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 68,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Tell me the name of the customer who has the most cancellations in the history",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Samantha Jones"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Samantha Jones"
+        },
+        "old_task_id": 288
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 69,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Show me the command to clone the best GAN python implementation with SSH.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "ssh",
+                    "eriklindernoren/PyTorch-GAN.git"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "ssh://git@localhost:2222/eriklindernoren/PyTorch-GAN.git"
+        },
+        "old_task_id": 296
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 70,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Show the most recent pending order",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/sales/order/view/order_id/189/",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 300
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 71,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Tell me who has made the most contributions, in terms of number of commits, to the Pytorch GAN project",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Erik Linder-Norén"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Erik Linder-Norén"
+        },
+        "old_task_id": 311
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 72,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Which number to call for the customer service?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "There is no phone number in the website"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "There is no phone number in the website",
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 313
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 73,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "List the last names of the top 3 contributors to 2019-nCov repo, ranked by the number of commits?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Lo",
+                    "Chen",
+                    "Chu"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Lo, Chen, Chu"
+        },
+        "old_task_id": 318
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 74,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "How much refund I should expect from my order canceled in 2022, including shipping fee",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "3053.97"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "3053.97"
+        },
+        "old_task_id": 321
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 75,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Show me the \"chairs\" listings by ascending price.",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/catalogsearch/result/index/?product_list_order=price&q=chairs&product_list_dir=asc |OR| catalogsearch/advanced/result/?description=&name=chairs&price[from]=&price[to]=&price[currency]=USD&product_list_order=price&short_description=&sku=",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 324
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 76,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "How much did I spend on shopping at One Stop Market on November 2022? They gave me a 20% discount on the total amount for orders exceeding $200 in cash",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "359.546"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "359.546"
+        },
+        "old_task_id": 333
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 77,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Tell me when I last ordered my body butter?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "January 16th 2023"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "January 16th 2023"
+        },
+        "old_task_id": 335
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 78,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "How many reviews our shop received in May 2023?",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "0"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "0"
+        },
+        "old_task_id": 348
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 79,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Who else have access to my repo gimmiethat.space, show me their usernames",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "yjlou"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "yjlou"
+        },
+        "old_task_id": 349
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 80,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "List products from Living Room Furtniture category by descending price",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/home-kitchen/furniture/living-room-furniture.html?product_list_order=price&product_list_dir=desc |OR| http://10.140.52.49:6666/home-kitchen.html?cat=154&product_list_order=price&product_list_dir=desc",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 354
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 81,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Checkout open merge requests requiring my review",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/dashboard/merge_requests?reviewer_username=byteblaze |OR| http://10.140.52.49:6669/dashboard/merge_requests?scope=all&state=opened&reviewer_username=byteblaze",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 357
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 82,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Show me the order statuses for order number 170 and 189.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "170: canceled",
+                    "189: pending"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "170: canceled, 189: pending"
+        },
+        "old_task_id": 361
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 83,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Measure distance between Carnegie Mellon University and CVS (closet one) by walking",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "1.4 km"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "1.4km, CVS Pharmacy, 4610, Centre Avenue, North"
+        },
+        "old_task_id": 367
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 84,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Find discounted items.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "There is no function to show only discount items"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "There is no function to show only discount items",
+            "reference_answer_raw_annotation": "There is no function to show only discount items."
+        },
+        "old_task_id": 368
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 85,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Pull up the description page of Carnegie Music Hall on Map",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": null,
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"sidebar_content\"').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Carnegie Music Hall"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 369
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 86,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Preview the Magento Blank theme for my shop",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6667/admin/admin/system_design_theme/edit/id/1",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 374
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 87,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Summarize customer reviews for Amazon Echo Dot 3rd generation.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "Serena: It was the exact same one that came with my echo show that my puppy",
+                    "Amazon Customer: It doesn’t work .",
+                    "BlessedGirl: Great replacement for Echo Dot.",
+                    "Jeff Sederquist: Great product no issues. It's for a Echo show 5",
+                    "melvin m.: Very good charger but I had to buy this one because when I bought an echo show 5, I came with an echo show 10 charger in the package with the device",
+                    "Jack Smith: Looks like pictures",
+                    "Ignacio: Muy bueno de buena calidad",
+                    "BusyB: My kids bent the original cord for their Echo show 5 and this replacement cord is just like the one it came with. It works just fine. Been using it for 2 weeks now and no problems.",
+                    "Kee Williams: Great value works better than original",
+                    "Howard A. Sinclair: Great product!!! Works exactly as it is supposed to."
+                ]
+            },
+            "reference_url": "",
+            "program_html": []
+        },
+        "old_task_id": 376
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 88,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Find the hotel around Carnegie Music Hall",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6671/search?query=hotels%20near%20Carnegie%20Music%20Hall |OR| http://10.140.52.49:6671/search?query=hotel%20near%20Carnegie%20Music%20Hall",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 381
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 89,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "I am arriving at Carnegie Mellon University. Find the nearby US Citizenship and Immigration Services and tell me the walking distance to the nearest Social Security Administration from US Citizenship and Immigration Services",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "4.8 km"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "US Social Security Administration, Garrison Place, Cultural District, Downtown, Pittsburgh, Allegheny County, 宾夕法尼亚 / 賓夕法尼亞州, 15222, 美利坚合众国/美利堅合眾國; USCIS Pittsburgh Field Office, South Side, 3000, Sidney Street, South Side Flats, Pittsburgh, Allegheny County, 宾夕法尼亚 / 賓夕法尼亞州, 15203, 美利坚合众国/美利堅合眾國",
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 382
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 90,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Hyatt Regency Pittsburgh International Airport",
+                    "Giant Eagle",
+                    "ALDI"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport Giant Eagle, ALDI"
+        },
+        "old_task_id": 383
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 91,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "List the customer names who complain about the quality of EYZUTAK phone cases",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "Lisa Lee",
+                    "Evelyn Kurver",
+                    "Amanda",
+                    "N Randall"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Lisa Lee, Evelyn Kurver, Amanda, N Randall"
+        },
+        "old_task_id": 384
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 92,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "What is the rating of Ugreen lightning to 3.5mm cable. Please round to the nearest whole number",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "65 |OR| 3"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "Around 3.1 stars"
+        },
+        "old_task_id": 386
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 93,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Who gave 4 or 5 stars for phone cases from EYZUTAK",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "must_include": [
+                    "MH",
+                    "Misba009",
+                    "Amanda",
+                    "Amazon Customer",
+                    "Cally",
+                    "Bethany Robertson"
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "",
+            "reference_answer_raw_annotation": "MH, Misba009, Amanda, Amazon Customer, Cally, Bethany Robertson, Bethany Robertson"
+        },
+        "old_task_id": 387
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 94,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Post \"Good idea\" for the merge request related to color ulitity in a11yproject.com project",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/merge_requests/1071",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"notes-list\"').lastElementChild.querySelector('.timeline-discussion-body').outerText",
+                    "required_contents": {
+                        "exact_match": "Good idea"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 392
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 95,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Change my reddit bio to \"Seeking SDE positions\"",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/user/MarvelsGrantMan136",
+                    "locator": "document.querySelector(\".user-bio__biography\").outerText",
+                    "required_contents": {
+                        "exact_match": "Seeking SDE positions"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 401
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 96,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Upvote the newest post in books subreddit",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/books/124260/adults-reading-to-each-other-out-loud",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-upvoted"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 404
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 97,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Go to the merge request on verification functions assigned to me, find if the author of the merge request responded at the end, and reply \"Thank you\" if he did. Otherwise remind him with a simple @.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/a11y-webring.club/-/merge_requests/40",
+                    "locator": "document.querySelector('[id=\"notes-list\"').lastElementChild.querySelector('.timeline-discussion-body').outerText",
+                    "required_contents": {
+                        "exact_match": "@davepgreene"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 415
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 98,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Set my gitlab status as Enjoying life.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze",
+                    "locator": "document.querySelector('.cover-status').lastChild.textContent",
+                    "required_contents": {
+                        "exact_match": "\nEnjoying life\n"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 419
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 99,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Mark all Hollister Backyard Sweatshirt on sale",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/126/",
+                    "locator": "document.querySelector('input[name=\"product[sale]\"]').value",
+                    "required_contents": {
+                        "exact_match": "1"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 423
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 100,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "I previously ordered some a make up removal kit during summer 2022 and later canceled. Can you reorder it for me?",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "func:shopping_get_latest_order_url()",
+                    "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "B0738JQG6Q"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 440
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 101,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "set the homepage URL on my GitLab profile to https://egg.tart.com",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze",
+                    "locator": "document.querySelector('.profile-header [itemprop=\"url\"]').outerText",
+                    "required_contents": {
+                        "exact_match": "egg.tart.com"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 448
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 102,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Disable Ryker Tee Crew Neck from the site, they are facing some quality issues.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/478/",
+                    "locator": "document.querySelector('[name=\"product[status]\"').value",
+                    "required_contents": {
+                        "exact_match": "2"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 454
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 103,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/1481/",
+        "intent": "Reduce the price of this product by $5",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/1481/",
+                    "locator": "document.querySelector('[name=\"product[price]\"').value",
+                    "required_contents": {
+                        "exact_match": "27.00"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 458
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 104,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Update the product description of Antonia Racer Tank to highlight the real user positive reviews by quoting the comments",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/../antonia-racer-tank.html",
+                    "locator": "document.querySelector('.data.item.content').outerText + (document.querySelector('.product.attribute.overview [itemprop=\"description\"]')?.outerText || '')",
+                    "required_contents": {
+                        "must_include": [
+                            "Its colorful and looks kinda cute under my exercise tanks",
+                            "it's very stylish for yoga or something else low impact"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 464
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 105,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Add 2 Hawaiian Bamboo Orchid Roots #zc50 - by Discount Hawaiian Gifts to my wish list",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6666/wishlist/",
+                    "locator": "document.querySelector('.products-grid.wishlist').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "2 Hawaiian Bamboo Orchid Roots #zc50 - by Discount Hawaiian Gifts"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 466
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 106,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Cancel order 302",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/sales/order/view/order_id/302/",
+                    "locator": "document.querySelector(\"#order_status\").outerText",
+                    "required_contents": {
+                        "exact_match": "Canceled"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 470
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 107,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Set up a new, empty repository with the name awesome_llm_reading?",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/awesome_llm_reading",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "awesome_llm_reading"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 476
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 108,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Vinta wants to check my dotfile configurations. Please invite him to the repo as a guest.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/dotfiles/-/project_members",
+                    "locator": "func:gitlab_get_project_memeber_role(__page__, 'vinta')",
+                    "required_contents": {
+                        "must_include": [
+                            "Guest"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 485
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 109,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Change the page title of \"Home Page\" page on my site to \"This is the home page!! Leave here!!\".",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/cms/page/edit/page_id/2/",
+                    "locator": "document.querySelector('input[name=\"title\"]').value",
+                    "required_contents": {
+                        "exact_match": "This is the home page!! Leave here!!"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 488
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 110,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Notify Sarah Miller in their most recent pending order with message \"the order is ready to be shipped soon!\"",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "System message: We cannot add order history."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "System message: We cannot add order history."
+        },
+        "old_task_id": 491
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 111,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Update order #307 with the DHL tracking number 24353446464",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/sales/order/commentsHistory/order_id/307/active_tab/order_shipments/",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "Tracking number 24353446464 for DHL assigned"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 497
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 112,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Make all Aeon Capri as out of stock",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/1861/",
+                    "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][is_in_stock]\"').value",
+                    "required_contents": {
+                        "exact_match": "0"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 505
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 113,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Buy the highest rated product from the Meat Substitute category within a budget between 100 and 200.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "func:shopping_get_latest_order_url()",
+                    "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "B01CTR3DLE"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 506
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 114,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Buy the best rating product from \"Men's Shoe\" category with at least 5 reviews and the product is least expensive",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "func:shopping_get_latest_order_url()",
+                    "locator": "document.querySelector(\".order-details-items.ordered\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "B01J4MM3KO"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 509
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 115,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Add a white desk to my wish list.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6666/wishlist/",
+                    "locator": "document.querySelector('.products-grid.wishlist').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "white",
+                            "desk"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 514
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 116,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666/elmwood-inn-fine-teas-orange-vanilla-caffeine-free-fruit-infusion-16-ounce-pouch.html",
+        "intent": "Add this product to my wishlist",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6666/wishlist/",
+                    "locator": "document.querySelector('.products-grid.wishlist').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Elmwood Inn Fine Teas, Orange Vanilla Caffeine-free Fruit Infusion, 16-Ounce Pouch"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 516
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 117,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Subscribe to the newsletter of OneStopMarket",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6666/newsletter/manage/",
+                    "locator": "document.querySelector('[title=\"General Subscription\"').checked.toString()",
+                    "required_contents": {
+                        "exact_match": "true"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 521
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 118,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Star the top eight most stared public repositories in Gitlab",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/users/byteblaze/starred",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "AndroidSlidingUpPanel",
+                            "create-react-app",
+                            "ffmpeg-python",
+                            "PHP_XLSXWriter",
+                            "AndroidAsync",
+                            "Pytorch-GAN",
+                            "administrate",
+                            "keycloak"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 524
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 119,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Draft a refund message via their \"contact us\" form for the phone screen protector I bought March 2023. It broke after three days of use. The shop requires the order id, the reason and the amount to refund in the message. Don't submit yet, I will check.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[title=\"What’s on your mind?\"').value",
+                    "required_contents": {
+                        "must_include": [
+                            "180",
+                            "12.99"
+                        ]
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[title=\"What’s on your mind?\"').value",
+                    "required_contents": {
+                        "fuzzy_match": [
+                            "refund",
+                            "it broke after three days of use"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 528
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 120,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Follow ['lahwaacz', 'Koushik', 'Vinta Chen'] on Gitlab",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/users/byteblaze/following",
+                    "locator": "document.querySelector('.user-profile').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "@lahwaacz",
+                            "@koush",
+                            "@vinta"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 534
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 121,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Modify the address of order #299 to 456 Oak Avenue, New York, NY, 10001",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/sales/order/view/order_id/299",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "456 Oak Avenue",
+                            "New York",
+                            "10001"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 538
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 122,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Add a new color blue to size S and M of Frankie Sweatshirt",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/110/",
+                    "locator": "document.querySelector('[data-index=\"configurable\"').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Sweatshirt-M-Blue",
+                            "Sweatshirt-S-Blue"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 548
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 123,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Invite lahwaacz and bblanchon as collaborator to gimmiethat.space repository",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/gimmiethat.space/-/project_members",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "@lahwaacz",
+                            "@bblanchon"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 567
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 124,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "I recently moved, my address is 111 Magnolia Path, Atlanta, GA, 30303, update my information on OneStopShopping accordingly",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6666/customer/address",
+                    "locator": "document.querySelector(\".box.box-address-shipping > .box-content\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "111 Magnolia Path",
+                            "Atlanta, Georgia, 30303"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6666/customer/address",
+                    "locator": "document.querySelector(\".box.box-address-billing > .box-content\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "111 Magnolia Path",
+                            "Atlanta, Georgia, 30303"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 574
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 125,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Add the following users to my GitHub timeline item management extension repository as maintainer: ['abisubramanya27', 'lahwaacz']",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/remove-board-movement-events-from-the-github-issue-timeline/-/project_members",
+                    "locator": "func:gitlab_get_project_memeber_role(__page__, 'abisubramanya27')",
+                    "required_contents": {
+                        "must_include": [
+                            "Maintainer"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/remove-board-movement-events-from-the-github-issue-timeline/-/project_members",
+                    "locator": "func:gitlab_get_project_memeber_role(__page__, 'lahwaacz')",
+                    "required_contents": {
+                        "must_include": [
+                            "Maintainer"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 577
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 126,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Create a new forum named Cyberpunk, with a description of \"Welcome to the future\", and include ['Games', 'Books', 'Movies', 'Future'] in the sidebar?",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/Cyberpunk/edit",
+                    "locator": "document.querySelector(\"#forum_description\").value",
+                    "required_contents": {
+                        "must_include": [
+                            "Welcome to the future"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6668/f/Cyberpunk/edit",
+                    "locator": "document.querySelector(\"#forum_sidebar\").value",
+                    "required_contents": {
+                        "must_include": [
+                            "Games",
+                            "Books",
+                            "Movies",
+                            "Future"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 582
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 127,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Open the thread of a trending post on the forum \"machine learning\" and subscribe.",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/MachineLearning",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/",
+                    "locator": "document.querySelector(\"#sidebar > section\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "MachineLearning"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 599
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 128,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Post my question, \"is car necessary in NYC\", in a subreddit where I'm likely to get an answer",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/nyc",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "is car necessary in NYC"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 601
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 129,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Find a subreddit focused on topics related to gaming consoles, and post my question, \"what is the recommended console to buy these days\" there",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/consoles",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "what is the recommended console to buy these days"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 605
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 130,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Post a review of my recent reading \"big little lies\" in the r/books with my comment \"can't stop it\".",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/books",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "big little lies",
+                            "can't stop it"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 612
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 131,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668/f/pics",
+        "intent": "Post the short URL of costume contest in this page to funny subreddit and note \"from /f/pics\"",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/funny",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "from /f/pics",
+                            "25055"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 619
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 132,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Create a discussion post about \"Iphone 14\" in a relevant subreddit and ask users for their opinions with the simple prompt, \"your opinion\"",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/iphone",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "your opinion",
+                            "Iphone 14"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 626
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 133,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Ask for product recommendations for running shoes within a budget of $100 in r/sports",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/sports",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "100",
+                            "running",
+                            "shoes"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 631
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 134,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Post a notice on a virtual meetup for Harry Potter enthusiasts on July 8th in the books subreddit",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/books",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "fuzzy_match": [
+                            "Harry Potter enthusiasts",
+                            "July 8th",
+                            "virtual meetup"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 641
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 135,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Post in books subreddit about what could machine learning help the correpong field.",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/books",
+            "program_html": [
+                {
+                    "url": "func:reddit_get_post_url('__last_url__')",
+                    "locator": "document.querySelector('.submission__inner').outerText",
+                    "required_contents": {
+                        "fuzzy_match": [
+                            "machine learning",
+                            "help"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 645
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 136,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668/f/technology/134852/ai-experts-disown-musk-backed-campaign-citing-their-research",
+        "intent": "Reply to the post with my comment \"???\"",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6668/f/technology/134852/ai-experts-disown-musk-backed-campaign-citing-their-research",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('.comment__body').outerText",
+                    "required_contents": {
+                        "exact_match": "???"
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 652
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 137,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Fill the \"contact us\" form in the site for a refund on the speaker I bought, stating that it broke after just three days of use. Also, ensure to include the order number #148 and the product SKU. Don't submit yet, I will check.",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/contact",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[title=\"What’s on your mind?\"').value",
+                    "required_contents": {
+                        "must_include": [
+                            "148",
+                            "B003FVW3VA"
+                        ]
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[title=\"What’s on your mind?\"').value",
+                    "required_contents": {
+                        "fuzzy_match": [
+                            "refund",
+                            "it broke after three days of use"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 657
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 138,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Submit a merge request for a11yproject.com/redesign branch to be merged into master branch, assign Roshan Jossy as the reviewer",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/merge_requests",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[0].outerText",
+                    "required_contents": {
+                        "exact_match": "redesign"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelectorAll(\".detail-page-description > a.gl-font-monospace\")[1].outerText",
+                    "required_contents": {
+                        "exact_match": "main"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('.block.reviewer').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Roshan Jossy"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 668
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 139,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Lookup orders that are canceled",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6667/admin/sales/order/",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector(\"div.admin__data-grid-filters-current\").outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Canceled"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 678
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 140,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Draft and submit an email to the shop owner via their contact us function for a coupon as my refund is suppoed to be replaced by a coupon",
+        "eval": {
+            "eval_types": [
+                "url_match"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6666/contact/index/",
+            "program_html": [],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 693
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 141,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Today is 3/15/2023, generate a sales order report for last month",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6667/admin/reports/report_sales/sales",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"sales_report_from\"').value",
+                    "required_contents": {
+                        "exact_match": "2/1/23"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"sales_report_to\"').value",
+                    "required_contents": {
+                        "exact_match": "2/28/23"
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 704
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 142,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "Create a shipping report from 08/05/2022 to 03/01/2023",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6667/admin/reports/report_sales/shipping",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"sales_report_from\"').value",
+                    "required_contents": {
+                        "exact_match": "8/5/22"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[id=\"sales_report_to\"').value",
+                    "required_contents": {
+                        "exact_match": "3/1/23"
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 710
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 143,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Thumbs down the top 1 post ever in gadgets.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/gadgets/19459/a-custom-gaming-pc-built-inside-a-vintage-1940s-motorola",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-downvoted"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 714
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 144,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Like all submissions created by CameronKelsey in subreddit earthporn",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/EarthPorn/98332/my-favorite-place-on-the-planet-henry-s-fork-of-the-snake",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-upvoted"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6668/f/EarthPorn/98297/2-years-later-this-is-still-one-of-the-most-incredible",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-upvoted"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6668/f/EarthPorn/98256/i-can-t-wait-for-all-this-green-to-start-coming-back-little",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-upvoted"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 720
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 145,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "DisLike all submissions created by AdamCannon in subreddit UpliftingNews",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/UpliftingNews/16087/same-sex-marriage-is-now-legal-in-all-of-mexico-s-states",
+                    "locator": "document.querySelector('div.submission__vote').querySelector('form').getAttribute('class')",
+                    "required_contents": {
+                        "must_include": [
+                            "vote vote--user-downvoted"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 729
+    },
+    {
+        "sites": [
+            "reddit"
+        ],
+        "task_id": 146,
+        "storage_state": "./.auth/reddit_state.json",
+        "start_url": "http://10.140.52.49:6668",
+        "intent": "Edit my post on Star Trek Starfleet Academy series by adding a line to the body that says \"Every watch makes me feel like a kid again\"",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6668/f/television/135201/star-trek-starfleet-academy-series-from-alex-kurtzman-and",
+                    "locator": "document.querySelector('.submission__body').outerText",
+                    "required_contents": {
+                        "exact_match": "Every watch makes me feel like a kid again"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 733
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 147,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Create a new public project \"awesome-llms\" and add primer, convexegg, abishek as members",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/awesome-llms",
+                    "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+                    "required_contents": {
+                        "must_include": [
+                            "public"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/awesome-llms/-/project_members",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "@primer",
+                            "@convexegg",
+                            "@abisubramanya27"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 745
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 148,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Start a private project web_agent_android_xl with Android template and add primer, convexegg, abishek as members",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/web_agent_android_xl",
+                    "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+                    "required_contents": {
+                        "must_include": [
+                            "Private"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/web_agent_android_xl/-/commits",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "Initialized from 'Android' project template"
+                        ]
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6669/byteblaze/web_agent_android_xl/-/project_members",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "@primer",
+                            "@convexegg",
+                            "@abisubramanya27"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 748
+    },
+    {
+        "sites": [
+            "map"
+        ],
+        "task_id": 149,
+        "storage_state": null,
+        "start_url": "http://10.140.52.49:6671",
+        "intent": "Get directions from Carnegie Hall in NYC to Carnegie Mellon University using driving options.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector(\"div#content select.routing_engines\").selectedIndex",
+                    "required_contents": {
+                        "exact_match": "1"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[name=\"route_from\"').value",
+                    "required_contents": {
+                        "must_include": [
+                            "Carnegie Hall",
+                            "West 57th Street",
+                            "Manhattan",
+                            "New York"
+                        ]
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[name=\"route_to\"').value",
+                    "required_contents": {
+                        "must_include": [
+                            "Carnegie Mellon University",
+                            "Pittsburgh"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 762
+    },
+    {
+        "sites": [
+            "shopping_admin"
+        ],
+        "task_id": 150,
+        "storage_state": "./.auth/shopping_admin_state.json",
+        "start_url": "http://10.140.52.49:6667/admin",
+        "intent": "5 blue Cronus yoga pants with size 33 arrived, update the stock",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/872/",
+                    "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][qty]\"').value",
+                    "required_contents": {
+                        "exact_match": "5"
+                    }
+                },
+                {
+                    "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/872/",
+                    "locator": "document.querySelector('[name=\"product[quantity_and_stock_status][is_in_stock]\"').value",
+                    "required_contents": {
+                        "exact_match": "1"
+                    }
+                }
+            ]
+        },
+        "old_task_id": 768
+    },
+    {
+        "sites": [
+            "shopping"
+        ],
+        "task_id": 151,
+        "storage_state": "./.auth/shopping_state.json",
+        "start_url": "http://10.140.52.49:6666",
+        "intent": "Change the delivery address for my most recent order to 77 Massachusetts Ave, Cambridge, MA.",
+        "eval": {
+            "eval_types": [
+                "string_match"
+            ],
+            "reference_answers": {
+                "fuzzy_match": [
+                    "The shipping address cannot be changed after an order is placed in the website."
+                ]
+            },
+            "reference_url": "",
+            "program_html": [],
+            "string_note": "The shipping address cannot be changed after an order is placed in the website.",
+            "reference_answer_raw_annotation": "N/A"
+        },
+        "old_task_id": 798
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 152,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Create an issue in a11yproject repo with title \"404 for many URLs\". Assign the issue to myself. Set due date to be 2030-1-3",
+        "eval": {
+            "eval_types": [
+                "url_match",
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/issues",
+            "program_html": [
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[data-qa-selector=\"title_content\"]').outerText",
+                    "required_contents": {
+                        "exact_match": "404 for many URLs"
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('[data-testid=\"sidebar-due-date\"').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Jan 3, 2030"
+                        ]
+                    }
+                },
+                {
+                    "url": "last",
+                    "locator": "document.querySelector('.block.assignee').outerText",
+                    "required_contents": {
+                        "must_include": [
+                            "Byte Blaze"
+                        ]
+                    }
+                }
+            ],
+            "url_note": "GOLD in PRED"
+        },
+        "old_task_id": 809
+    },
+    {
+        "sites": [
+            "gitlab"
+        ],
+        "task_id": 153,
+        "storage_state": "./.auth/gitlab_state.json",
+        "start_url": "http://10.140.52.49:6669",
+        "intent": "Assign the issue regarding 404 in a11yproject to myself.",
+        "eval": {
+            "eval_types": [
+                "program_html"
+            ],
+            "reference_answers": null,
+            "reference_url": "",
+            "program_html": [
+                {
+                    "url": "http://10.140.52.49:6669/dashboard/issues?scope=all&state=opened&assignee_username=byteblaze",
+                    "locator": "",
+                    "required_contents": {
+                        "must_include": [
+                            "404s, bad host, timeouts, bad urls for URLs linked from website"
+                        ]
+                    }
+                }
+            ]
+        },
+        "old_task_id": 811
+    }
+]

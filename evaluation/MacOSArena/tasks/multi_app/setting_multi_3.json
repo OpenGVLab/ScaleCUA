@@ -1,0 +1,36 @@
+{
+    "id": "mac_system_settings_multi_3",
+    "system_img": "default",
+    "instruction": "Please open the Contacts app and check if there is a contact named Herro. Then go to System Settings and enable the \"Allow repeated calls\" option in the Do Not Disturb Focus mode.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'System Settings'",
+            "open -a 'Contacts'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "mac_system_settings"
+    ],
+    "evaluator": {
+      "func": ["settings_check_dnd_repeated_calls_enabled"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

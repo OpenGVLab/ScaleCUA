@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Invite lahwaacz and bblanchon as collaborator to gimmiethat.space repository",
+    "task_config": {
+        "example_id": "123.json",
+        "file_path": "config/env/webarena/tasks/123.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

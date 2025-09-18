@@ -1,0 +1,68 @@
+{
+    "id": "calendar_3",
+    "system_img": "default",
+    "instruction": "In the Calendar app, create two calendars named \"Research\" and \"Group meeting\". Then, add a weekly recurring event titled \"Paper Reading\" to the \"Research\" calendar every Monday, and a weekly recurring event titled \"Group Meeting\" to the \"Group meeting\" calendar every Monday as well. \nHint: The recurrence must be set using the 'Custom' option in the repeat settings.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["calendar_check_calendar_contains_events", "calendar_check_weekly_event_advanced", "calendar_check_calendar_contains_events", "calendar_check_weekly_event_advanced"],
+      "conj": "and",
+      "parameters": [
+        {
+          "calendar_name": "Research",
+          "event_names": ["Paper Reading"]
+        },
+        {
+          "event_name": "Paper Reading"
+        },
+        {
+          "calendar_name": "Group Meeting",
+          "event_names": ["Group Meeting"]
+        },
+        {
+          "event_name": "Group Meeting"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+        }]
+    }
+}

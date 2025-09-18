@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 37,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "What is the minimum travel time by car from Animal Rescue League of Pittsburgh to Schenley park?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "16 min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "9min"
+  },
+  "old_task_id": 155
+}

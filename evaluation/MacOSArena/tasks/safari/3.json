@@ -1,0 +1,27 @@
+{
+    "id": "safari_3",
+    "system_img": "default",
+    "instruction": "Using the Safari browser, navigate to the Steam Top Sellers page and add all of the top 3 displayed products on the page to the shopping cart.",
+    "config": [
+    ],
+    "related_apps": [
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["safari_check_steam_cart_contains_all_top3_items"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

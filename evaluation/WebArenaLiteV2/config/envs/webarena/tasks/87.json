@@ -1,0 +1,31 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 87,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Summarize customer reviews for Amazon Echo Dot 3rd generation.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "Serena: It was the exact same one that came with my echo show that my puppy",
+        "Amazon Customer: It doesn\u2019t work .",
+        "BlessedGirl: Great replacement for Echo Dot.",
+        "Jeff Sederquist: Great product no issues. It's for a Echo show 5",
+        "melvin m.: Very good charger but I had to buy this one because when I bought an echo show 5, I came with an echo show 10 charger in the package with the device",
+        "Jack Smith: Looks like pictures",
+        "Ignacio: Muy bueno de buena calidad",
+        "BusyB: My kids bent the original cord for their Echo show 5 and this replacement cord is just like the one it came with. It works just fine. Been using it for 2 weeks now and no problems.",
+        "Kee Williams: Great value works better than original",
+        "Howard A. Sinclair: Great product!!! Works exactly as it is supposed to."
+      ]
+    },
+    "reference_url": "",
+    "program_html": []
+  },
+  "old_task_id": 376
+}

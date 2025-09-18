@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+    "task_config": {
+        "example_id": "25.json",
+        "file_path": "config/env/webarena/tasks/25.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

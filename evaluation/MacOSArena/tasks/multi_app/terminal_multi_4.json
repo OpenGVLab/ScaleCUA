@@ -1,0 +1,37 @@
+{
+    "id": "multiapp_6",
+    "system_img": "default",
+    "instruction": "Find all files in ~/Documents/ and insert them as file attachments into a note called 'document' in the macOS Notes app. If the note does not exist, create it first.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "touch ~/Documents/test1.txt ~/Documents/test2.txt ~/Documents/test3.txt"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal",
+      "notes"
+    ],
+    "evaluator": {
+        "func": ["notes_list_attachment_names_by_note_name"],
+        "conj": "and",
+        "parameters": [
+          {
+            "note_name": "document"
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "find_str_in_list",
+            "parameters": [["test1.txt", "test2.txt", "test3.txt"]]
+          }
+          }
+        ]
+      }
+}

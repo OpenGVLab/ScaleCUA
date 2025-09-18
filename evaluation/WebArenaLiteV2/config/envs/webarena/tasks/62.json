@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 62,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Tell me my RSS feed token",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "TMN_bBn9Z48qVbUFZV45"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "TMN_bBn9Z48qVbUFZV45"
+  },
+  "old_task_id": 259
+}

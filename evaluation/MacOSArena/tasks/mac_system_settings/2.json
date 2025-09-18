@@ -1,0 +1,35 @@
+{
+    "id": "mac_system_settings_2",
+    "system_img": "default",
+    "instruction": "In the System Settings, set the accent color to purple and turn off the option 'Allow wallpaper tinting in windows'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'System Settings'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "mac_system_settings"
+    ],
+    "evaluator": {
+      "func": ["settings_check_purple_and_tinting_off"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

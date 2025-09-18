@@ -1,0 +1,23 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 58,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Show me the email address of the customer who is the most unhappy with the style of Zoe products",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "Valorie doesn't have a email in the system"
+      ]
+    },
+    "reference_url": "Valorie doesn't have a email in the system",
+    "program_html": [],
+    "reference_answer_raw_annotation": "N/A"
+  },
+  "old_task_id": 247
+}

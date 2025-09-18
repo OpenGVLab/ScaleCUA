@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 106,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Cancel order 302",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6667/admin/sales/order/view/order_id/302/",
+        "locator": "document.querySelector(\"#order_status\").outerText",
+        "required_contents": {
+          "exact_match": "Canceled"
+        }
+      }
+    ]
+  },
+  "old_task_id": 470
+}

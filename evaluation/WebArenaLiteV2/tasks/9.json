@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Check out my todos",
+    "task_config": {
+        "example_id": "9.json",
+        "file_path": "config/env/webarena/tasks/9.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,32 @@
+{
+    "id": "mac_system_settings_multi_1",
+    "system_img": "default",
+    "instruction": "Please enable 'Ask Siri' in the System Settings, and set Siri's voice to 'American (Voice 4)'.",
+    "config": [],
+    "related_apps": [
+      "mac_system_settings"
+    ],
+    "evaluator": {
+      "func": ["setting_get_siri_status_and_voice"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+      {
+        "type": "common",
+        "rules": {
+          "func": "dict_equal",
+          "parameters": [
+            {
+              "enabled": true,
+              "voice": "American (Voice 4)"
+            }
+          ]
+        }
+      }
+      ]
+    }
+  }
+  

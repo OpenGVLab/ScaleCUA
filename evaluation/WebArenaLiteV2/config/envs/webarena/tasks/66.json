@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 66,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Show the least expensive switch card holder with a minimum storage capacity of 15 cards.",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6666/game-card-holder-storage-case-for-nintendo-switch-games-or-ps-vita-game-case-or-sd-memory-cards-black.html",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 285
+}

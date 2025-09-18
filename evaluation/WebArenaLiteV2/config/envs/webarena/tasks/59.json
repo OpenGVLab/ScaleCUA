@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 59,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Tell me the coordinates of Apple Store near Pittsburgh in DD format (keep all decimal places)",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "40.4511693",
+        "-79.9334241"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "40.4511693, -79.9334241"
+  },
+  "old_task_id": 250
+}

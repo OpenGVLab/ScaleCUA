@@ -1,0 +1,36 @@
+{
+    "id": "notes_2",
+    "system_img": "default",
+    "instruction": "Create a new folder named \"Paper Reading\" in the Notes app, and add at least three notes to this folder.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_count_notes_in_folder"],
+      "conj": "and",
+      "parameters": [
+        {
+          "folder_name": "Paper Reading"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "compare_numbers",
+          "parameters": [">=", 3]
+        }
+        }]
+    }
+  }
+  

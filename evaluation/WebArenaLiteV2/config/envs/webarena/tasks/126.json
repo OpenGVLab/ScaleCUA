@@ -1,0 +1,40 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 126,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Create a new forum named Cyberpunk, with a description of \"Welcome to the future\", and include ['Games', 'Books', 'Movies', 'Future'] in the sidebar?",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/f/Cyberpunk/edit",
+        "locator": "document.querySelector(\"#forum_description\").value",
+        "required_contents": {
+          "must_include": [
+            "Welcome to the future"
+          ]
+        }
+      },
+      {
+        "url": "http://10.140.52.49:6668/f/Cyberpunk/edit",
+        "locator": "document.querySelector(\"#forum_sidebar\").value",
+        "required_contents": {
+          "must_include": [
+            "Games",
+            "Books",
+            "Movies",
+            "Future"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 582
+}

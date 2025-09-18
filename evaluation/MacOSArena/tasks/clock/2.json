@@ -1,0 +1,36 @@
+{
+    "id": "clock_2",
+    "system_img": "default",
+    "instruction": "Add Vienna to the World Clock, and then drag it to the top of the current list.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Clock'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "clock"
+    ],
+    "evaluator": {
+      "func": ["clock_get_world_clock_top_item"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+      {
+        "type": "common",
+        "rules": {
+          "func": "exact_match",
+          "parameters": ["Vienna"]
+        }
+      }
+      ]
+    }
+  }
+  

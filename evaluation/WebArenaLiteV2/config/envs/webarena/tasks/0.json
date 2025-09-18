@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 0,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "What are the top-3 best-selling product in Jan 2023",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Impulse Duffle",
+        "Overnight Duffle",
+        "Hawkeye Yoga Short-32-Blue"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Impulse Duffle, Overnight Duffle, Hawkeye Yoga Short-32-Blue"
+  },
+  "old_task_id": 4
+}

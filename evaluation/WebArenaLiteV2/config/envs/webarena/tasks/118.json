@@ -1,0 +1,35 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 118,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Star the top eight most stared public repositories in Gitlab",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/users/byteblaze/starred",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "AndroidSlidingUpPanel",
+            "create-react-app",
+            "ffmpeg-python",
+            "PHP_XLSXWriter",
+            "AndroidAsync",
+            "Pytorch-GAN",
+            "administrate",
+            "keycloak"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 524
+}

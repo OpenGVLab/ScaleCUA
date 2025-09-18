@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Which number to call for the customer service?",
+    "task_config": {
+        "example_id": "72.json",
+        "file_path": "config/env/webarena/tasks/72.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

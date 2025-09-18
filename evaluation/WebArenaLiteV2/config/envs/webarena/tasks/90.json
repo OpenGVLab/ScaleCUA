@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 90,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "I am arriving at Pittsburgh Airport. Show me the name of a Hyatt hotel if there is any nearby. Tell me the names of supermarkets that are within 15mins driving from the hotel",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Hyatt Regency Pittsburgh International Airport",
+        "Giant Eagle",
+        "ALDI"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Hyatt Regency Pittsburgh International Airport Giant Eagle, ALDI"
+  },
+  "old_task_id": 383
+}

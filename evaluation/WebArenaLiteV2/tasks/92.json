@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the rating of Ugreen lightning to 3.5mm cable. Please round to the nearest whole number",
+    "task_config": {
+        "example_id": "92.json",
+        "file_path": "config/env/webarena/tasks/92.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

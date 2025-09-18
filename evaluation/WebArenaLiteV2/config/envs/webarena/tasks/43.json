@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 43,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Open my latest updated issue that has keyword \"better\" in its title to check if it is closed",
+  "eval": {
+    "eval_types": [
+      "string_match",
+      "url_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "No, it is open"
+      ]
+    },
+    "reference_url": "http://10.140.52.49:6669/byteblaze/empathy-prompts/-/issues/8",
+    "program_html": [],
+    "reference_answer_raw_annotation": "Not closed",
+    "string_note": "",
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 173
+}

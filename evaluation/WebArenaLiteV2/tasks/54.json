@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the price range for products from EYZUTAK?",
+    "task_config": {
+        "example_id": "54.json",
+        "file_path": "config/env/webarena/tasks/54.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

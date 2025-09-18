@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Open the thread of a trending post on the forum \"machine learning\" and subscribe.",
+    "task_config": {
+        "example_id": "127.json",
+        "file_path": "config/env/webarena/tasks/127.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

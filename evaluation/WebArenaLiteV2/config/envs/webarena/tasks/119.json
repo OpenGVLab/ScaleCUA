@@ -1,0 +1,39 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 119,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Draft a refund message via their \"contact us\" form for the phone screen protector I bought March 2023. It broke after three days of use. The shop requires the order id, the reason and the amount to refund in the message. Don't submit yet, I will check.",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
+        "required_contents": {
+          "must_include": [
+            "180",
+            "12.99"
+          ]
+        }
+      },
+      {
+        "url": "last",
+        "locator": "document.querySelector('[title=\"What\u2019s on your mind?\"').value",
+        "required_contents": {
+          "fuzzy_match": [
+            "refund",
+            "it broke after three days of use"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 528
+}

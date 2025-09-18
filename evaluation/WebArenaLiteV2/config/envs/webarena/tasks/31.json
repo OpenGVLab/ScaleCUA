@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 31,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "What brands appear most frequently among the top search terms?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Hollister"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Hollister"
+  },
+  "old_task_id": 127
+}

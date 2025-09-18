@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Measure distance between Carnegie Mellon University and CVS (closet one) by walking",
+    "task_config": {
+        "example_id": "83.json",
+        "file_path": "config/env/webarena/tasks/83.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,5 @@
+azure-ai-ml
+azure-identity
+azureml-core
+azureml-dataset-runtime
+pandas

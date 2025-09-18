@@ -1,0 +1,44 @@
+{
+  "id": "clock_safari_1",
+  "system_img": "default",
+  "instruction": "In the Clock App, set an alarm for the time when Titanic completely sank recorded by Wikipedia on everyday (Monday through Sunday) labeled 'Titanic', using the 'Timba' sound.",
+  "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Clock'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "clock",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["clock_list_alarms"],
+      "conj": "and",
+      "parameters": [
+        {
+        }
+      ],
+      "expected": [
+      {
+        "type": "common",
+        "rules": {
+          "func": "find_dict",
+          "parameters": [
+            {
+              "time": "2:20AM",
+              "label": "Titanic",
+              "repeat": "Every day",
+              "sound": "Timba"
+            }
+          ]
+        }
+      }
+      ]
+    }
+  }

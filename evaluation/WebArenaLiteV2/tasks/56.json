@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Where is the nearest pharmacy from Carnegie Mellon I can walk within 20mins",
+    "task_config": {
+        "example_id": "56.json",
+        "file_path": "config/env/webarena/tasks/56.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

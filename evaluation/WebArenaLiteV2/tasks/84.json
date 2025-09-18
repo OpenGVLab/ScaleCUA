@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Find discounted items.",
+    "task_config": {
+        "example_id": "84.json",
+        "file_path": "config/env/webarena/tasks/84.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

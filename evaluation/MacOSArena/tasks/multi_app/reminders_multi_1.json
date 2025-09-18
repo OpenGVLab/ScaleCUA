@@ -1,0 +1,38 @@
+{
+    "id": "reminders_4",
+    "system_img": "default",
+    "instruction": "Search for TRB Hutong in Maps or Safari and find its phone number. In the Reminders app, create a list named \"Restaurant Reservations\" and add a reminder due in the year 2100 titled\"TRB Hutong:{phone number}\", where the phone number is the full 11-digit number with no spaces or separators.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_get_due_year"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "TRB Hutong:13911712083",
+          "list_name": "Restaurant Reservations"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "exact_match",
+          "parameters": [2100]
+        }
+        }
+      ]
+    }
+  }
+  

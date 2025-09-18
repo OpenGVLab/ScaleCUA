@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post in books subreddit about what could machine learning help the correpong field.",
+    "task_config": {
+        "example_id": "135.json",
+        "file_path": "config/env/webarena/tasks/135.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

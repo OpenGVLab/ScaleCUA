@@ -1,0 +1,38 @@
+{
+    "id": "multiapp_5",
+    "system_img": "default",
+    "instruction": "Help me run the Python file on the desktop and save its output as note called 'output'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "echo 'print('Hi, you are using macos')' > ~/Desktop/hello.py"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal",
+      "notes"
+    ],
+    "evaluator": {
+        "func": ["notes_get_note_plaintext_by_name"],
+        "conj": "and",
+        "parameters": [
+          {
+            "name": "output",
+            "folder": null
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "find_str_in_list",
+            "parameters": ["Hi, you are using macos"]
+          }
+          }
+        ]
+      }
+}

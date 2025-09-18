@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "List the last names of the top 3 contributors to 2019-nCov repo, ranked by the number of commits?",
+    "task_config": {
+        "example_id": "73.json",
+        "file_path": "config/env/webarena/tasks/73.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

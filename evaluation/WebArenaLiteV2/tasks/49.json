@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Find the customer name and email with phone number 8015551212",
+    "task_config": {
+        "example_id": "49.json",
+        "file_path": "config/env/webarena/tasks/49.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

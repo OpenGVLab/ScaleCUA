@@ -1,0 +1,41 @@
+{
+    "id": "calendar_safari_2",
+    "system_img": "default",
+    "instruction": "In the Calendar App, create a recurring event called 'Sunday' scheduled for every week on the same day of the week as Trump's second inauguration as President of the United States, with the start time at 4:45AM and end time at 6:30AM.\nHint: The recurrence must be set using the 'Custom' option in the repeat settings.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar",
+      "safari"
+    ],
+    "calendar_check_weekly_event_advanced": {
+      "func": ["calendar_check_weekly_event_advanced"],
+      "conj": "and",
+      "parameters": [
+        {
+          "event_name": "Sunday",
+          "start_hour": 4,
+          "start_minute": 45,
+          "end_hour": 6,
+          "end_minute": 30
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+}

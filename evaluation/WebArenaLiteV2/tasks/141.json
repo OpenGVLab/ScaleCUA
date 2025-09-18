@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Today is 3/15/2023, generate a sales order report for last month",
+    "task_config": {
+        "example_id": "141.json",
+        "file_path": "config/env/webarena/tasks/141.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

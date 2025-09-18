@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Add the following users to my GitHub timeline item management extension repository as maintainer: ['abisubramanya27', 'lahwaacz']",
+    "task_config": {
+        "example_id": "125.json",
+        "file_path": "config/env/webarena/tasks/125.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

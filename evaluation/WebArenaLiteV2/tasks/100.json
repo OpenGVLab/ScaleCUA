@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I previously ordered some a make up removal kit during summer 2022 and later canceled. Can you reorder it for me?",
+    "task_config": {
+        "example_id": "100.json",
+        "file_path": "config/env/webarena/tasks/100.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

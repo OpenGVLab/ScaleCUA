@@ -1,0 +1,24 @@
+agent:
+  name: GLM4Agent
+  args:
+    model_key:
+    model_name: "glm-4-plus"
+    max_new_tokens: 512
+    temperature: 0.0
+
+task:
+  class: TextOnlyMobileTask_AutoTest
+  args:
+    save_dir: "./logs/evaluation"
+    max_rounds: 25
+    request_interval: 3
+    mode: "in_app"
+
+eval:
+  avd_base: /Users/[Your user name]/.android/avd
+  avd_name: Pixel_7_Pro_API_33
+  avd_log_dir: ./logs/evaluation
+  android_sdk_path: /Users/[Your user name]/Library/Android/sdk
+  show_avd: false
+
+

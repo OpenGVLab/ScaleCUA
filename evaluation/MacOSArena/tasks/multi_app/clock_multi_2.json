@@ -1,0 +1,38 @@
+{
+  "id": "clock_safari_2",
+  "system_img": "default",
+  "instruction": "In the Clock App, set a timer with the time of 'the winning time of the men's 800m champion at the 2012 London Olympics (using only minutes and seconds)', start the timer, then cancel it. Finally, clear the Recents section in the Timers view.",
+  "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Clock'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "clock",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["clock_check_clock_timer_value"],
+      "conj": "and",
+      "parameters": [
+        {
+          "minutes": 1,
+          "seconds": 40
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }

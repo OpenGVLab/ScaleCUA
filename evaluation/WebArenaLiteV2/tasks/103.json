@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Reduce the price of this product by $5",
+    "task_config": {
+        "example_id": "103.json",
+        "file_path": "config/env/webarena/tasks/103.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,59 @@
+APP: calendar
+package: com.skuld.calendario
+tasks:
+  - task_id: calendar_1
+    task: I want to add an event at 5:00PM today, whose Title is "work".
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_2
+    task: Arrange an event titled "homework" for me at May 21st, and set the notification time to be 10 minutes before.
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_3
+    task: Help me arrange an event titled "meeting" at May 13th with note "conference room B202" .
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_4
+    task: arrange an event which starts at 2024/6/1 and repeats monthly
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_5
+    task: Edit the event with title "work", change the end time to be 7:00 PM.
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_6
+    task: add the note "classroom 101" to the event "homework"
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_7
+    task: change the notification time of event "meeting" to be 5 minutes before and 10 minutes before.
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_8
+    task: Edit the event titled "work" and add a Note "computer" to it
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_9
+    task: For the event titled "work", please help me set recurrence to be daily
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_10
+    task: arrange an event "this day"
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_11
+    task: edit the event titled "this day", and make it repeat weekly
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_12
+    task: Help me add a note "Hello" to the event titled "Today".
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_13
+    task: Arrange an event titled "exam".
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar
+  - task_id: calendar_14
+    task: Edit the event titled "exam" and make it an all-day event.
+    metric_type: operation
+    metric_func: evaluation.tasks.calendar

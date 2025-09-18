@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the total cost of my latest complete order?",
+    "task_config": {
+        "example_id": "45.json",
+        "file_path": "config/env/webarena/tasks/45.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

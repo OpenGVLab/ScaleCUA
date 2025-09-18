@@ -1,0 +1,51 @@
+{
+    "id": "reminders_6",
+    "system_img": "default",
+    "instruction": "In the Finder app, locate a PDF file at ~/Documents; then in the Reminders app, create a reminder named after that PDF's filename (without the \".pdf\" extension) that is due next week at 11:00 AM.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'",
+            "echo 'This is Document A' > ~/Documents/report_111.txt",
+            "cupsfilter -o ~/Documents/report_111.txt  ~/Documents/report_222.pdf"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_check_work_due_next_week", "reminders_check_due_time"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "report_222" 
+        },
+        {
+          "reminder_name": "report_222",
+          "target_hour": 11,
+          "target_minute": 0   
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          }
+      ]
+    }
+  }
+  

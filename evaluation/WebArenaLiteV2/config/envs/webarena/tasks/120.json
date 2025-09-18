@@ -1,0 +1,30 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 120,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Follow ['lahwaacz', 'Koushik', 'Vinta Chen'] on Gitlab",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/users/byteblaze/following",
+        "locator": "document.querySelector('.user-profile').outerText",
+        "required_contents": {
+          "must_include": [
+            "@lahwaacz",
+            "@koush",
+            "@vinta"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 534
+}

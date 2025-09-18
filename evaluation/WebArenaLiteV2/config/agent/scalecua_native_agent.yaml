@@ -1,0 +1,23 @@
+# OpenCUA as a native GUI agent
+planner_model:
+  # Engine type, default uses openai api engine, see core/engine.py for other supported engines
+  engine_type: openai
+  # API base URL
+  base_url: http://10.140.60.107:10025/v1
+  # API model name
+  model: gui_v108
+  # Model name, currently not used much, mainly for supporting custom models
+  model_name: scalecua
+  # Coordinate normalization method:
+  # - qwen2vl series uses per-thousand normalization (set to 1000)
+  # - internvl series uses 0-1 normalization (set to 1)
+  # - qwen2.5vl series (Our OpenCUA) uses smart_resize coordinates, this parameter is not used
+  grounding_coord: 1
+  # Prompt template, including settings for when used as a native agent and as a planner-worker agent
+  prompt_template: config/prompt_template/ours_web.json
+  # Whether to enable chain-of-thought mode
+  enable_thinking: true
+  # Smart resize settings and related parameters, see qwen25vl source code for details
+  smart_resize: true
+  max_pixels: 2109744
+  min_pixels: 3136

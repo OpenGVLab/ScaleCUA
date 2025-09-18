@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Follow ['lahwaacz', 'Koushik', 'Vinta Chen'] on Gitlab",
+    "task_config": {
+        "example_id": "120.json",
+        "file_path": "config/env/webarena/tasks/120.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

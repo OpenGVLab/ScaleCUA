@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 64,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Search for \"switch accessories\"",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6666/catalogsearch/result/?q=switch+accessories |OR| http://10.140.52.49:6666/catalogsearch/advanced/result/?name=switch+accessories&sku=&description=&short_description=&price[from]=&price[to]=&price[currency]=USD",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 276
+}

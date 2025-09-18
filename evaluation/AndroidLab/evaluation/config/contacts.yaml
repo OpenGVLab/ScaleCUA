@@ -1,0 +1,79 @@
+APP: Contacts
+package: com.google.android.contacts
+tasks:
+  - task_id: contacts_1
+    category: add contacts' information
+    task: Add John as a contacts and set his mobile phone number to be 12345678
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_2
+    category: add contacts' information
+    task: Add a contacts whose first name is "John", last name is "Smith", mobile phone number is 12345678, and working email as 123456@gmail.com
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_3
+    category: add contacts' information
+    task: Add a contacts whose name is Xu, set the working phone number to be 12345678 and mobile phone number to be 87654321
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_4
+    category: add contacts' information
+    task: Add a contacts named Chen, whose company is Tsinghua University
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_5
+    category: add contacts' information
+    task: Create a new label as work, and add AAA、ABC into it
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_6
+    category: modify contacts' information
+    task: Add a work phone number 00112233 to contacts ABC
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_7
+    category: modify contacts' information
+    task: Add birthday to AAA as 1996/10/24
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_8
+    category: modify contacts' information
+    task: Set contacts ABC's website to be abc.github.com
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_9
+    category: call or message
+    task: Edit a message to ABC, whose content is "Nice to meet you", but do not send it
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_10
+    category: call or message
+    task: Call ABC
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_11
+    category: modify contacts' information
+    task: Delete contacts AAA
+    metric_type: operation
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_12
+    category: check contacts' information
+    task: What is ABC's phone number
+    metric_type: query_detect
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_13
+    category: check contacts' information
+    task: Check Li's working email in contacts
+    metric_type: query_detect
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_14
+    category: check contacts' information
+    task: When is ABC's birthday?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.contacts
+  - task_id: contacts_15
+    category: check contacts' information
+    task: What is AAA's company?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.contacts
+

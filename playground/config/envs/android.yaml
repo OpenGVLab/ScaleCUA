@@ -1,0 +1,23 @@
+# ==================
+# Physical Device
+# ==================
+server_path: http://127.0.0.1
+platform: android
+manager_port: 8002
+avd_name: f44cdae5
+docker: False
+docker_args:
+  image_name: android_eval:latest
+  port: 6060
+
+# ==================
+# Emulator Device
+# ==================
+# server_path: http://127.0.0.1
+# platform: android
+# manager_port: 8002
+# avd_name: Pixel_7_Pro_API_33
+# docker: True
+# docker_args:
+#   image_name: android_eval:latest
+#   port: 6060

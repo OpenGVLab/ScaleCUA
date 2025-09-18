@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What brands appear most frequently among the top search terms?",
+    "task_config": {
+        "example_id": "31.json",
+        "file_path": "config/env/webarena/tasks/31.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

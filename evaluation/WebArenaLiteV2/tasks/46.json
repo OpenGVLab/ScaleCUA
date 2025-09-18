@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Compare the payment difference of the last 4 canceled orders and last 4 completed orders",
+    "task_config": {
+        "example_id": "46.json",
+        "file_path": "config/env/webarena/tasks/46.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Disable Ryker Tee Crew Neck from the site, they are facing some quality issues.",
+    "task_config": {
+        "example_id": "102.json",
+        "file_path": "config/env/webarena/tasks/102.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

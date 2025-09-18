@@ -1,0 +1,44 @@
+{
+    "config": [
+        {
+            "type": "execute",
+            "parameters": {
+                "command": [
+                    "python",
+                    "-c",
+                    "import pyautogui; import time; pyautogui.hotkey('win'); time.sleep(2); pyautogui.typewrite('slack', interval=0.1); time.sleep(1); pyautogui.press('enter'); time.sleep(5);"
+                ]
+            }
+        },
+        {
+            "type": "execute",
+            "parameters": {
+                "command": [
+                    "python",
+                    "-c",
+                    "import pyautogui; import time; pyautogui.typewrite('password', interval=0.1); time.sleep(1); pyautogui.press('enter'); time.sleep(10);"
+                ]
+            }
+        },
+        {
+            "type": "execute",
+            "parameters": {
+                "command": [
+                    "python",
+                    "-c",
+                    "import pyautogui; import time; pyautogui.click(888, 538); time.sleep(6);"
+                ]
+            }
+        },
+        {
+            "type": "execute",
+            "parameters": {
+                "command": [
+                    "python",
+                    "-c",
+                    "import pyautogui; import time;  pyautogui.click(1540, 280); time.sleep(1); pyautogui.click(1602, 327); time.sleep(8); pyautogui.click(1885, 66); time.sleep(2)"
+                ]
+            }
+        }
+    ]
+}

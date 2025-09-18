@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 67,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "How much time does it take from Pittsburgh to Philadelphia by car?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "5h 47min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "5h 47min"
+  },
+  "old_task_id": 287
+}

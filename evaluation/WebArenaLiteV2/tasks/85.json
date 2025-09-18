@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Pull up the description page of Carnegie Music Hall on Map",
+    "task_config": {
+        "example_id": "85.json",
+        "file_path": "config/env/webarena/tasks/85.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

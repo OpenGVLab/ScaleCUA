@@ -1,0 +1,29 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 123,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Invite lahwaacz and bblanchon as collaborator to gimmiethat.space repository",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/byteblaze/gimmiethat.space/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@lahwaacz",
+            "@bblanchon"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 567
+}

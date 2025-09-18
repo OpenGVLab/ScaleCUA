@@ -1,0 +1,24 @@
+agent:
+  name: OpenAIAgent
+  args:
+    api_key:
+    api_base:
+    model_name: "gpt-4o-2024-05-13"
+    max_new_tokens: 512
+
+task:
+  class: ScreenshotMobileTask_AutoTest
+  args:
+    save_dir: "./logs/evaluation"
+    max_rounds: 25
+    request_interval: 3
+    mode: "in_app"
+
+eval:
+  avd_base: /Users/[Your user name]/.android/avd
+  avd_name: Pixel_7_Pro_API_33
+  avd_log_dir: ./logs/evaluation
+  android_sdk_path: /Users/[Your user name]/Library/Android/sdk
+  show_avd: false
+
+

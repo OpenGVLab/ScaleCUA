@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post my question, \"is car necessary in NYC\", in a subreddit where I'm likely to get an answer",
+    "task_config": {
+        "example_id": "128.json",
+        "file_path": "config/env/webarena/tasks/128.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

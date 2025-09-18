@@ -1,0 +1,30 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 127,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Open the thread of a trending post on the forum \"machine learning\" and subscribe.",
+  "eval": {
+    "eval_types": [
+      "url_match",
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6668/f/MachineLearning",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/",
+        "locator": "document.querySelector(\"#sidebar > section\").outerText",
+        "required_contents": {
+          "must_include": [
+            "MachineLearning"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 599
+}

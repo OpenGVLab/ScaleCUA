@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show all customers",
+    "task_config": {
+        "example_id": "39.json",
+        "file_path": "config/env/webarena/tasks/39.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

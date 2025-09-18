@@ -1,0 +1,19 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 86,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Preview the Magento Blank theme for my shop",
+  "eval": {
+    "eval_types": [
+      "url_match"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6667/admin/admin/system_design_theme/edit/id/1",
+    "program_html": [],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 374
+}

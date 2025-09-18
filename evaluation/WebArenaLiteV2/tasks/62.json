@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me my RSS feed token",
+    "task_config": {
+        "example_id": "62.json",
+        "file_path": "config/env/webarena/tasks/62.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

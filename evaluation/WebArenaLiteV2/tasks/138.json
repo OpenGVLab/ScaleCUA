@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Submit a merge request for a11yproject.com/redesign branch to be merged into master branch, assign Roshan Jossy as the reviewer",
+    "task_config": {
+        "example_id": "138.json",
+        "file_path": "config/env/webarena/tasks/138.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

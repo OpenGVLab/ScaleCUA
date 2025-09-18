@@ -1,0 +1,30 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 129,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Find a subreddit focused on topics related to gaming consoles, and post my question, \"what is the recommended console to buy these days\" there",
+  "eval": {
+    "eval_types": [
+      "url_match",
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6668/f/consoles",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "what is the recommended console to buy these days"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 605
+}

@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 42,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Tell me the full names of the repositories where I made contributions and they got the most stars?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "a11yproject.com",
+        "design"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "a11yproject.com, Primer/design"
+  },
+  "old_task_id": 169
+}

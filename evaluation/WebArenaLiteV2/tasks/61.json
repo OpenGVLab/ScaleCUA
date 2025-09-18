@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "See all public projects",
+    "task_config": {
+        "example_id": "61.json",
+        "file_path": "config/env/webarena/tasks/61.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

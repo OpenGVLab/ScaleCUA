@@ -1,0 +1,138 @@
+APP: clock
+package: com.google.android.deskclock
+tasks:
+  - task_id: clock_1
+    category: Alarm set
+    task: Set an alarm for 3PM with the label "meeting" using Clock.
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_2
+    category: Alarm set
+    task: Set an alarm for 6:45AM, disable vibrate and change ring song to Argon
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_3
+    category: Alarm set
+    task: Help me set an alarm every Monday to Friday, 7AM in morning
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_4
+    category: Alarm set
+    task: Change my clock at 9AM, make it ring everyday
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_5
+    category: Alarm set
+    task: Help me set an alarm at 10:30AM tomorrow
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_6
+    category: Alarm set
+    task: I need to set a 10:30PM clock every weekend, and label it as "Watch Football Games" to remind me
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_7
+    category: Alarm set
+    task: Turn off all alarms
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_8
+    category: Alarm set
+    task: Delete all alarms after 2PM
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_9
+    category: Alarm set
+    task: Turn off the alarm at 4PM
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_10
+    category: Alarm query
+    task: What is my earliest alarm which is open?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_11
+    category: Alarm query
+    task: Is there an alarm set on 4PM everyday?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_12
+    category: Alarm query
+    task: Does my alarm at 4PM turn on vibrate?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_13
+    category: Alarm query
+    task: How many alarms have been turned on?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_14
+    category: Alarm query
+    task: Have my alarm at 9AM been turned on?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_15
+    category: Clock
+    task: Add London and Barcelona time in clock
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_16
+    category: Clock
+    task: Query the current time in Barcelona and the time difference with local time in clock
+    metric_type: query_detect
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_17
+    category: Clock
+    task: Delete Barcelona time from clock
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_18
+    category: Timer
+    task: Set a countdown timer for 1 hour 15 minutes but do not start it
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_19
+    category: Bedtime
+    task: Set bedtime for 10PM to sleep, wake up at 7AM
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_20
+    category: Bedtime
+    task: Set sleep sounds to deep space
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_21
+    category: Bedtime
+    task: Turn on the Wake-up alarm in Bedtime
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_22
+    category: Clock Setting
+    task: Set alarm style to Analog
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_23
+    category: Clock Setting
+    task: Change home time zone to Tokyo in clock
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_24
+    category: Clock Setting
+    task: Modify silence after to 5 minutes
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_25
+    category: App
+    task: Open clock app
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_26
+    category: Alarm set
+    task: Close my 7:30AM alarm
+    metric_type: operation
+    metric_func: evaluation.tasks.clock
+  - task_id: clock_27
+    category: Alarm set
+    task: Set an alarm at 3PM
+    metric_type: operation
+    metric_func: evaluation.tasks.clock

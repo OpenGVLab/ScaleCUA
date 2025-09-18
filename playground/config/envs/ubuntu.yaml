@@ -1,0 +1,2 @@
+vm_path: /path/to/docker_vm_data/Ubuntu_playground.qcow2
+connect_max_try: 3

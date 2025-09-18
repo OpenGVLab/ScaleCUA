@@ -1,0 +1,23 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 110,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Notify Sarah Miller in their most recent pending order with message \"the order is ready to be shipped soon!\"",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "System message: We cannot add order history."
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "System message: We cannot add order history."
+  },
+  "old_task_id": 491
+}

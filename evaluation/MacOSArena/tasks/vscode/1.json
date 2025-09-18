@@ -1,0 +1,38 @@
+{
+    "id": "vscode_1",
+    "system_img": "default",
+    "instruction": "Open VSCode and add exactly two folders — /Users/Shared/data1 and /Users/Shared/data2 — to the current workspace. Make sure no other folders are included in the workspace, and ensure the workspace is saved as a .code-workspace file in the /Users/Shared directory.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "mkdir -p /Users/Shared/data1",
+            "mkdir -p /Users/Shared/data2",
+            "open -a 'Visual Studio Code'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "vscode"
+    ],
+    "evaluator": {
+      "func": ["vscode_check_workspace_folders"],
+      "conj": "and",
+      "parameters": [
+        {
+          "expected_folder_list": ["data1", "data2"]
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

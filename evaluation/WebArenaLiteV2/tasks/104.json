@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Update the product description of Antonia Racer Tank to highlight the real user positive reviews by quoting the comments",
+    "task_config": {
+        "example_id": "104.json",
+        "file_path": "config/env/webarena/tasks/104.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the shortest walking distance to a supermarket from the hotel.",
+    "task_config": {
+        "example_id": "6.json",
+        "file_path": "config/env/webarena/tasks/6.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

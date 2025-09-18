@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the count of comments that have received more downvotes than upvotes for the user who made the latest post on the Showerthoughts forum.",
+    "task_config": {
+        "example_id": "5.json",
+        "file_path": "config/env/webarena/tasks/5.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

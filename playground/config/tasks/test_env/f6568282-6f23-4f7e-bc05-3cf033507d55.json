@@ -1,0 +1,5 @@
+{
+  "application": null,
+  "url": null,
+  "query": "Compress all regular files under the '/home/user/Documents' and name it 'documents.zip'."
+}

@@ -1,0 +1,31 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 130,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Post a review of my recent reading \"big little lies\" in the r/books with my comment \"can't stop it\".",
+  "eval": {
+    "eval_types": [
+      "url_match",
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6668/f/books",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "must_include": [
+            "big little lies",
+            "can't stop it"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 612
+}

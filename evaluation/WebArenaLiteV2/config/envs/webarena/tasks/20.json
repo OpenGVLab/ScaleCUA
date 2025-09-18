@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 20,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Which US states border New Hampshire?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "Massachusetts",
+        "Vermont",
+        "Maine"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Massachusetts, Vermont, Maine"
+  },
+  "old_task_id": 93
+}

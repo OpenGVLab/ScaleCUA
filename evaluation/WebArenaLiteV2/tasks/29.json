@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the reasons why customers like Circe's products",
+    "task_config": {
+        "example_id": "29.json",
+        "file_path": "config/env/webarena/tasks/29.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

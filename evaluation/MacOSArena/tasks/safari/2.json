@@ -1,0 +1,44 @@
+{
+    "id": "safari_2",
+    "system_img": "default",
+    "instruction": "Create a new folder named 'agent task' in Safari's bookmarks. Then, add at least five webpages to this folder, and make sure one of them is 'https://www.apple.com/'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Google Chrome'"
+          ]
+        }
+      },
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["safari_get_bookmarks_in_folder"],
+      "conj": "and",
+      "parameters": [
+        {
+          "folder_name": "agent task"     
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "check_list_length_and_contains_element",
+          "parameters": [">=", 5, "https://www.apple.com/"]
+        }
+        }]
+    }
+  }
+  

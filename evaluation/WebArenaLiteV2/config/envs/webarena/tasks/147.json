@@ -1,0 +1,39 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 147,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Create a new public project \"awesome-llms\" and add primer, convexegg, abishek as members",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6669/byteblaze/awesome-llms",
+        "locator": "document.querySelector('.visibility-icon').getAttribute('title')",
+        "required_contents": {
+          "must_include": [
+            "public"
+          ]
+        }
+      },
+      {
+        "url": "http://10.140.52.49:6669/byteblaze/awesome-llms/-/project_members",
+        "locator": "",
+        "required_contents": {
+          "must_include": [
+            "@primer",
+            "@convexegg",
+            "@abisubramanya27"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 745
+}

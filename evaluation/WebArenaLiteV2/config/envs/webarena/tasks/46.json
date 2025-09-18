@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 46,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Compare the payment difference of the last 4 canceled orders and last 4 completed orders",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "194.25"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "194.25"
+  },
+  "old_task_id": 196
+}

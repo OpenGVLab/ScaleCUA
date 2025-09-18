@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Find the hotel around Carnegie Music Hall",
+    "task_config": {
+        "example_id": "88.json",
+        "file_path": "config/env/webarena/tasks/88.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

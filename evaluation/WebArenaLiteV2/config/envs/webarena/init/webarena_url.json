@@ -1,0 +1,7 @@
+{
+    "SHOPPING_URL": "http://10.140.52.49:6666",
+    "SHOPPING_ADMIN_URL": "http://10.140.52.49:6667/admin",
+    "REDDIT_URL": "http://10.140.52.49:6668",
+    "GITLAB_URL": "http://10.140.52.49:6669",
+    "MAP_URL": "http://10.140.52.49:6671"
+}

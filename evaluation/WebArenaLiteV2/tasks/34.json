@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the estimated driving time between the hometown of Joe Biden(New Castle County, Delaware) and Bridgeport?",
+    "task_config": {
+        "example_id": "34.json",
+        "file_path": "config/env/webarena/tasks/34.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

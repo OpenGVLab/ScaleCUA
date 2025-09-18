@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 8,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "List the top 3 search terms in my store",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "hollister",
+        "Joust Bag",
+        "nike"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "hollister, Joust Bag, nike"
+  },
+  "old_task_id": 43
+}

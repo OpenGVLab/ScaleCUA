@@ -1,0 +1,38 @@
+{
+    "id": "finder_multi_4",
+    "system_img": "default",
+    "instruction": "Let's play a game. You need to search in Safari for the 2016 NBA Finals MVP, then create a .txt file under the \"/Users/Shared/\" directory and name it using this person's last name.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Finder'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "finder",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["finder_check_file_exists"],
+      "conj": "and",
+      "parameters": [
+        {
+          "file_path": "/Users/Shared/James.txt"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }
+        ]
+    }
+  }
+  

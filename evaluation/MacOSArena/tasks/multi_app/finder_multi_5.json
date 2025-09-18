@@ -1,0 +1,40 @@
+{
+    "id": "finder_multi_5",
+    "system_img": "default",
+    "instruction": "I just created a new empty folder—can you tell which one it is? Once you find it, rename it to new_finder in Finder.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "mkdir -p /Users/Shared/finder",
+            "open -a 'Finder'",
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "finder",
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["finder_check_folder_exists"],
+      "conj": "and",
+      "parameters": [
+        {
+          "folder_path": "/Users/Shared/new_finder"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }
+        ]
+    }
+  }
+  

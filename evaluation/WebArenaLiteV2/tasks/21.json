@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the grand total of invoice 000000002.",
+    "task_config": {
+        "example_id": "21.json",
+        "file_path": "config/env/webarena/tasks/21.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

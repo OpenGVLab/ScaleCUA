@@ -1,0 +1,66 @@
+name: Unittests
+
+# Allow to trigger the workflow manually (e.g., when deps changes)
+on: [push, workflow_dispatch]
+
+jobs:
+  pytest-job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Set up Python
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    # Install AndroidEnv
+    - name: Install AndroidEnv
+      run: |
+        git clone https://github.com/google-deepmind/android_env
+        cd android_env
+        python setup.py install
+
+    # Install AndroidWorld
+    - name: Install AndroidWorld
+      run: |
+        pip install -r requirements.txt
+        python setup.py install
+
+    # Set PYTHONPATH
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    # Set TMPDIR
+    - name: Set TMPDIR
+      run: |
+        echo "TMPDIR=/tmp/" >> $GITHUB_ENV
+
+    # Install additional dependencies
+    - name: Install additional dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fonts-dejavu fonts-liberation ttf-mscorefonts-installer
+        # Workaround for dependency issues with protobuf and google-generativeai.
+        # Update: 11/18/2024: This may need to be continually updated, when protobuf updates (from
+        # AndroidEnv), i.e. if there is an errror: "Runtime version cannot be older than the linked
+        # gencode version."
+        pip install protobuf==5.29.0
+        pip --version
+        pip install pytest-xdist
+        pip install -e .[dev]
+        pip freeze
+
+    # Run tests (in parallel)
+    - name: Run core tests
+      env:
+        PYTHONPATH: ${{ env.PYTHONPATH }}
+      run: |
+        pytest -vv -n auto --ignore=android_env

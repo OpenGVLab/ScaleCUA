@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Post the short URL of costume contest in this page to funny subreddit and note \"from /f/pics\"",
+    "task_config": {
+        "example_id": "131.json",
+        "file_path": "config/env/webarena/tasks/131.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

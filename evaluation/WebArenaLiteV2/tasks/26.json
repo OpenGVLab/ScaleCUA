@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show me the name of the customers who have expressed dissatisfaction with Chloe Compete Tank",
+    "task_config": {
+        "example_id": "26.json",
+        "file_path": "config/env/webarena/tasks/26.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,23 @@
+{
+  "sites": [
+    "gitlab"
+  ],
+  "task_id": 44,
+  "storage_state": "./.auth/gitlab_state.json",
+  "start_url": "http://10.140.52.49:6669",
+  "intent": "Open my latest created issue that has homepage content in its title to check if it is closed",
+  "eval": {
+    "eval_types": [
+      "string_match",
+      "url_match"
+    ],
+    "reference_answers": {
+      "exact_match": "Yes"
+    },
+    "reference_url": "http://10.140.52.49:6669/a11yproject/a11yproject.com/-/issues/719",
+    "program_html": [],
+    "reference_answer_raw_annotation": "closed",
+    "string_note": ""
+  },
+  "old_task_id": 182
+}

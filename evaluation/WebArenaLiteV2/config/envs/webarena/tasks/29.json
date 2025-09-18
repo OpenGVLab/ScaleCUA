@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 29,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Tell me the reasons why customers like Circe's products",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "Warm and comfortable. True to size."
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Warm and comfortable. True to size."
+  },
+  "old_task_id": 123
+}

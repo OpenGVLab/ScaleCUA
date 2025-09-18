@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 15,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "What is the zip code of Chatham University?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "15232 |OR| 15208"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "15232"
+  },
+  "old_task_id": 71
+}

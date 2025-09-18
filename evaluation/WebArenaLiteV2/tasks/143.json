@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Thumbs down the top 1 post ever in gadgets.",
+    "task_config": {
+        "example_id": "143.json",
+        "file_path": "config/env/webarena/tasks/143.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

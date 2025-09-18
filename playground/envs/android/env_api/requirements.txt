@@ -1,0 +1,14 @@
+backoff==2.2.1
+colorama==0.4.6
+fastapi==0.116.1
+jsonlines==4.0.0
+openai==1.97.0
+opencv_python==4.10.0.84
+Pillow==11.3.0
+pydantic==2.11.7
+pyshine==0.0.9
+python_Levenshtein==0.27.1
+PyYAML==6.0.2
+Requests==2.32.4
+timeout_decorator==0.5.0
+uiautomator2==3.3.3

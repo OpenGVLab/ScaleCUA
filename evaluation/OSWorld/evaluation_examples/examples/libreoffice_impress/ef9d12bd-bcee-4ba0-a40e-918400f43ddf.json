@@ -1,0 +1,37 @@
+{
+  "id": "ef9d12bd-bcee-4ba0-a40e-918400f43ddf",
+  "snapshot": "libreoffice_impress",
+  "instruction": "I closed the slide panel on the left and idk how to get it back please help",
+  "source": "https://www.reddit.com/r/libreoffice/comments/18elh3y/i_closed_the_slide_pannel_on_the_left_and_idk_how/",
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "libreoffice",
+          "--impress"
+        ]
+      }
+    },
+    {
+        "type": "execute",
+        "parameters": {
+          "command": [
+            "python",
+            "-c",
+            "import pyautogui; import time; pyautogui.click(960, 540); time.sleep(5); pyautogui.press('esc'); time.sleep(0.3); pyautogui.press('f10'); time.sleep(0.3); pyautogui.press('right', presses=2, interval=0.1); time.sleep(0.3); pyautogui.press('down', presses=11, interval=0.1); pyautogui.press('enter')"
+          ]
+        }
+      }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "libreoffice_impress"
+  ],
+  "evaluator": {
+    "func": "check_left_panel",
+    "result": {
+      "type": "accessibility_tree"
+    }
+  }
+}

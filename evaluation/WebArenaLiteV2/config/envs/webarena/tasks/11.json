@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 11,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "How long does it take to walk from Carnegie Museum of Art to Sorrells Library?",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "11 min"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "11 min"
+  },
+  "old_task_id": 56
+}

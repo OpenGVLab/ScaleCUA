@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "List products from Living Room Furtniture category by descending price",
+    "task_config": {
+        "example_id": "80.json",
+        "file_path": "config/env/webarena/tasks/80.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the status of my latest order and when will it arrive",
+    "task_config": {
+        "example_id": "22.json",
+        "file_path": "config/env/webarena/tasks/22.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

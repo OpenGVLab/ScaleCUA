@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Today is 6/12/2023. Tell me how many fulfilled orders I have over the past three days, and the total amount of money I spent.",
+    "task_config": {
+        "example_id": "10.json",
+        "file_path": "config/env/webarena/tasks/10.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

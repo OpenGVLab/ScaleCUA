@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 60,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "What is the phone number of Western Pennsylvania Hospital",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "+1 412 578 5000"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "4125785000"
+  },
+  "old_task_id": 254
+}

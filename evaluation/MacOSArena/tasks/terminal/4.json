@@ -1,0 +1,36 @@
+{
+    "id": "terminal_4",
+    "system_img": "default",
+    "instruction": "In the Terminal, create a new file at the path /Users/Shared/1.txt",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal"
+    ],
+    "evaluator": {
+        "func": ["terminal_check_files_in_directory"],
+        "conj": "and",
+        "parameters": [
+          {
+            "folder_path": "/Users/Shared",
+            "required_files": ["1.txt"] 
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          }]
+      }
+}

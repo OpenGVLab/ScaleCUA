@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Open my latest updated issue that has keyword \"better\" in its title to check if it is closed",
+    "task_config": {
+        "example_id": "43.json",
+        "file_path": "config/env/webarena/tasks/43.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

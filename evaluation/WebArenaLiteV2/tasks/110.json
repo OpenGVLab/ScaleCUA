@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Notify Sarah Miller in their most recent pending order with message \"the order is ready to be shipped soon!\"",
+    "task_config": {
+        "example_id": "110.json",
+        "file_path": "config/env/webarena/tasks/110.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

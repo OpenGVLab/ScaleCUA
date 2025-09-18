@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the total count of Pending reviews amongst all the reviews?",
+    "task_config": {
+        "example_id": "17.json",
+        "file_path": "config/env/webarena/tasks/17.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

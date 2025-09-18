@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What's the total number of items sold in the most recent 7 orders (no matter orders' status)?",
+    "task_config": {
+        "example_id": "32.json",
+        "file_path": "config/env/webarena/tasks/32.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

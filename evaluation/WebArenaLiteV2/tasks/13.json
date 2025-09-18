@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Which customer has completed the fifth most number of orders in the entire history?",
+    "task_config": {
+        "example_id": "13.json",
+        "file_path": "config/env/webarena/tasks/13.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

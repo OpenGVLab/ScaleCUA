@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Star the top eight most stared public repositories in Gitlab",
+    "task_config": {
+        "example_id": "118.json",
+        "file_path": "config/env/webarena/tasks/118.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

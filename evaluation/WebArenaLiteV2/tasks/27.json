@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "What is the date when I made my first purchase on this site?",
+    "task_config": {
+        "example_id": "27.json",
+        "file_path": "config/env/webarena/tasks/27.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

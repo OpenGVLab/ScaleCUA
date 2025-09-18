@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 82,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Show me the order statuses for order number 170 and 189.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "170: canceled",
+        "189: pending"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "170: canceled, 189: pending"
+  },
+  "old_task_id": 361
+}

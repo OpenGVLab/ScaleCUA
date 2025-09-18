@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Subscribe to the newsletter of OneStopMarket",
+    "task_config": {
+        "example_id": "117.json",
+        "file_path": "config/env/webarena/tasks/117.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

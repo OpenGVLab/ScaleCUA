@@ -1,0 +1,30 @@
+{
+  "exposs": {
+    "ci_startup_script_path": "Users/rbonatti/compute-instance-startup.sh",
+    "agent": "navi",
+    "datastore_input_path": "storage",
+    "docker_img_name": "windowsarena/winarena",
+    "exp_name": "exposs",
+    "num_workers": 4,
+    "use_managed_identity": false,
+    "json_name": "evaluation_examples_windows/test_all.json",
+    "model_name": "gpt-4-1106-vision-preview",
+    "som_origin": "oss",
+    "a11y_backend": "win32",
+    "_start_time": "2024-08-21 13:52:45", 
+    "_stop_time": "2024-08-21 14:16:10"
+  },
+  "exposswithuia": {
+    "ci_startup_script_path": "Users/rbonatti/compute-instance-startup.sh",
+    "agent": "navi",
+    "datastore_input_path": "storage",
+    "docker_img_name": "windowsarena/winarena",
+    "exp_name": "exposswithuia",
+    "num_workers": 4,
+    "use_managed_identity": false,
+    "json_name": "evaluation_examples_windows/test_all.json",
+    "model_name": "gpt-4-1106-vision-preview",
+    "som_origin": "oss-mixed",
+    "a11y_backend": "uia"
+  }
+}

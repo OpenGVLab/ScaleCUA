@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Add this product to my wishlist",
+    "task_config": {
+        "example_id": "116.json",
+        "file_path": "config/env/webarena/tasks/116.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

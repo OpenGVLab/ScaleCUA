@@ -1,0 +1,29 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 104,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Update the product description of Antonia Racer Tank to highlight the real user positive reviews by quoting the comments",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6667/admin/../antonia-racer-tank.html",
+        "locator": "document.querySelector('.data.item.content').outerText + (document.querySelector('.product.attribute.overview [itemprop=\"description\"]')?.outerText || '')",
+        "required_contents": {
+          "must_include": [
+            "Its colorful and looks kinda cute under my exercise tanks",
+            "it's very stylish for yoga or something else low impact"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 464
+}

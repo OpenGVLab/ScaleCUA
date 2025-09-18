@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the coordinates of Apple Store near Pittsburgh in DD format (keep all decimal places)",
+    "task_config": {
+        "example_id": "59.json",
+        "file_path": "config/env/webarena/tasks/59.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

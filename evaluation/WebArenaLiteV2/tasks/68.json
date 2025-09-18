@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the name of the customer who has the most cancellations in the history",
+    "task_config": {
+        "example_id": "68.json",
+        "file_path": "config/env/webarena/tasks/68.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

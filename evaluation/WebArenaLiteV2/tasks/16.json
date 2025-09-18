@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Given the following locations, ['Massachusetts Institute of Technology', 'Harvard University', 'Boston Logan International Airport'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+    "task_config": {
+        "example_id": "16.json",
+        "file_path": "config/env/webarena/tasks/16.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

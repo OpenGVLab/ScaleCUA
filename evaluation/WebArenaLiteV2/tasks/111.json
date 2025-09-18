@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Update order #307 with the DHL tracking number 24353446464",
+    "task_config": {
+        "example_id": "111.json",
+        "file_path": "config/env/webarena/tasks/111.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,32 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 134,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Post a notice on a virtual meetup for Harry Potter enthusiasts on July 8th in the books subreddit",
+  "eval": {
+    "eval_types": [
+      "url_match",
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6668/f/books",
+    "program_html": [
+      {
+        "url": "func:reddit_get_post_url('__last_url__')",
+        "locator": "document.querySelector('.submission__inner').outerText",
+        "required_contents": {
+          "fuzzy_match": [
+            "Harry Potter enthusiasts",
+            "July 8th",
+            "virtual meetup"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 641
+}

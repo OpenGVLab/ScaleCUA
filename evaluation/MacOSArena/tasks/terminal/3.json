@@ -1,0 +1,36 @@
+{
+    "id": "terminal_3",
+    "system_img": "default",
+    "instruction": "Create a hidden shell script in the /Users/Shared/ directory. The file name must include the string echo_macos and the script should print 'macOS task complete' and exit. Ensure only the current user has execute permission for the file (i.e., no read/write for others or group). Also ensure that only one file in that directory matches the pattern. The script must be successfully executable via terminal.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Terminal'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal"
+    ],
+    "evaluator": {
+      "func": ["terminal_check_echo_macos_script"],
+      "conj": "and",
+      "parameters": [
+        {
+          "base_path": "/Users/Shared"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

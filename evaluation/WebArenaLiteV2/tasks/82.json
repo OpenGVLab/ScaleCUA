@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show me the order statuses for order number 170 and 189.",
+    "task_config": {
+        "example_id": "82.json",
+        "file_path": "config/env/webarena/tasks/82.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

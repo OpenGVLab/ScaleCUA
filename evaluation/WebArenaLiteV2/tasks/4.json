@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "List out reviewers, if exist, who mention about good fingerprint resistant",
+    "task_config": {
+        "example_id": "4.json",
+        "file_path": "config/env/webarena/tasks/4.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

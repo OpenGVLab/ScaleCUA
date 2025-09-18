@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Find a subreddit focused on topics related to gaming consoles, and post my question, \"what is the recommended console to buy these days\" there",
+    "task_config": {
+        "example_id": "129.json",
+        "file_path": "config/env/webarena/tasks/129.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

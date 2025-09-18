@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Checkout open merge requests requiring my review",
+    "task_config": {
+        "example_id": "81.json",
+        "file_path": "config/env/webarena/tasks/81.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

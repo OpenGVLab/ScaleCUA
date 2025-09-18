@@ -1,0 +1,64 @@
+APP: Cantook
+package: Cantook
+tasks:
+  # query
+  - task_id: cantook_1
+    task: Do I have Pride and Prejudice on my bookshelf?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_2
+    task: What was the last book I recently read?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_3
+    task: Who is the author of the second book in my recently added?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_4
+    task: How many Charles Dickens books do I have?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_5
+    task: What is my progress in reading Romeo and Juliet?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.cantook
+
+  # operation
+  - task_id: cantook_6
+    task: Import Alice's Advantures in Wonderland from folder /Download/Ebooks/.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_7
+    task: Delete Don Quixote from my books.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_8
+    task: Mark Hamlet as read.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_9
+    task: Mark the second book I recently read as unread.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_10
+    task: Open Romeo and Juliet.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_11
+    task: Open the category named 'Tragedies'.
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook
+
+  - task_id: cantook_12
+    task: Create a new collection called "Favorite".
+    metric_type: operation
+    metric_func: evaluation.tasks.cantook

@@ -1,0 +1,30 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 139,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Lookup orders that are canceled",
+  "eval": {
+    "eval_types": [
+      "url_match",
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "http://10.140.52.49:6667/admin/sales/order/",
+    "program_html": [
+      {
+        "url": "last",
+        "locator": "document.querySelector(\"div.admin__data-grid-filters-current\").outerText",
+        "required_contents": {
+          "must_include": [
+            "Canceled"
+          ]
+        }
+      }
+    ],
+    "url_note": "GOLD in PRED"
+  },
+  "old_task_id": 678
+}

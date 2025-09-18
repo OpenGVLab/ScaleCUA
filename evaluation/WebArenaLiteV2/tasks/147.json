@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Create a new public project \"awesome-llms\" and add primer, convexegg, abishek as members",
+    "task_config": {
+        "example_id": "147.json",
+        "file_path": "config/env/webarena/tasks/147.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

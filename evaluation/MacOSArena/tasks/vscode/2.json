@@ -1,0 +1,41 @@
+{
+    "id": "vscode_2",
+    "system_img": "default",
+    "instruction": "In the VScode workspace located at ~/Library/example_code, replace every tab character (\\t) in all files with exactly four spaces. Do not modify any other content. Ignore any potential syntax errors or formatting issues in the files.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "sudo /usr/local/bin/code ~/Library/example_code"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "vscode"
+    ],
+    "evaluator": {
+      "func": ["vscode_check_tab_to_4space_replacement"],
+      "conj": "and",
+      "parameters": [
+        {
+          "folder": "~/Library/example_code",
+          "files": ["1.py", "2.txt"],
+          "original_contents": {
+            "1.py": "\nimport os\nfrom pathlib import Path\ntry:\n    from osxmetadata import OSXMetaData\n    path = Path(r\"\"\"/Users/Shared/1/11/11/1/empty.txt\"\"\").expanduser().resolve()\n    if \t\tnot \tpath.exists():\n        \tprint(\"__NOT_FOUND__\")\t\t\n    else:\n        \tmd = OSXMetaData(str(path))\n        \ttags = md.tags or []\t\t\t\n        \tprint(\"__TAGS__:\" + \",\".join(str(tag) for tag in tags))\nexcept Exception as e:\t\t\t\t\t\t\n    print(\"__ERROR__:\" + str(e))\n\n\n\t\t\n\t\t\n    1   \t\t\t1\t\n\t\t\n\n\n\n\n\n\n\n",
+            "2.txt": " \n    123131\n    ewqrfwr3r32r3rqwtgqgqghhq\t\tthg\t\trhaft               \n    wwzfzsfzsdfa\t\tefg\n\t\t\n\t\t\t\t\n        ewerwqrq\twrfqegwra\n\t\t\t\n            wwzfzsfzsdfa\tefgwer  \t\twwzfzsfzsdfaefgwer      F\n\n\t            sdfsfaf\n\t\n\t\n                wwzfzsfzsdfaefg fef\n\t\n\t\n\t\n\t\n\t\t\t\t\t\t\n\n\t\t\t\n\n\n\n\n\n\n\n\n\n\n\n\n                                                                                    "
+          }
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+  }
+  

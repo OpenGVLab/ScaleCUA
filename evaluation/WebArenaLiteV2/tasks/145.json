@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "DisLike all submissions created by AdamCannon in subreddit UpliftingNews",
+    "task_config": {
+        "example_id": "145.json",
+        "file_path": "config/env/webarena/tasks/145.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

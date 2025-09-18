@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "reddit"
+  ],
+  "task_id": 95,
+  "storage_state": "./.auth/reddit_state.json",
+  "start_url": "http://10.140.52.49:6668",
+  "intent": "Change my reddit bio to \"Seeking SDE positions\"",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6668/user/MarvelsGrantMan136",
+        "locator": "document.querySelector(\".user-bio__biography\").outerText",
+        "required_contents": {
+          "exact_match": "Seeking SDE positions"
+        }
+      }
+    ]
+  },
+  "old_task_id": 401
+}

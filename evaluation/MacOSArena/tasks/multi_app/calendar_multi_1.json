@@ -1,0 +1,38 @@
+{
+    "id": "calendar_safari_1",
+    "system_img": "default",
+    "instruction": "In the Calendar app, create a new calendar named '2012 London Olympic'. Then, create three events and name them after the capital cities of the top three countries by gold medal count in the 2012 London Olympics.\nHint: One of the event names should be “Washington, D.C.” (including the comma and periods).",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["calendar_check_calendar_contains_events"],
+      "conj": "and",
+      "parameters": [
+        {
+          "calendar_name": "2012 London Olympic",
+          "event_names": ["Washington, D.C.", "Beijing", "London"]
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 6,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "I will arrive Pittsburgh Airport soon. Provide the name of a Hilton hotel in the vicinity, if available. Then, tell me the the shortest walking distance to a supermarket from the hotel.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "DoubleTree by Hilton Hotel Pittsburgh Airport",
+        "1.4km"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "DoubleTree by Hilton Hotel Pittsburgh Airport Distance: 1.4km"
+  },
+  "old_task_id": 33
+}

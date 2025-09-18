@@ -1,0 +1,37 @@
+{
+    "id": "notes_4",
+    "system_img": "default",
+    "instruction": "Search for \"TRB Hutong\" in the Maps app or Safari and find its full 11-digit phone number; then in the Notes app, create a folder named \"Restaurant\", create a note titled \"TRB Hutong\" inside it, and add the following content: \"phone number:{phone number}\" (11 digits, no separators).",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_get_note_plaintext_by_name"],
+      "conj": "and",
+      "parameters": [
+        {
+          "name": "TRB Hutong",
+          "folder": "Restaurant"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": ["phone number:13911712083"]
+        }
+        }]
+    }
+  }
+  

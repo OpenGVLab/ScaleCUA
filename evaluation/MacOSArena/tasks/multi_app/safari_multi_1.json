@@ -1,0 +1,39 @@
+{
+    "id": "multiapp_4",
+    "system_img": "default",
+    "instruction": "Please search online for the abstract deadline and of the NeurIPS main conference in 2025, and set a reminder called 'abs ddl'",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a Safari"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "safari",
+      "reminder"
+    ],
+    "evaluator": {
+        "func": ["reminders_check_on_date"],
+        "conj": "and",
+        "parameters": [
+            {
+                "reminder_name": "abs ddl",
+                "date_str": "20250512"
+            }
+        ],
+        "expected": [
+            {
+                "type": "common",
+                "rules": {
+                    "func": "is_true",
+                    "parameters": []
+                }
+            }
+        ]
+      }
+}
+

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "From my stay at Homewood Suites Southpointe, what's the estimated driving time to reach PPG Paints Arena?",
+    "task_config": {
+        "example_id": "19.json",
+        "file_path": "config/env/webarena/tasks/19.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

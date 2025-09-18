@@ -1,0 +1,63 @@
+APP: map.me
+package: com.mapswithme.maps.pro
+tasks:
+  - task_id: map_1
+    task: Check the walking distance and time between Bus Stop of Stanford Campus Oval and Bus Stop of Oxford Street & University Avenue
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_2
+    task: Check the driving distance and time between Bus stop of 2700 Coast Avenue and Bus Stop Route 51
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_3
+    task: Check the riding time between Bus Stop of Stanford Campus Oval and Bus Stop of Oxford Street & University Avenue
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_4
+    task: Check the route by public transportation between Bus stop of 2700 Coast Avenue and Bus Stop Route 51
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_5
+    task: Compare which takes less time to travel between Bus stop of 2700 Coast Avenue and Bus Stop Route 51, by riding or by public transportation?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_6
+    task: Compare which takes less time to travel between Bus Stop of Stanford Campus Oval and Bus Stop of Oxford Street & University Avenue, by riding or by public transportation?
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_7
+    task: Check the nearest restaurant and tell me what is it
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_8
+    task: Check the nearest restaurant, and tell me the time it will take to walk to the restaurant.
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_9
+    task: Check the nearest hotel, tell me what is it
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_10
+    task: Check the nearest IKEA, and tell me how long it will take to drive to the IKEA
+    metric_type: query_detect
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_11
+    task: Add the address of openai to my Work place
+    metric_type: operation
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_12
+    task: Navigate from my location to Stanford University
+    metric_type: operation
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_13
+    task: Navigate from my location to University South
+    metric_type: operation
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_14
+    task: Navigate from my location to OpenAI
+    metric_type: operations
+    metric_func: evaluation.tasks.map_me
+  - task_id: map_15
+    task: Navigate from my location to University of California, Berkeley
+    metric_type: operation
+    metric_func: evaluation.tasks.map_me

@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Among the top 10 post in \"books\" forum, is there any post talks about supporting local book stores? If so, tell me the organizations involved",
+    "task_config": {
+        "example_id": "14.json",
+        "file_path": "config/env/webarena/tasks/14.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

@@ -1,0 +1,38 @@
+{
+    "id": "multi_app_1",
+    "system_img": "default",
+    "instruction": "Locate a file named summary.txt on the system. Once found, create a note titled path_summary that contains the full absolute path to the file, ensuring that the path does not include ~ but is fully expanded.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "echo \"Evaluation for\" > ~/Documents/summary.txt"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "terminal",
+      "notes"
+    ],
+    "evaluator": {
+        "func": ["notes_get_note_plaintext_by_name"],
+        "conj": "and",
+        "parameters": [
+          {
+            "name": "path_summary",
+            "folder": null
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "find_str_in_list",
+            "parameters": ["/User/pipiwu/Documents/summary.txt"]
+          }
+          }]
+      }
+  }
+  

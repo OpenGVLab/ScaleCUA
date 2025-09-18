@@ -1,0 +1,24 @@
+{
+  "sites": [
+    "map"
+  ],
+  "task_id": 16,
+  "storage_state": null,
+  "start_url": "http://10.140.52.49:6671",
+  "intent": "Given the following locations, ['Massachusetts Institute of Technology', 'Harvard University', 'Boston Logan International Airport'], what would be the optimal route to travel through them all in order to minimize total travel time? Please note the journey begins at the first place listed.",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "The order is Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "Massachusetts Institute of Technology, Harvard University, Boston Logan International Airport"
+  },
+  "old_task_id": 75
+}

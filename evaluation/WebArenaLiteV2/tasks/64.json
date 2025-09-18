@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Search for \"switch accessories\"",
+    "task_config": {
+        "example_id": "64.json",
+        "file_path": "config/env/webarena/tasks/64.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

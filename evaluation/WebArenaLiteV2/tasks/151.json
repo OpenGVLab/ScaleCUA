@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Change the delivery address for my most recent order to 77 Massachusetts Ave, Cambridge, MA.",
+    "task_config": {
+        "example_id": "151.json",
+        "file_path": "config/env/webarena/tasks/151.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

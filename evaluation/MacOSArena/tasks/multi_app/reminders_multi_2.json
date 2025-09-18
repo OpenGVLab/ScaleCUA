@@ -1,0 +1,50 @@
+{
+    "id": "reminders_5",
+    "system_img": "default",
+    "instruction": "In the Calendar app, locate the event scheduled on June 10, 2050, then in the Reminders app, create a reminder with the same title that is due next week at 9:00 AM.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Reminders'",
+            "osascript -e 'tell application \"Calendar\"' -e 'if not (exists calendar \"Team Presentations\") then make new calendar with properties {name:\"Team Presentations\"}' -e 'tell calendar \"Team Presentations\"' -e 'make new event with properties {summary:\"Team Presentation\", start date:date \"June 10, 2050 at 10:00 AM\", end date:date \"June 10, 2050 at 11:00 AM\"}' -e 'end tell' -e 'end tell'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "reminders"
+    ],
+    "evaluator": {
+      "func": ["reminders_check_work_due_next_week", "reminders_check_due_time"],
+      "conj": "and",
+      "parameters": [
+        {
+          "reminder_name": "Team Presentation"
+        },
+        {
+          "reminder_name": "Team Presentation",
+          "target_hour": 9,
+          "target_minute": 0   
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        },
+        {
+          "type": "common",
+          "rules": {
+            "func": "is_true",
+            "parameters": []
+          }
+          }
+      ]
+    }
+  }
+  

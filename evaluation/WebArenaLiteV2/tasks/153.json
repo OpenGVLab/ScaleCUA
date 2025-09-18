@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Assign the issue regarding 404 in a11yproject to myself.",
+    "task_config": {
+        "example_id": "153.json",
+        "file_path": "config/env/webarena/tasks/153.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

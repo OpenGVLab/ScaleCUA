@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Draft a refund message via their \"contact us\" form for the phone screen protector I bought March 2023. It broke after three days of use. The shop requires the order id, the reason and the amount to refund in the message. Don't submit yet, I will check.",
+    "task_config": {
+        "example_id": "119.json",
+        "file_path": "config/env/webarena/tasks/119.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

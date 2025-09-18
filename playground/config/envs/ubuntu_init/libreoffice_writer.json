@@ -1,0 +1,23 @@
+{
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "libreoffice",
+          "--writer"
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "python",
+          "-c",
+          "import pyautogui; import time; time.sleep(5.0); pyautogui.click(959, 640); time.sleep(1.0)"
+        ]
+      }
+    }
+  ]
+}

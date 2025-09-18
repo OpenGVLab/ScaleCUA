@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Tell me the closest cafe(s) to Hunt library, Pittsburgh",
+    "task_config": {
+        "example_id": "12.json",
+        "file_path": "config/env/webarena/tasks/12.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

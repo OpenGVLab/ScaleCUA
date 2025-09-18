@@ -1,0 +1,36 @@
+{
+    "id": "multiapp_6",
+    "system_img": "default",
+    "instruction": "In the Notes app, create a new note titled \"Notes with Attachment\" and ensure it includes an attachment named \"1.txt\".",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+        "func": ["notes_list_attachment_names_by_note_name"],
+        "conj": "and",
+        "parameters": [
+          {
+            "note_name": "Notes with Attachment"
+          }
+        ],
+        "expected": [
+          {
+          "type": "common",
+          "rules": {
+            "func": "find_str_in_list",
+            "parameters": [["1.txt"]]
+          }
+          }
+        ]
+      }
+}

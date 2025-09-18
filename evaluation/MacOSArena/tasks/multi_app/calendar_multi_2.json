@@ -1,0 +1,40 @@
+{
+    "id": "calendar_safari_2",
+    "system_img": "default",
+    "instruction": "In the Calendar App, create a recurring event called 'TianGanDiZhi' every Monday, with the start time set to the beginning of '酉时' in Chinese.\nHint: The recurrence must be set using the 'Custom' option in the repeat settings.",
+    "instruction_zh": "创建一个每周一循环的事件叫做“天干地支”，提醒时间为 '中国的酉时' 的开始",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Calendar'",
+            "open -a 'Google Chrome'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "calendar",
+      "safari"
+    ],
+    "evaluator": {
+      "func": ["calendar_check_weekly_event_advanced"],
+      "conj": "and",
+      "parameters": [
+        {
+          "event_name": "TianGanDiZhi",
+          "start_hour": 17,
+          "start_minute": 0
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "is_true",
+          "parameters": []
+        }
+        }]
+    }
+}

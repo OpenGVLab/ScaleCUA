@@ -1,0 +1,27 @@
+**
+
+.dockerignore
+.git
+.github
+.gitignore
+.gitlab-ci.yml
+.gitmodules
+Dockerfile
+Dockerfile.archive
+compose.yml
+compose.yaml
+docker-compose.yml
+docker-compose.yaml
+*.md
+
+# whitelist src/win-arena-container
+!src/win-arena-container/**
+
+# Ignore all VM storage clones
+src/win-arena-container/vm/storage*/
+src/win-arena-container/client/results/
+
+
+# Optionally ignore large image files
+*.iso
+*.img

@@ -1,0 +1,29 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 93,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "Who gave 4 or 5 stars for phone cases from EYZUTAK",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "must_include": [
+        "MH",
+        "Misba009",
+        "Amanda",
+        "Amazon Customer",
+        "Cally",
+        "Bethany Robertson"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "MH, Misba009, Amanda, Amazon Customer, Cally, Bethany Robertson, Bethany Robertson"
+  },
+  "old_task_id": 387
+}

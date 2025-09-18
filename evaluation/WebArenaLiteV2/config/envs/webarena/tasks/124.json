@@ -1,0 +1,39 @@
+{
+  "sites": [
+    "shopping"
+  ],
+  "task_id": 124,
+  "storage_state": "./.auth/shopping_state.json",
+  "start_url": "http://10.140.52.49:6666",
+  "intent": "I recently moved, my address is 111 Magnolia Path, Atlanta, GA, 30303, update my information on OneStopShopping accordingly",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6666/customer/address",
+        "locator": "document.querySelector(\".box.box-address-shipping > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "111 Magnolia Path",
+            "Atlanta, Georgia, 30303"
+          ]
+        }
+      },
+      {
+        "url": "http://10.140.52.49:6666/customer/address",
+        "locator": "document.querySelector(\".box.box-address-billing > .box-content\").outerText",
+        "required_contents": {
+          "must_include": [
+            "111 Magnolia Path",
+            "Atlanta, Georgia, 30303"
+          ]
+        }
+      }
+    ]
+  },
+  "old_task_id": 574
+}

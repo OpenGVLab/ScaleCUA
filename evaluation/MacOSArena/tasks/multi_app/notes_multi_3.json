@@ -1,0 +1,37 @@
+{
+    "id": "notes_6",
+    "system_img": "default",
+    "instruction": "In the Maps app, find the Palace Museum and look up its official website; then in the Notes app, create a folder named \"Scenic Websites\", create a note inside it titled \"Palace Museum\", and enter the exact website URL shown in Maps (with no other modifications).",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_get_note_plaintext_by_name"],
+      "conj": "and",
+      "parameters": [
+        {
+          "name": "Palace Museum",
+          "folder": "Scenic Websites"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": ["dpm.org.cn/Home.html"]
+        }
+        }]
+    }
+  }
+  

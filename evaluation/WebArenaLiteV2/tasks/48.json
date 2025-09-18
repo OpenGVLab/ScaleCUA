@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "How many commits did kilian make on 3/5/2023?",
+    "task_config": {
+        "example_id": "48.json",
+        "file_path": "config/env/webarena/tasks/48.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

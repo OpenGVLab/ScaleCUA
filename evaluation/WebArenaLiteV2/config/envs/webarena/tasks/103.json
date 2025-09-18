@@ -1,0 +1,26 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 103,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/1481/",
+  "intent": "Reduce the price of this product by $5",
+  "eval": {
+    "eval_types": [
+      "program_html"
+    ],
+    "reference_answers": null,
+    "reference_url": "",
+    "program_html": [
+      {
+        "url": "http://10.140.52.49:6667/admin/catalog/product/edit/id/1481/",
+        "locator": "document.querySelector('[name=\"product[price]\"').value",
+        "required_contents": {
+          "exact_match": "27.00"
+        }
+      }
+    ]
+  },
+  "old_task_id": 458
+}

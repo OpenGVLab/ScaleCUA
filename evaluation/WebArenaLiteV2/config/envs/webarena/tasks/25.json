@@ -1,0 +1,35 @@
+{
+  "sites": [
+    "shopping_admin"
+  ],
+  "task_id": 25,
+  "storage_state": "./.auth/shopping_admin_state.json",
+  "start_url": "http://10.140.52.49:6667/admin",
+  "intent": "Presents the monthly count of successful orders from Jan to December 2022 in MM:COUNT format",
+  "eval": {
+    "eval_types": [
+      "string_match"
+    ],
+    "reference_answers": {
+      "fuzzy_match": [
+        "01(Jan):11",
+        "02(Feb):16",
+        "03(Mar):14",
+        "04(Apr):8",
+        "05(May):8",
+        "06(Jun):13",
+        "07(Jul):9",
+        "08(Aug):8",
+        "09(Sep):10",
+        "10(Oct):4",
+        "11(Nov):5",
+        "12(Dec):10"
+      ]
+    },
+    "reference_url": "",
+    "program_html": [],
+    "string_note": "",
+    "reference_answer_raw_annotation": "01:11 02:16 03:14 04:8 05:8 06:13 07:9 08:8 09:10 10:4 11:5 12:10"
+  },
+  "old_task_id": 109
+}

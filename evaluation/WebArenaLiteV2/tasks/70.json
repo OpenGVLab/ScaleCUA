@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show the most recent pending order",
+    "task_config": {
+        "example_id": "70.json",
+        "file_path": "config/env/webarena/tasks/70.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

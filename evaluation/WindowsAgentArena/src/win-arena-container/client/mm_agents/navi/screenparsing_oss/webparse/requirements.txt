@@ -1,0 +1,3 @@
+pyautogui
+playwright
+opencv-python

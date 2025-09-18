@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Show me the command to clone the best GAN python implementation with SSH.",
+    "task_config": {
+        "example_id": "69.json",
+        "file_path": "config/env/webarena/tasks/69.json"
+    },
+    "benchmark": "vab_webarena_lite"
+}

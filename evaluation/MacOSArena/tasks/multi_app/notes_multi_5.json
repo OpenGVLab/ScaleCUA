@@ -1,0 +1,37 @@
+{
+    "id": "notes_8",
+    "system_img": "default",
+    "instruction": "In the Terminal app, run \"sw_vers -productVersion\"; then in the Notes app, create a folder named “Mac”, add a note titled “Product Version” inside it, and enter only the numeric version number (no extra text).",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a 'Notes'"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "notes"
+    ],
+    "evaluator": {
+      "func": ["notes_get_note_plaintext_by_name"],
+      "conj": "and",
+      "parameters": [
+        {
+          "name": "Product Version",
+          "folder": "Mac"
+        }
+      ],
+      "expected": [
+        {
+        "type": "common",
+        "rules": {
+          "func": "find_str_in_list",
+          "parameters": ["14.7.5"] 
+        }
+        }]
+    }
+  }
+  

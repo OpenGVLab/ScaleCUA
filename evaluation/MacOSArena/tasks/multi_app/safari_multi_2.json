@@ -1,0 +1,36 @@
+{
+    "id": "multiapp_8",
+    "system_img": "default",
+    "instruction": "Check the current time difference between South Korea and the United States using Safari. Then, in the Clock app, create or update the first alarm and set its time to the current time in Seoul, South Korea. Name this alarm 'Korea'.",
+    "config": [
+      {
+        "type": "cmd",
+        "parameters": {
+          "command": [
+            "open -a Safari"
+          ]
+        }
+      }
+    ],
+    "related_apps": [
+      "safari",
+      "clock"
+    ],
+    "evaluator": {
+        "func": ["clock_check_korea_alarm"],
+        "conj": "and",
+        "parameters": [
+            {
+            }
+        ],
+        "expected": [
+            {
+                "type": "common",
+                "rules": {
+                    "func": "is_true",
+                    "parameters": []
+                }
+            }
+        ]
+    }
+}

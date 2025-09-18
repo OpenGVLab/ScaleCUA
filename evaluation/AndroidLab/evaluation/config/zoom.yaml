@@ -1,0 +1,28 @@
+APP: zoom
+package: us.zoom.videomeetings
+tasks:
+  # query
+  - task_id: zoom_1
+    task: Join meeting 1234567890. (You should not click join button, and leave it to user)
+    metric_type: operation
+    metric_func: evaluation.tasks.zoom
+
+  - task_id: zoom_2
+    task: Join meeting 0987654321, and set my name as 'Alice'. (You should not click join button, and leave it to user)
+    metric_type: operation
+    metric_func: evaluation.tasks.zoom
+
+  - task_id: zoom_3
+    task: I need to join meeting 1234567890 without audio and video. (You should not click join button, and leave it to user)
+    metric_type: operation
+    metric_func: evaluation.tasks.zoom
+
+  - task_id: zoom_4
+    task: Set auto connect to audio when wifi is connected in zoom settings.
+    metric_type: operation
+    metric_func: evaluation.tasks.zoom
+
+  - task_id: zoom_5
+    task: Change my reaction skin to Medium-light in zoom settings.
+    metric_type: operation
+    metric_func: evaluation.tasks.zoom
