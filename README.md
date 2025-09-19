@@ -91,7 +91,7 @@ Our evaluation suite covers desktop, mobile, and web environments:
   * **Android**: `AndroidWorld`, `AndroidLab`
   * **Ubuntu**: `OSWorld`
   * **macOS**: `MacOSArena`
-  * **Web**: `WebArenaLiteV2` (A refined version of WebArena-Lite suitable for visual-based agents)
+  * **Web**: `WebArenaLite-V2` (A refined version of WebArena-Lite suitable for visual-based agents)
   * **Windows**: `WindowsAgentArena`
 
 ## 🧠 Training
