@@ -1,7 +1,7 @@
 # ScaleCUA: Scaling Open-Source Computer Use Agents with Cross-Platform Data
 
 <p align="center">
-&nbsp&nbsp📑 <a href="https://arxiv.org/abs/2509.xxx">Paper</a>&nbsp&nbsp | &nbsp&nbsp🤗 <a href="https://huggingface.co/datasets/OpenGVLab/ScaleCUA-Data">Dataset</a>&nbsp&nbsp | &nbsp&nbsp🤖 <a href="https://huggingface.co/collections/OpenGVLab/scalecua-68c912cf56f7ff4c8e034003">Model</a>&nbsp&nbsp | &nbsp&nbsp🖥️  <a href="https://github.com/OpenGVLab/OpenCUA">Model Demo</a>&nbsp&nbsp 
+&nbsp&nbsp📑 <a href="https://arxiv.org/abs/2509.15221">Paper</a>&nbsp&nbsp | &nbsp&nbsp🤗 <a href="https://huggingface.co/datasets/OpenGVLab/ScaleCUA-Data">Dataset</a>&nbsp&nbsp | &nbsp&nbsp🤖 <a href="https://huggingface.co/collections/OpenGVLab/scalecua-68c912cf56f7ff4c8e034003">Model</a>&nbsp&nbsp | &nbsp&nbsp🖥️  <a href="https://github.com/OpenGVLab/OpenCUA">Model Demo</a>&nbsp&nbsp 
 </p>
 
 <div style="max-width:900px;margin:0 auto;">
@@ -126,6 +126,8 @@ If you find our work useful, please consider citing our paper:
   title        = {ScaleCUA: Scaling Open-Source Computer Use Agents with Cross-Platform Data},
   author       = {Liu, Zhaoyang and Xie, Jingjing and Ding, Zichen and Li, Zehao and Yang, Bowen and Wu, Zhenyu and Wang, Xuehui and Sun, Qiushi and Liu, Shi and Wang, Weiyun and Ye, Shenglong and Li, Qingyun and Dong, Xuan and Yu, Yue and Lu, Chenyu and Mo, YunXiang and Yan, Yao and Tian, Zeyue and Zhang, Xiao and Huang, Yuan and Liu, Yiqian and Su, Weijie and Luo, Gen and Yue, Xiangyu and Qi, Biqing and Chen, Kai and Zhou, Bowen and Qiao, Yu and Chen, Qifeng and Wang, Wenhai},
   journal      = {arXiv preprint arXiv:2509.15221},
-  year         = {2025}
+  year         = {2025},
+  note         = {Preprint},
+  url          = {https://github.com/OpenGVLab/ScaleCUA}
 }
 ```
