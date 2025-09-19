@@ -19,7 +19,8 @@ Specifically, it delivers strong gains over baselines (+**26.6** on WebArena-Lit
 ## 🤖 Video Demo
 **<a id="draggan_demo"></a>**
 
-https://github.com/user-attachments/assets/15da764b-d586-490c-b852-cd1d0b42bb2d
+https://github.com/user-attachments/assets/87a2be0b-75ff-4d70-8442-2fdc7e4a12ef
+
 
 ## 📋 Table of Contents
 - [ScaleCUA: An Open-Source Agent for Cross-Platform GUI Automation](#scalecua-an-open-source-agent-for-cross-platform-gui-automation)
