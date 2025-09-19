@@ -18,7 +18,8 @@ Specifically, it delivers strong gains over baselines (+**26.6** on WebArena-Lit
 ## 🤖 Video Demo
 **<a id="draggan_demo"></a>**
 
-https://github.com/user-attachments/assets/ed9c23c6-1813-4c35-847a-c088df6e5abc
+https://github.com/user-attachments/assets/d1a3294c-6b22-4184-bb39-c5df91ab7edf
+
 
 
 
