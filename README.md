@@ -108,6 +108,7 @@ Thanks to the following open-sourced projects:
 [WindowAgentArena](https://github.com/microsoft/WindowsAgentArena) &#8194; 
 [WebArena](https://github.com/web-arena-x/webarena) &#8194; 
 [AndroidWorld](https://github.com/google-research/android_world)&#8194; 
+[ScienceBoard](https://github.com/OS-Copilot/ScienceBoard)&#8194; 
 [AGUVIS](https://github.com/xlang-ai/aguvis)&#8194; 
 [MMBench-GUI](https://github.com/open-compass/MMBench-GUI) &#8194; 
 [Qwen-VL](https://github.com/QwenLM/Qwen2.5-VL) &#8194; 
