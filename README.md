@@ -13,12 +13,12 @@ Consequently, progress in this field remains constrained by both data scale and 
 In this work, we introduce **ScaleCUA**, a step toward scaling open-source CUAs. It offers a large-scale dataset spanning 6 operating systems and 3 task domains, via a closed-loop pipeline uniting automated agents with human experts. Trained on this scaled-up data, ScaleCUA can operate seamlessly across platforms. 
 Specifically, it delivers strong gains over baselines (+**26.6** on WebArena-Lite-v2, +**10.7** on ScreenSpot-Pro) and sets new state-of-the-art results (**94.4**\% on MMBench-GUI L1-Hard, **60.6**\% on OSWorld-G, **47.4**\% on WebArena-Lite-v2). These findings underscore the power of data-driven scaling for general-purpose cross-platform CUAs. 
 
-<img width="4497" height="3069" alt="teaser" src="https://github.com/user-attachments/assets/2f4be19d-d37c-4b92-bfcf-9d2dffdefc56" />
+<img width="4521" height="3068" alt="teaser" src="https://github.com/user-attachments/assets/4ae7dd58-3747-427b-bf9c-73ebb1dd1f18" />
 
 ## 🤖 Video Demo
 **<a id="draggan_demo"></a>**
 
-https://github.com/user-attachments/assets/d1a3294c-6b22-4184-bb39-c5df91ab7edf
+https://github.com/user-attachments/assets/73ee1048-5ef6-420d-8078-e73894dfa1db
 
 
 
