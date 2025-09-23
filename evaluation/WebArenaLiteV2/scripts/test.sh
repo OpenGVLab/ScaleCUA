@@ -1,8 +1,8 @@
 export HTTP_PROXY=""
 export HTTPS_PROXY=""
 export NO_PROXY=""
-export OPENAI_API_KEY="sk-lZYCt4IDPC0kBJU3wO03KjmNhgE5f4p5MsZQvYBpw2A4i64D"
-export OPENAI_BASE_URL="https://api.boyuerichdata.opensphereai.com/v1"
+export OPENAI_API_KEY=""
+export OPENAI_BASE_URL=""
 
 python agent_run.py \
     --platform web \
