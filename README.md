@@ -93,7 +93,7 @@ Our evaluation suite covers desktop, mobile, and web environments:
   * **Android**: `AndroidWorld`, `AndroidLab`
   * **Ubuntu**: `OSWorld`
   * **macOS**: `MacOSArena`
-  * **Web**: `WebArenaLite-V2` (A refined version of WebArena-Lite suitable for visual-based agents)
+  * **Web**: `WebArenaLite-v2` (A refined version of WebArena-Lite suitable for visual-based agents)
   * **Windows**: `WindowsAgentArena`
 
 ## 🧠 Training
@@ -109,8 +109,8 @@ Thanks to the following open-sourced projects:
 [WebArena](https://github.com/web-arena-x/webarena) &#8194; 
 [AndroidWorld](https://github.com/google-research/android_world)&#8194; 
 [ScienceBoard](https://github.com/OS-Copilot/ScienceBoard)&#8194; 
+[MMBench-GUI](https://github.com/open-compass/MMBench-GUI) &#8194;
 [AGUVIS](https://github.com/xlang-ai/aguvis)&#8194; 
-[MMBench-GUI](https://github.com/open-compass/MMBench-GUI) &#8194; 
 [Qwen-VL](https://github.com/QwenLM/Qwen2.5-VL) &#8194; 
 [InternVL](https://github.com/OpenGVLab/InternVL) &#8194;
 
