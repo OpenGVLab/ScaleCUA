@@ -105,7 +105,7 @@ The directory `agent-sft/` contains all the necessary code and configuration fil
 Thanks to the following open-sourced projects:
 
 [OSWorld](https://github.com/xlang-ai/OSWorld) &#8194; 
-[WindowAgentArena](https://github.com/microsoft/WindowsAgentArena) &#8194; 
+[WindowsAgentArena](https://github.com/microsoft/WindowsAgentArena) &#8194; 
 [WebArena](https://github.com/web-arena-x/webarena) &#8194; 
 [AndroidWorld](https://github.com/google-research/android_world)&#8194; 
 [ScienceBoard](https://github.com/OS-Copilot/ScienceBoard)&#8194; 
