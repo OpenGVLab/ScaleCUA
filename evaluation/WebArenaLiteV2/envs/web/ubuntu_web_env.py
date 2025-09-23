@@ -10,7 +10,7 @@ from typing import Tuple, List, Union, Dict, Optional, Any
 from loguru import logger
 from PIL import Image
 
-from env.base_env import BaseEnv, agent_action
+from envs.base_env import BaseEnv, agent_action
 
 
 class VMUbuntuWebEnv(BaseEnv):
