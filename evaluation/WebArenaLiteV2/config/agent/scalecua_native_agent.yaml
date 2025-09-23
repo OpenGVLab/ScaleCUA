@@ -3,9 +3,9 @@ planner_model:
   # Engine type, default uses openai api engine, see core/engine.py for other supported engines
   engine_type: openai
   # API base URL
-  base_url: http://10.140.60.107:10025/v1
+  base_url: http://10.140.52.49:10000/v1/
   # API model name
-  model: gui_v108
+  model: gui_v158
   # Model name, currently not used much, mainly for supporting custom models
   model_name: scalecua
   # Coordinate normalization method:

@@ -7,11 +7,11 @@ from typing import Tuple, List, Union, Dict, Optional, ByteString, Any
 import os
 import time
 import traceback
-from env.base_env import BaseEnv
-from env.web.utils.js import find_clickable_elements_js_code
-from env.web.utils.keyword import KEYBOARD_KEYS, key_mapping
-from env.web.webarena.evaluation.vab_evaluators import webarena_evaluator_router
-from env.web.webarena.utils.auto_login import get_site_comb_from_filepath
+from envs.base_env import BaseEnv
+from envs.web.utils.js import find_clickable_elements_js_code
+from envs.web.utils.keyword import KEYBOARD_KEYS, key_mapping
+from envs.web.webarena.evaluation.vab_evaluators import webarena_evaluator_router
+from envs.web.webarena.utils.auto_login import get_site_comb_from_filepath
 
 
 class WebEnv(BaseEnv):

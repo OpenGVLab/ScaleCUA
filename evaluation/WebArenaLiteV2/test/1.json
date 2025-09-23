@@ -1,7 +1,7 @@
 {
     "application": null,
     "url": null,
-    "query": "Check out my todos",
+    "query": "Use swipe action to view more project!",
     "task_config": {
         "example_id": "1.json",
         "file_path": "test/test_config/1.json"

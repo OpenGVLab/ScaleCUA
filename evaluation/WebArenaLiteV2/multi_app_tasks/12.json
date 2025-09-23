@@ -1,0 +1,10 @@
+{
+    "application": null,
+    "url": null,
+    "query": "Create a folder named real_space in gimmiethat.space repo. Within it, create a file named urls.txt that contains the 4 newest post names from the subreddit 'space' from 'Postmill' tab.",
+    "task_config": {
+        "example_id": "12.json",
+        "file_path": "config/envs/webarena/multi_app_tasks/12.json"
+    },
+    "benchmark": "webarena_multi_app"
+}

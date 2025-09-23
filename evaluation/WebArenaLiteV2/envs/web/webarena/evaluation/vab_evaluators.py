@@ -14,7 +14,7 @@ from playwright.sync_api import CDPSession, Page
 import base64
 from io import BytesIO
 
-from env.web.webarena.evaluation.vab_helper_functions import (
+from envs.web.webarena.evaluation.vab_helper_functions import (
     PseudoPage,
     llm_fuzzy_match,
     llm_ua_match,
