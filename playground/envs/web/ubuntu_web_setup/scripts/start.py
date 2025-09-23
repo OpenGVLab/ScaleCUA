@@ -7,7 +7,7 @@ import signal
 import subprocess
 import tempfile
 import traceback
-
+import math
 import pyautogui
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -681,6 +681,7 @@ def execute_single_action(action):
             "rightClick": _execute_right_click,
             "hotkey": _execute_hotkey,
             "swipe": _execute_swipe,
+            "scroll": _execute_scroll
         }
 
         # Get the corresponding handler and execute
@@ -704,7 +705,6 @@ def execute_single_action(action):
         print(f"Failed to execute action: {str(e)}")
         traceback.print_exc()
         return False
-
 
 # Various operation execution functions
 def _execute_move_to(parameters):
@@ -846,45 +846,107 @@ def _execute_hotkey(parameters):
         pyautogui.hotkey(*mapped_args)
     return True
 
+def _execute_scroll(parameters):
+    pass
+
 
 def _execute_swipe(parameters):
-    """Perform scroll operation"""
+    """Perform scroll operation using either page API or PyAutoGUI based on context"""
+    global page, context
     x1, y1 = parameters.get("from_coord", (None, None))
     x2, y2 = parameters.get("to_coord", (None, None))
     direction = parameters.get("direction", "up")
     amount = parameters.get("amount", 0.5)
-    amount = max(0, min(1, amount))
+    amount = max(0, min(1, amount))  # Normalize amount between 0 and 1
+
+    # Calculate delta values for scrolling
     if x2 is not None and y2 is not None and x1 is not None and y1 is not None:
         delta_x = x1 - x2
         delta_y = y1 - y2
     else:
-        # Keep custom logic here
+        # Default scrolling based on direction and amount
         if direction in ["up", "down"]:
-            distance = (
-                css_height * amount if direction == "up" else -css_height * amount
-            )
+            distance = css_height * amount if direction == "up" else -css_height * amount
             delta_x, delta_y = 0, distance
         else:  # direction in ["left", "right"]
-            distance = (
-                css_width * amount if direction == "left" else -css_width * amount
-            )
+            distance = css_width * amount if direction == "left" else -css_width * amount
             delta_x, delta_y = distance, 0
 
-    # If from_coord coordinates are provided, move mouse to specified location, otherwise move global page
-    # If starting coordinates x1, y1 exist, use mouse move and scroll
-    if x1 is not None and y1 is not None:
-        page.mouse.move(x1, y1)
-        page.mouse.wheel(delta_x, delta_y)
+    # If only one page exists in context, use Playwright API
+    if len(context.pages) == 1:
+        if x1 is not None and y1 is not None:
+            x_os, y_os = _convert_to_os_coordinates(x1, y1)
+            page.mouse.move(x_os, y_os)
+            page.mouse.wheel(delta_x, delta_y)
+        else:
+            # Use JavaScript to scroll the page
+            if direction in ["up", "down"]:
+                js_scroll = f"window.scrollBy(0, {delta_y});"
+            else:  # direction in ["left", "right"]
+                js_scroll = f"window.scrollBy({delta_x}, 0);"
+            page.evaluate(js_scroll)
+
+        time.sleep(2)
     else:
-        # If x1, y1 don't exist, use JavaScript to scroll the page
-        if direction in ["up", "down"]:
-            js_scroll = f"window.scrollBy(0, {delta_y});"
-        else:  # direction in ["left", "right"]
-            js_scroll = f"window.scrollBy({delta_x}, 0);"
-        page.evaluate(js_scroll)
-    page.wait_for_timeout(2000)
+        # Multiple pages - use PyAutoGUI for scrolling
+        # First ensure mouse is within browser viewport
+        _ensure_mouse_in_browser_viewport(x1, y1)
+
+        # Convert pixel distance to scroll clicks
+        # Approximate conversion: 100 pixels = 1 wheel click
+        # Consistency with page wheel
+        scroll_x_clicks = math.ceil(int(delta_x / 100))
+        scroll_y_clicks = math.ceil(int(delta_y / 100))
+
+        # Execute the scroll
+        if abs(scroll_y_clicks) > 0:
+            pyautogui.scroll(scroll_y_clicks)
+        elif abs(scroll_x_clicks) > 0:
+            pyautogui.hscroll(scroll_x_clicks)
+
+        # Wait for scrolling to complete
+        time.sleep(2)
+
     return True
 
+
+def _ensure_mouse_in_browser_viewport(x=None, y=None):
+    """Ensure mouse cursor is within browser viewport before scrolling"""
+    global browser_window, browser_offset_x, browser_offset_y
+
+    try:
+        # If browser window info is not available, update it
+        if not browser_window:
+            _update_browser_window_info()
+            if not browser_window:
+                print("Warning: Could not determine browser position")
+                return False
+
+        # Get browser window geometry
+        geometry = browser_window.get_geometry()
+        browser_width = geometry.width
+        browser_height = geometry.height
+
+        # If specific coordinates provided, move to those coordinates
+        if x is not None and y is not None:
+            # Convert to OS coordinates
+            x_os, y_os = _convert_to_os_coordinates(x, y)
+            if x_os is not None and y_os is not None:
+                pyautogui.moveTo(x_os, y_os)
+                return True
+
+        # Otherwise, move to center of browser window
+        center_x = browser_offset_x + (browser_width // 2)
+        center_y = browser_offset_y + (browser_height // 2)
+
+        # Move mouse to center of browser
+        pyautogui.moveTo(center_x, center_y)
+        return True
+
+    except Exception as e:
+        print(f"Error positioning mouse in browser viewport: {str(e)}")
+        traceback.print_exc()
+        return False
 
 # Evaluation functions
 def evaluate_webarena(params):

@@ -1,7 +1,7 @@
 # websites domain
 import json
 
-WEBARENA_URL_JSON = "config/env/webarena/init/webarena_url.json"
+WEBARENA_URL_JSON = "config/envs/webarena/init/webarena_url.json"
 
 with open(WEBARENA_URL_JSON, "r") as f:
     URL = json.load(f)

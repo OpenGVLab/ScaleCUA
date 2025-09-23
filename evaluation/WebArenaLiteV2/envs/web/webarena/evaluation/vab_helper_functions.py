@@ -12,7 +12,7 @@ from beartype import beartype
 from beartype.typing import Dict, List
 from playwright.sync_api import Page
 
-from config.env.webarena.init.env_config import ACCOUNTS, SHOPPING
+from config.envs.webarena.init.env_config import ACCOUNTS, SHOPPING
 
 import logging
 
