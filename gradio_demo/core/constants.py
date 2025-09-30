@@ -7,17 +7,23 @@
 CONTROLLER_HEART_BEAT_EXPIRATION = 30
 WORKER_HEART_BEAT_INTERVAL = 15
 
-LOGDIR = 'logs/'
+LOGDIR = "logs/"
 
-server_error_msg = '**NETWORK ERROR DUE TO HIGH TRAFFIC. PLEASE REGENERATE OR REFRESH THIS PAGE.**'
-moderation_msg = 'YOUR INPUT VIOLATES OUR CONTENT MODERATION GUIDELINES. PLEASE TRY AGAIN.'
+server_error_msg = (
+    "**NETWORK ERROR DUE TO HIGH TRAFFIC. PLEASE REGENERATE OR REFRESH THIS PAGE.**"
+)
+moderation_msg = (
+    "YOUR INPUT VIOLATES OUR CONTENT MODERATION GUIDELINES. PLEASE TRY AGAIN."
+)
 
 
 # SYSTEM PROMPT FOR THREE MODES
 import textwrap
+
 SYSTEM_PROMPT_DICT = {
     "Multimodal Chat": """You are a helpful assistant.""",
-    "GUI Grounding": textwrap.dedent('''
+    "GUI Grounding": textwrap.dedent(
+        '''
         You are an autonomous GUI agent capable of operating on desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
         
         ## Action Space
@@ -77,8 +83,10 @@ SYSTEM_PROMPT_DICT = {
         - Avoid action(s) that would lead to invalid states.
         - The generated action(s) must exist within the defined action space.
         - The generated action(s) should be enclosed within <action></action> tags.
-    '''),
-    "GUI Planning": textwrap.dedent('''
+    '''
+    ),
+    "GUI Planning": textwrap.dedent(
+        '''
         You are an autonomous GUI agent operating on the desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
 
         ## Action Space
@@ -88,7 +96,7 @@ SYSTEM_PROMPT_DICT = {
             clicks: int = 1,
             button: str = "left",
         ) -> None:
-            \"""Clicks on the screen at the specified coordinates. The `x` and `y` parameter specify where the mouse event occurs. If not provided, the current mouse position is used. The `clicks` parameter specifies how many times to click, and the `button` parameter specifies which mouse button to use ('left', 'right', or 'middle').\"""
+            """Clicks on the screen at the specified coordinates. The `x` and `y` parameter specify where the mouse event occurs. If not provided, the current mouse position is used. The `clicks` parameter specifies how many times to click, and the `button` parameter specifies which mouse button to use ('left', 'right', or 'middle')."""
             pass
 
 
@@ -97,24 +105,24 @@ SYSTEM_PROMPT_DICT = {
             y: float | None = None,
             button: str = "left",
         ) -> None:
-            \"""Performs a double click. This is a wrapper function for click(x, y, 2, 'left').\"""
+            """Performs a double click. This is a wrapper function for click(x, y, 2, 'left')."""
             pass
 
 
         def rightClick(x: float | None = None, y: float | None = None) -> None:
-            \"""Performs a right mouse button click. This is a wrapper function for click(x, y, 1, 'right').\"""
+            """Performs a right mouse button click. This is a wrapper function for click(x, y, 1, 'right')."""
             pass
 
 
         def moveTo(x: float, y: float) -> None:
-            \"""Move the mouse to the specified coordinates.\"""
+            """Move the mouse to the specified coordinates."""
             pass
 
 
         def dragTo(
             x: float | None = None, y: float | None = None, button: str = "left"
         ) -> None:
-            \"""Performs a drag-to action with optional `x` and `y` coordinates and button.\"""
+            """Performs a drag-to action with optional `x` and `y` coordinates and button."""
             pass
 
 
@@ -124,37 +132,37 @@ SYSTEM_PROMPT_DICT = {
             direction: str = "up",
             amount: float = 0.5,
         ) -> None:
-            \"""Performs a swipe action on the screen. The `from_coord` and `to_coord` specify the starting and ending coordinates of the swipe. If `to_coord` is not provided, the `direction` and `amount` parameters are used to determine the swipe direction and distance. The `direction` can be 'up', 'down', 'left', or 'right', and the `amount` specifies how far to swipe relative to the screen size (0 to 1).\"""
+            """Performs a swipe action on the screen. The `from_coord` and `to_coord` specify the starting and ending coordinates of the swipe. If `to_coord` is not provided, the `direction` and `amount` parameters are used to determine the swipe direction and distance. The `direction` can be 'up', 'down', 'left', or 'right', and the `amount` specifies how far to swipe relative to the screen size (0 to 1)."""
             pass
 
 
         def press(keys: str | list[str], presses: int = 1) -> None:
-            \"""Performs a keyboard key press down, followed by a release. The function supports pressing a single key or a list of keys, multiple presses, and customizable intervals between presses.\"""
+            """Performs a keyboard key press down, followed by a release. The function supports pressing a single key or a list of keys, multiple presses, and customizable intervals between presses."""
             pass
 
 
         def hotkey(*args: str) -> None:
-            \"""Performs key down presses on the arguments passed in order, then performs key releases in reverse order. This is used to simulate keyboard shortcuts (e.g., 'Ctrl-Shift-C').\"""
+            """Performs key down presses on the arguments passed in order, then performs key releases in reverse order. This is used to simulate keyboard shortcuts (e.g., 'Ctrl-Shift-C')."""
             pass
 
 
         def write(message: str) -> None:
-            \"""Write the specified text.\"""
+            """Write the specified text."""
             pass
 
 
         def wait(seconds: int = 3) -> None:
-            \"""Wait for the change to happen.\"""
+            """Wait for the change to happen."""
             pass
 
 
         def response(answer: str) -> None:
-            \"""Answer a question or provide a response to an user query.\"""
+            """Answer a question or provide a response to an user query."""
             pass
 
 
         def terminate(status: str = "success", info: str | None = None) -> None:
-            \"""Terminate the current task with a status. The `status` specifies the termination status ('success', 'failure'), and the `info` can provide additional information about the termination.\"""
+            """Terminate the current task with a status. The `status` specifies the termination status ('success', 'failure'), and the `info` can provide additional information about the termination."""
             pass
 
 
@@ -180,36 +188,32 @@ SYSTEM_PROMPT_DICT = {
         - The reasoning process, operation and action(s) in your response should be enclosed within <think></think>, <operation></operation> and <action></action> tags, respectively.
         - Ensure that all action parameters are provided as explicit key-value pairs (i.e., keyword arguments), not as positional arguments.
 
-    ''')
+    '''
+    ),
 }
 
 
 MESSAGES = [
-        {
-            "role": "system",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "",
-                },
-            ],
-        },
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": "data:image/png;base64,"
-                    },
-                },
-                {
-                    "type": "text", 
-                    "text": None
-                },
-            ],
-        },
-    ]
+    {
+        "role": "system",
+        "content": [
+            {
+                "type": "text",
+                "text": "",
+            },
+        ],
+    },
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image_url",
+                "image_url": {"url": "data:image/png;base64,"},
+            },
+            {"type": "text", "text": None},
+        ],
+    },
+]
 
 OPENAI_API_BASE = "http://10.140.66.159:10024/v1"
 MODEL_NAME = "ScaleCUA-7B"

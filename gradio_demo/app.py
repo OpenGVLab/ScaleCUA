@@ -1,4 +1,5 @@
 import os
+
 if "TMPDIR" not in os.environ:
     tmp_dir = "./tmp"
     if not os.path.exists(tmp_dir):
@@ -18,7 +19,6 @@ import random
 from filelock import FileLock
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-# from qwen_vl_utils import smart_resize
 from core.constants import *
 
 from core.utils import (
@@ -109,9 +109,8 @@ def get_model_list():
         model_info = requests.get(model_worker_url).json()["data"]
         models = [item["id"] for item in model_info]
         logger.info(f"Models (from {model_worker_url}): {models}")
-        
-    return models
 
+    return models
 
 
 def init_state(state=None):
@@ -124,7 +123,7 @@ def convert_examples(original_examples):
     """
     Convert examples from [image_path, text, mode] format into the
     nested format used by gr.Examples with MultimodalTextbox.
-    
+
     Input format:
         [
             ["./examples/mac_desktop_1.jpg", "Click on 飞书", "grounding"],
@@ -181,7 +180,11 @@ def prepare_grounding_examples():
         ["./examples/arxiv.jpg", "Home", "grounding"],
         ["./examples/health.jpg", "text labeled by 2023/11/26", "grounding"],
         ["./examples/ios_setting.png", "Turn off Do not disturb.", "grounding"],
-        ["./examples/vscode.png", "Open the 'debug.sh' file to modify the content.", "grounding"]
+        [
+            "./examples/vscode.png",
+            "Open the 'debug.sh' file to modify the content.",
+            "grounding",
+        ],
     ]
 
     # Check if example images exist
@@ -225,9 +228,21 @@ def prepare_chat_examples():
     examples = [
         ["./examples/mac_screenshot_1.jpg", "Please describe this image", "chat"],
         ["./examples/math_1.png", "请根据图片内容，计算WiFi密码", "chat"],
-        ["./examples/1-2.png", "Please generate Python code based on the flow chart in the image.", "chat"],
-        ["./examples/windows_panel.png", "请检测Paint的bounding box，并以json格式输出", "chat"],
-        ["./examples/menu2.png", "Please recognize all words in the image and then translate them into English", "chat"],
+        [
+            "./examples/1-2.png",
+            "Please generate Python code based on the flow chart in the image.",
+            "chat",
+        ],
+        [
+            "./examples/windows_panel.png",
+            "请检测Paint的bounding box，并以json格式输出",
+            "chat",
+        ],
+        [
+            "./examples/menu2.png",
+            "Please recognize all words in the image and then translate them into English",
+            "chat",
+        ],
     ]
 
     # Check if example images exist
@@ -253,9 +268,9 @@ def draw_bbox_on_image(image, bbox_dict, input_height, input_width):
             for key, value in bbox_dict.items():
                 if isinstance(value, list):
                     new_results.extend(value)
-            
+
         bbox_dict = new_bbox_dict
-        
+
     width, height = image.size
     for result in bbox_dict:
         line_width = max(1, int(min(width, height) / 200))
@@ -266,11 +281,13 @@ def draw_bbox_on_image(image, bbox_dict, input_height, input_width):
         )
         if "bbox_2d" not in result:
             continue
-        
+
         coordinates = result["bbox_2d"]
         copy_result = result.copy()
         copy_result.pop("bbox_2d")
-        category_name = result.get("label", result.get("text_content", str(list(copy_result.values()))))
+        category_name = result.get(
+            "label", result.get("text_content", str(list(copy_result.values())))
+        )
         coordinates = [
             (
                 round(float(x[0]) / input_width * width),
@@ -299,7 +316,7 @@ def draw_bbox_on_image(image, bbox_dict, input_height, input_width):
             draw.text(text_position, category_name, fill="white", font=font)
             is_draw_bbox = True
     return image, is_draw_bbox
-            
+
 
 def find_bounding_boxes(state, response):
     if "<ref>" in response and "</ref>" in response:
@@ -322,7 +339,9 @@ def find_bounding_boxes(state, response):
     input_height, input_width = smart_resize(
         height, width, min_pixels=record.min_pixels, max_pixels=record.max_pixels
     )
-    returned_image, is_drawing_bbox = draw_bbox_on_image(returned_image, results, input_height, input_width)
+    returned_image, is_drawing_bbox = draw_bbox_on_image(
+        returned_image, results, input_height, input_width
+    )
 
     if is_drawing_bbox:
         return returned_image
@@ -339,7 +358,7 @@ def find_bounding_boxes_qwenvl(state, response):
         except Exception as e:
             logger.error(f"Error parsing JSON: {match.group(1).strip()}")
             return None, False
-    
+
     # returned_image = None
     latest_image_path = state.get_images(source=state.USER)[-1]
     returned_image = Image.open(latest_image_path).convert("RGB")
@@ -360,9 +379,11 @@ def find_bounding_boxes_qwenvl(state, response):
     for result in results:
         if "bbox_2d" in result and type(result["bbox_2d"][0]) == int:
             result["bbox_2d"] = [result["bbox_2d"]]
-    
-    returned_image, is_drawing_bbox = draw_bbox_on_image(returned_image, results, input_height, input_width)
-    
+
+    returned_image, is_drawing_bbox = draw_bbox_on_image(
+        returned_image, results, input_height, input_width
+    )
+
     if is_drawing_bbox:
         return returned_image
     return None
@@ -379,7 +400,9 @@ def draw_point_area(image, point):
 
 def parse_point(output_text, image):
     w, h = image.size
-    new_h, new_w = smart_resize(h, w, min_pixels=record.min_pixels, max_pixels=record.max_pixels)
+    new_h, new_w = smart_resize(
+        h, w, min_pixels=record.min_pixels, max_pixels=record.max_pixels
+    )
 
     # Pattern 1: Match x=number, y=number format
     pattern1 = r"x=(\d+\.?\d*),\s*y=(\d+\.?\d*)"
@@ -731,20 +754,20 @@ def chat_with_vlm(
             if item["type"] == "text":
                 msg = item[item["type"]]
                 break
-    
+
     print(f"msg: {msg}")
     returned_image = None
     if "```json\n" in msg:
         returned_image = find_bounding_boxes_qwenvl(state, msg)
-        
+
     if "<box>" in msg and "</box>" in msg:
         returned_image = find_bounding_boxes(state, msg)
-        
+
     if "<action>" in msg and "</action>" in msg:
         latest_image_path = state.get_images(source=state.USER)[-1]
         returned_image = Image.open(latest_image_path).convert("RGB")
         returned_image, _ = parse_point(msg, returned_image)
-    
+
     if returned_image:
         state.update_message(
             Record.ASSISTANT,
@@ -758,7 +781,7 @@ def chat_with_vlm(
                 }
             ],
         )
-        
+
     state.end_of_current_turn()
 
     finish_tstamp = time.time()
@@ -774,7 +797,7 @@ def chat_with_vlm(
         "ip": request.client.host,
     }
     # write2file(get_log_filename(), json.dumps(data) + "\n")
-    
+
     yield (
         state,
         state.to_gradio_chatbot(streaming=False),
@@ -784,14 +807,26 @@ def chat_with_vlm(
 
 def change_mode(mode):
     if mode == "GUI Grounding":
-        visiblities = [gr.update(visible=True), gr.update(visible=False), gr.update(visible=False)]
+        visiblities = [
+            gr.update(visible=True),
+            gr.update(visible=False),
+            gr.update(visible=False),
+        ]
     elif mode == "GUI Planning":
-        visiblities = [gr.update(visible=False), gr.update(visible=True), gr.update(visible=False)]
+        visiblities = [
+            gr.update(visible=False),
+            gr.update(visible=True),
+            gr.update(visible=False),
+        ]
     elif mode == "Multimodal Chat":
-        visiblities = [gr.update(visible=False), gr.update(visible=False), gr.update(visible=True)]
-    
+        visiblities = [
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=True),
+        ]
+
     return [], SYSTEM_PROMPT_DICT[mode], *visiblities
-    
+
 
 def build_demo(embed_mode, show_example=False):
     textbox = gr.MultimodalTextbox(
@@ -866,7 +901,7 @@ def build_demo(embed_mode, show_example=False):
                         interactive=True,
                         label="Max output tokens",
                     )
-                    
+
                 with gr.Row(visible=True) as grounding_examples:
                     gr.Examples(
                         examples=prepare_grounding_examples() if show_example else [],
@@ -894,7 +929,7 @@ def build_demo(embed_mode, show_example=False):
                 mode_selector = gr.Radio(
                     choices=["GUI Grounding", "GUI Planning", "Multimodal Chat"],
                     value="GUI Grounding",
-                    label="Chat Mode"
+                    label="Chat Mode",
                 )
                 chatbot = gr.Chatbot(
                     elem_id="chatbot",
@@ -933,7 +968,13 @@ def build_demo(embed_mode, show_example=False):
         mode_selector.change(
             change_mode,
             inputs=[mode_selector],
-            outputs=[chatbot, system_prompt, grounding_examples, planning_examples, chat_examples],
+            outputs=[
+                chatbot,
+                system_prompt,
+                grounding_examples,
+                planning_examples,
+                chat_examples,
+            ],
         )
         btn_list = [upvote_btn, downvote_btn, flag_btn, regenerate_btn, clear_btn]
         upvote_btn.click(
@@ -986,7 +1027,7 @@ def build_demo(embed_mode, show_example=False):
                 temperature,
                 top_p,
                 repetition_penalty,
-                max_output_tokens
+                max_output_tokens,
             ],
             [state, chatbot, textbox] + btn_list,
         )
@@ -1034,7 +1075,7 @@ def build_demo(embed_mode, show_example=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", type=str, default="0.0.0.0")
-    parser.add_argument("--port", type=int, default=10024)
+    parser.add_argument("--port", type=int, default=10025)
     parser.add_argument("--model-worker-url", type=str, default=None)
     parser.add_argument("--model-name", type=str, default=None)
     parser.add_argument("--concurrency-count", type=int, default=10)
@@ -1046,7 +1087,7 @@ if __name__ == "__main__":
     parser.add_argument("--embed", action="store_true")
     # parser.add_argument("--show-example", action="store_true")
     args = parser.parse_args()
-    
+
     models = get_model_list()
     logger.info(f"models: {models}")
     logger.info(args)

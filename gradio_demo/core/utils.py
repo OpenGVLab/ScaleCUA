@@ -12,6 +12,7 @@ from PIL import Image
 
 import logging
 import logging.handlers
+
 # from pycocotools import mask as mask_util
 
 from .constants import LOGDIR
@@ -220,8 +221,15 @@ MAX_RATIO = 200
 IMAGE_FACTOR = 28
 MIN_PIXELS = 3136
 MAX_PIXELS = 2109744
-def smart_resize(height: int, width: int, factor: int = IMAGE_FACTOR,
-                 min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS) -> tuple[int, int]:
+
+
+def smart_resize(
+    height: int,
+    width: int,
+    factor: int = IMAGE_FACTOR,
+    min_pixels: int = MIN_PIXELS,
+    max_pixels: int = MAX_PIXELS,
+) -> tuple[int, int]:
     """
     Resize an image to meet the following criteria:
     1. Height and width are both divisible by 'factor'

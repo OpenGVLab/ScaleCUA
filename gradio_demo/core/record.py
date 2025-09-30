@@ -80,7 +80,9 @@ class Record:
         """
         new_messages = []
         if self.system_message is not None:
-            new_messages.append({"role": self.SYSTEM, "content": self.get_system_message()})
+            new_messages.append(
+                {"role": self.SYSTEM, "content": self.get_system_message()}
+            )
         for msg in messages:
             new_messages.append({"role": msg["role"], "content": []})
             if type(msg["content"]) is str:
@@ -209,7 +211,7 @@ class Record:
                 files.append(self.get_filepath(item))
 
         return files
-    
+
     def get_images(
         self,
         source: Union[str, None] = None,
@@ -327,8 +329,8 @@ class Record:
         ), f"It should end with the message from assistant instead of {self.messages[-1]['role']}."
 
         if len(self.messages[-1]["content"][0]["text"]) == 0:
-            return 
-        
+            return
+
         if self.messages[-1]["content"][0]["text"][-1] != self.streaming_placeholder:
             return
 
