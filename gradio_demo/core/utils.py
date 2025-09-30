@@ -6,6 +6,7 @@ import io
 import requests
 import json
 import numpy as np
+import math
 from io import BytesIO
 from PIL import Image
 
@@ -213,3 +214,32 @@ def video2base64(video_path: str) -> str:
     with open(video_path, "rb") as f:
         video_bytes = f.read()
     return base64.b64encode(video_bytes).decode()
+
+
+MAX_RATIO = 200
+IMAGE_FACTOR = 28
+MIN_PIXELS = 3136
+MAX_PIXELS = 2109744
+def smart_resize(height: int, width: int, factor: int = IMAGE_FACTOR,
+                 min_pixels: int = MIN_PIXELS, max_pixels: int = MAX_PIXELS) -> tuple[int, int]:
+    """
+    Resize an image to meet the following criteria:
+    1. Height and width are both divisible by 'factor'
+    2. Total pixel count is within ['min_pixels', 'max_pixels']
+    3. Aspect ratio is preserved as much as possible
+    """
+    if max(height, width) / min(height, width) > MAX_RATIO:
+        raise ValueError(
+            f"Aspect ratio must be less than {MAX_RATIO}, but current ratio is {max(height, width) / min(height, width)}"
+        )
+    h_bar = max(factor, round_by_factor(height, factor))
+    w_bar = max(factor, round_by_factor(width, factor))
+    if h_bar * w_bar > max_pixels:
+        beta = math.sqrt((height * width) / max_pixels)
+        h_bar = floor_by_factor(int(height / beta), factor)
+        w_bar = floor_by_factor(int(width / beta), factor)
+    elif h_bar * w_bar < min_pixels:
+        beta = math.sqrt(min_pixels / (height * width))
+        h_bar = ceil_by_factor(int(height * beta), factor)
+        w_bar = ceil_by_factor(int(width * beta), factor)
+    return h_bar, w_bar

@@ -18,7 +18,7 @@ import random
 from filelock import FileLock
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-from qwen_vl_utils import smart_resize
+# from qwen_vl_utils import smart_resize
 from core.constants import *
 
 from core.utils import (
@@ -35,6 +35,7 @@ from core.utils import (
     image2base64,
     load_image_from_base64,
     base64_to_bytes,
+    smart_resize,
 )
 import core.record as record
 from core.record import Record
@@ -167,7 +168,7 @@ def prepare_grounding_examples():
 
     # Example list - store image paths, text and modes separately
     examples = [
-        ["./examples/mac_desktop_1.jpg", "Click on 飞书", "grounding"],
+        ["./examples/mac_screenshot_1.jpg", "Click on 飞书", "grounding"],
         ["./examples/solitaire.png", "Play the solitaire collection", "grounding"],
         ["./examples/weather_ui.png", "Open map", "grounding"],
         ["./examples/football_live.png", "click team 1 win", "grounding"],

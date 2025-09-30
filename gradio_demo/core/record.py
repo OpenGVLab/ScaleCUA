@@ -10,7 +10,6 @@ from PIL import Image
 from typing import Any, List, Dict, Union, Optional
 from dataclasses import field
 from gradio import ChatMessage
-from matplotlib.widgets import EllipseSelector
 
 from .utils import (
     LOGDIR,
