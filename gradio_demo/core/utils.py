@@ -217,6 +217,22 @@ def video2base64(video_path: str) -> str:
     return base64.b64encode(video_bytes).decode()
 
 
+# Helper functions
+def round_by_factor(number: int, factor: int) -> int:
+    """Returns the integer closest to 'number' that is divisible by 'factor'."""
+    return round(number / factor) * factor
+
+
+def ceil_by_factor(number: int, factor: int) -> int:
+    """Returns the smallest integer greater than or equal to 'number' that is divisible by 'factor'."""
+    return math.ceil(number / factor) * factor
+
+
+def floor_by_factor(number: int, factor: int) -> int:
+    """Returns the largest integer less than or equal to 'number' that is divisible by 'factor'."""
+    return math.floor(number / factor) * factor
+
+
 MAX_RATIO = 200
 IMAGE_FACTOR = 28
 MIN_PIXELS = 3136
