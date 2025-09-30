@@ -38,7 +38,8 @@ https://github.com/user-attachments/assets/73ee1048-5ef6-420d-8078-e73894dfa1db
   - [📜 Citation](#-citation)
 
 ## 🎉 News
-- `2025/09/19`: ScaleCUA-Data is being uploaded to HuggingFace. Please be patient.
+- `2025/09/30`: ScaleCUA-Demo on HuggingFace is under construction. Welcome to try our demo!
+- `2025/09/30`: ScaleCUA-Data is ready on HuggingFace.
 - `2025/09/19`: We have released models and code of ScaleCUA.
 
 ## 🚀 Key Features
