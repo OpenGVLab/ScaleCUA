@@ -215,8 +215,8 @@ MESSAGES = [
     },
 ]
 
-OPENAI_API_BASE = "http://10.140.66.159:10024/v1"
-MODEL_NAME = "ScaleCUA-7B"
+# OPENAI_API_BASE = "http://10.140.66.159:10024/v1"
+# MODEL_NAME = "ScaleCUA-7B"
 
 # UI
 title_html = """

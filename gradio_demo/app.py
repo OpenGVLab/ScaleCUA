@@ -943,6 +943,7 @@ def build_demo(embed_mode, show_example=False):
                     ],
                     bubble_full_width=False,
                     type="messages",
+                    allow_tags=True,
                 )
                 with gr.Row():
                     with gr.Column(scale=8):
