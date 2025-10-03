@@ -23,8 +23,7 @@ import textwrap
 SYSTEM_PROMPT_DICT = {
     "Multimodal Chat": """You are a helpful assistant.""",
     "GUI Grounding": textwrap.dedent(
-        '''
-        You are an autonomous GUI agent capable of operating on desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
+        '''You are an autonomous GUI agent capable of operating on desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
         
         ## Action Space
         def click(
@@ -82,12 +81,10 @@ SYSTEM_PROMPT_DICT = {
         ## Note
         - Avoid action(s) that would lead to invalid states.
         - The generated action(s) must exist within the defined action space.
-        - The generated action(s) should be enclosed within <action></action> tags.
-    '''
+        - The generated action(s) should be enclosed within <action></action> tags.'''
     ),
     "GUI Planning": textwrap.dedent(
-        '''
-        You are an autonomous GUI agent operating on the desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
+        '''You are an autonomous GUI agent operating on the desktops, mobile devices, and web browsers. Your primary function is to analyze screen captures and perform appropriate UI actions to complete assigned tasks.
 
         ## Action Space
         def click(
@@ -186,9 +183,7 @@ SYSTEM_PROMPT_DICT = {
         - Avoid actions that would lead to invalid states.
         - The generated action(s) must exist within the defined action space.
         - The reasoning process, operation and action(s) in your response should be enclosed within <think></think>, <operation></operation> and <action></action> tags, respectively.
-        - Ensure that all action parameters are provided as explicit key-value pairs (i.e., keyword arguments), not as positional arguments.
-
-    '''
+        - Ensure that all action parameters are provided as explicit key-value pairs (i.e., keyword arguments), not as positional arguments.'''
     ),
 }
 
