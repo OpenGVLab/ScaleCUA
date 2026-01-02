@@ -218,3 +218,6 @@ playground/.env
 !launcher/**
 multi_app_tasks_backup
 multi_app_tasks
+
+!evaluation/AndroidWorld/android_world/env/
+!evaluation/AndroidWorld/android_world/env/**/*
