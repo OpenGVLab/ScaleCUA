@@ -20,8 +20,20 @@ tasks or all tasks in the suite and customize various settings using the
 command-line flags.
 """
 
-from collections.abc import Sequence
 import os
+
+# ---- Reduce noisy gRPC C++/absl logs (must be set BEFORE importing grpc/android_world) ----
+# These messages often look like:
+#   I0000 ... fork_posix.cc:71] Other threads are currently calling into gRPC, skipping fork() handlers
+# They are usually harmless, but very noisy.
+os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+os.environ.setdefault("GRPC_TRACE", "none")
+# gRPC uses Abseil logging in C++ in many builds; this env can help reduce INFO logs.
+os.environ.setdefault("ABSL_MIN_LOG_LEVEL", "2")  # 0=INFO,1=WARNING,2=ERROR,3=FATAL
+# Some environments still honor glog.
+os.environ.setdefault("GLOG_minloglevel", "2")
+
+from collections.abc import Sequence
 import concurrent.futures
 from absl import app
 from absl import flags
@@ -41,9 +53,6 @@ from android_world.env import env_launcher
 from android_world.env import interface
 
 logging.set_verbosity(logging.WARNING)
-
-os.environ["GRPC_VERBOSITY"] = "ERROR"  # Only show errors
-os.environ["GRPC_TRACE"] = "none"  # Disable tracing
 
 
 def _find_adb_directory() -> str:
@@ -135,6 +144,23 @@ _OUTPUT_PATH = flags.DEFINE_string(
 # Agent specific.
 _AGENT_NAME = flags.DEFINE_string("agent_name", "seeact_v", help="Agent name.")
 
+# Qwen3VL (OpenAI-compatible server) specific.
+_QWEN3VL_MODEL_BASE_URL = flags.DEFINE_string(
+    "qwen3vl_model_base_url",
+    "http://127.0.0.1:8000/v1",
+    "Qwen3VL OpenAI-compatible base_url, e.g. http://host:port/v1",
+)
+_QWEN3VL_MODEL_API_KEY = flags.DEFINE_string(
+    "qwen3vl_model_api_key",
+    "EMPTY",
+    "Qwen3VL API key for OpenAI-compatible server (if needed).",
+)
+_QWEN3VL_MODEL_NAME = flags.DEFINE_string(
+    "qwen3vl_model_name",
+    "",
+    "Model name passed to /v1/chat/completions (depends on your server).",
+)
+
 _FIXED_TASK_SEED = flags.DEFINE_boolean(
     "fixed_task_seed",
     False,
@@ -206,6 +232,14 @@ def _get_agent(
             model_name="gui_v123",
             model_address=" http://10.140.66.139:10026/",
             mode="Agent",
+        )
+    elif _AGENT_NAME.value == "qwen3vl":
+        agent = seeact_v.Qwen3VL(
+            env,
+            infer.Gpt4Wrapper("gpt-4o"),
+            model_base_url=_QWEN3VL_MODEL_BASE_URL.value,
+            model_api_key=_QWEN3VL_MODEL_API_KEY.value,
+            model_name=_QWEN3VL_MODEL_NAME.value,
         )
 
     if not agent:

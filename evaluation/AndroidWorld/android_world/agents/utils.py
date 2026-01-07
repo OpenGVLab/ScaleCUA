@@ -7,7 +7,13 @@ import numpy as np
 from android_world.env import interface
 from android_world.env import json_action
 from android_world.agents import base_agent
-from transformers.models.qwen2_vl.image_processing_qwen2_vl_fast import smart_resize
+
+try:
+    from transformers.models.qwen2_vl.image_processing_qwen2_vl_fast import (  # type: ignore
+        smart_resize,
+    )
+except Exception:  # pragma: no cover
+    smart_resize = None  # type: ignore[assignment]
 
 
 def _extract_xy(s: str) -> Tuple[float, float] | None:
@@ -154,6 +160,60 @@ def action_transform(action: str, width: int, height: int) -> Dict[str, Any] | N
             return {"action_type": "status", "goal_status": gs}
 
     return None
+
+
+def qwen3vl_action_transform(action, arguments, width, height) -> Dict[str, Any]:
+    if action == "key":
+        return {"action_type": "wait"}
+    elif action == "click" or action == "left_click":
+        coordinate = arguments.get("coordinate", [0, 0])
+        x, y = coordinate
+        x = x / 1000 * width
+        y = y / 1000 * height
+        return {"action_type": "click", "x": x, "y": y}
+    elif action == "long_press":
+        coordinate = arguments.get("coordinate", [0, 0])
+        x, y = coordinate
+        x = x / 1000 * width
+        y = y / 1000 * height
+        return {"action_type": "long_press", "x": x, "y": y}
+    elif action == "swipe":
+        coordinate = arguments.get("coordinate", [0, 0])
+        coordinate2 = arguments.get("coordinate2", [0, 0])
+        x0, y0 = coordinate[0]/1000 * width, coordinate[1]/1000 * height
+        x1, y1 = coordinate2[0]/1000 * width, coordinate2[1]/1000 * height
+        dir_ = _dir_from_coords(x0, y0, x1, y1)
+        return {"action_type": "scroll", "direction": reverse_direction(dir_)}
+    elif action == "type":
+        text = arguments.get("text", "")
+        return {"action_type": "input_text", "text": text}
+    elif action == "system_button":
+        button = arguments.get("button", "").lower()
+        if button == "home":
+            return {"action_type": "navigate_home"}
+        elif button == "back":
+            return {"action_type": "navigate_back"}
+        else:
+            raise ValueError(f"Unknown system button: {button}")
+    elif action == "open":
+        text = arguments.get("text", "")
+        return {"action_type": "open_app", "app_name": text}
+    elif action == "wait":
+        return {"action_type": "wait"}
+    elif action == "answer":
+        return {"action_type": "answer", "text": arguments.get("text", "")}
+    elif action == "terminate":
+        status = arguments.get("status", "").lower()
+        if status == "success":
+            return {"action_type": "status", "goal_status": "complete"}
+        elif status == "failure":
+            return {"action_type": "status", "goal_status": "infeasible"}
+        else:
+            raise ValueError(f"Unknown terminate status: {status}")
+    # else:
+    #     raise ValueError(f"Unknown action: {action}")
+    else:
+        return {'action_type': 'wait'}
 
 
 def action_coord(action):

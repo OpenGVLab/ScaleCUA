@@ -18,6 +18,7 @@ import io
 import time
 
 import ast
+import json
 import numpy as np
 from PIL import Image
 from openai import OpenAI
@@ -40,7 +41,13 @@ from android_world.agents.utils import *
 from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
-from transformers.models.qwen2_vl.image_processing_qwen2_vl_fast import smart_resize
+
+try:
+    from transformers.models.qwen2_vl.image_processing_qwen2_vl_fast import (  # type: ignore
+        smart_resize,
+    )
+except Exception:  # pragma: no cover
+    smart_resize = None  # type: ignore[assignment]
 
 # Utils for Visual Grounding
 
@@ -932,3 +939,184 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
         buf = BytesIO()
         PILImage.fromarray(image).save(buf, format="PNG")
         return f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}"
+
+
+def _extract_action_text_qwen3vl(block: str) -> str:
+    """Extracts the 'Action:' line from Qwen3VL text output for step history (does not affect execution)."""
+    m = re.search(r"Action:\s*(.+?)(?:\n<tool_call>|$)", block, flags=re.S)
+    if not m:
+        return ""
+    text = m.group(1).strip()
+    # Some models wrap Action: "..." with quotes.
+    if text.startswith('"') and text.endswith('"'):
+        text = text[1:-1]
+    return text.replace("\n", " ")
+
+
+def _parse_tool_call_json(block: str) -> dict[str, Any] | None:
+    """Parse JSON inside <tool_call>...</tool_call>."""
+    m = re.search(r"<tool_call>\s*([\s\S]*?)\s*</tool_call>", block)
+    if not m:
+        return None
+    payload = m.group(1).strip()
+    try:
+        return json.loads(payload)
+    except Exception:
+        return None
+
+
+class Qwen3VL(base_agent.EnvironmentInteractingAgent):
+    """Android GUI Agent based on Qwen3VL tool-call output (for AndroidWorld eval).
+
+    - Input: Screenshot + instruction + history
+    - Output: <tool_call>{...}</tool_call>
+    - Execution: Map to JSONAction by qwen3vl_action_transform(...)
+    """
+
+    def __init__(
+        self,
+        env: interface.AsyncEnv,
+        llm: infer.MultimodalLlmWrapper,
+        name: str = "Qwen3VL",
+        wait_after_action_seconds: float = 2.0,
+        model_base_url: str = "http://127.0.0.1:8000/v1",
+        model_api_key: str = "EMPTY",
+        model_name: str = "",
+        extra_headers: dict[str, str] | None = None,
+    ):
+        super().__init__(env, name)
+        self.llm = llm
+        self.wait_after_action_seconds = wait_after_action_seconds
+        self.model_name = model_name
+        self.client = OpenAI(
+            api_key=model_api_key,
+            base_url=model_base_url,
+            default_headers=extra_headers,
+        )
+        self.step_his: str = ""
+        self.turn_number: int = 0
+        # Used to detect repeated actions (avoid infinite loops)
+        self.last_action: str | None = None
+        self.repeat_time: int = 0
+
+    def reset(self, go_home_on_reset: bool = False):
+        super().reset(go_home_on_reset)
+        self.env.hide_automation_ui()
+        self.step_his = ""
+        self.turn_number = 0
+        self.last_action = None
+        self.repeat_time = 0
+
+    @staticmethod
+    def _to_base64_png(image: np.ndarray) -> str:
+        import base64
+        from io import BytesIO
+        from PIL import Image as PILImage
+        buf = BytesIO()
+        PILImage.fromarray(image).save(buf, format='PNG')
+        return f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}"
+        
+    def step(self, instruction: str) -> base_agent.AgentInteractionResult:
+        self.turn_number += 1
+
+        state = self.get_post_transition_state()
+        screenshot = state.pixels.copy()
+        # To be consistent with other agents in this file: BGR->RGB (for saving/encoding)
+        screenshot = screenshot[:, :, ::-1]
+        height, width = screenshot.shape[:2]
+
+        system_prompt = QWEN3VL_SYSTEM_PROMPT
+        user_prompt = QWEN3VL_USER_PROMPT.format(
+            instruction=instruction, history=self.step_his
+        )
+
+        messages = [
+            {
+                "role": "system",
+                "content": [{"type": "text", "text": system_prompt}],
+            },
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": user_prompt},
+                    {"type": "image_url", "image_url": {"url": self._to_base64_png(screenshot)}},
+                ],
+            },
+        ]
+
+        completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+            temperature=0,
+        )
+        response = completion.choices[0].message.content or ""
+        print(response)
+        print("=" * 50)
+
+        tool_call = _parse_tool_call_json(response)
+        if not tool_call:
+            return base_agent.AgentInteractionResult(
+                True, {"summary": "No <tool_call> JSON found in model output.", "response": response}
+            )
+
+        op_text = _extract_action_text_qwen3vl(response)
+        if op_text:
+            self.step_his += f"Step {self.turn_number}: {op_text}; "
+
+        # Compatible: tool_call may look like {"name":"mobile_use","arguments":{...}}
+        args = tool_call.get("arguments", {}) if isinstance(tool_call, dict) else {}
+        action_name = args.get("action", "")
+        try:
+            parsed = qwen3vl_action_transform(action_name, args, width, height)
+            print(parsed)
+        except Exception as e:
+            return base_agent.AgentInteractionResult(
+                True,
+                {
+                    "summary": f"Failed to transform tool-call into action: {e}",
+                    "response": response,
+                    "tool_call": tool_call,
+                },
+            )
+
+        # Record last_action + repeat_time (previous code had these fields but not working)
+        # Here, use the tool-call's arguments as the "action signature", which is more robust than checking 'terminate' in a string.
+        try:
+            action_sig = json.dumps(args, ensure_ascii=False, sort_keys=True)
+        except Exception:
+            action_sig = str(args)
+        if self.last_action == action_sig:
+            self.repeat_time += 1
+        else:
+            self.repeat_time = 0
+        self.last_action = action_sig
+
+        try:
+            act = json_action.JSONAction(**parsed)
+            self.env.execute_action(act)
+            time.sleep(self.wait_after_action_seconds)
+        except Exception:
+            # continue
+            print("Failed to execute action:", parsed)
+
+        if parsed.get("action_type") == "status":
+            return base_agent.AgentInteractionResult(
+                True, {"response": response, "step_history": self.step_his, "parsed": parsed}
+            )
+
+        # If repeated actions reach the threshold: terminate immediately to avoid deadlock in evaluation
+        if self.repeat_time >= 3:
+            return base_agent.AgentInteractionResult(
+                True,
+                {
+                    "summary": "Terminated due to repeated identical actions.",
+                    "response": response,
+                    "step_history": self.step_his,
+                    "parsed": parsed,
+                    "repeat_time": self.repeat_time,
+                },
+            )
+
+        return base_agent.AgentInteractionResult(
+            False, {"response": response, "step_history": self.step_his, "parsed": parsed}
+        )
