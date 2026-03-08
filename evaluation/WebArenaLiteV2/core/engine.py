@@ -12,6 +12,24 @@ from openai import (
     DefaultHttpxClient,
 )
 
+FORGE_BASE_URL = "https://api.forge.tensorblock.co/v1"
+FORGE_DEFAULT_PROVIDER = "OpenAI"
+
+
+def _resolve_openai_config(base_url=None, api_key=None, model=None):
+    forge_api_key = os.getenv("FORGE_API_KEY")
+    if forge_api_key and api_key is None:
+        api_key = forge_api_key
+        if base_url is None:
+            base_url = os.getenv("FORGE_API_BASE") or FORGE_BASE_URL
+        if model and "/" not in model:
+            model = f"{FORGE_DEFAULT_PROVIDER}/{model}"
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+    if base_url is None:
+        base_url = os.getenv("OPENAI_BASE_URL")
+    return base_url, api_key, model
+
 
 class LMMEngine:
     pass
@@ -23,11 +41,12 @@ class LMMEngineOpenAI(LMMEngine):
     ):
         assert model is not None, "model must be provided"
         self.model = model
-        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.base_url, api_key, self.model = _resolve_openai_config(
+            base_url=base_url, api_key=api_key, model=self.model
+        )
         if api_key is None:
             raise ValueError(
-                "An API Key needs to be provided in either the api_key parameter or as an environment variable named OPENAI_API_KEY"
+                "An API Key needs to be provided in either the api_key parameter or as an environment variable named OPENAI_API_KEY or FORGE_API_KEY"
             )
 
         self.api_key = api_key
@@ -125,12 +144,17 @@ class OpenAIEmbeddingEngine(LMMEngine):
         self.model = "text-embedding-3-small"
         self.cost_per_thousand_tokens = 0.00002
 
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        base_url, api_key, model = _resolve_openai_config(
+            base_url=None, api_key=api_key, model=self.model
+        )
         if api_key is None:
             raise ValueError(
-                "An API Key needs to be provided in either the api_key parameter or as an environment variable named OPENAI_API_KEY"
+                "An API Key needs to be provided in either the api_key parameter or as an environment variable named OPENAI_API_KEY or FORGE_API_KEY"
             )
         self.api_key = api_key
+        if model:
+            self.model = model
+        self.base_url = base_url
         self.display_cost = display_cost
         self.request_interval = 0 if rate_limit == -1 else 60.0 / rate_limit
 
@@ -143,7 +167,12 @@ class OpenAIEmbeddingEngine(LMMEngine):
         ),
     )
     def get_embeddings(self, text: str) -> np.ndarray:
-        client = OpenAI(api_key=self.api_key)
+        base_url, api_key, model = _resolve_openai_config(
+            base_url=self.base_url, api_key=self.api_key, model=self.model
+        )
+        if model:
+            self.model = model
+        client = OpenAI(api_key=api_key, base_url=base_url)
         response = client.embeddings.create(model=self.model, input=text)
         if self.display_cost:
             total_tokens = response.usage.total_tokens
