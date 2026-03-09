@@ -17,6 +17,10 @@ import logging
 logger = logging.getLogger("logger")
 
 
+FORGE_BASE_URL = "https://api.forge.tensorblock.co/v1"
+FORGE_DEFAULT_PROVIDER = "OpenAI"
+
+
 def get_site_comb_from_filepath(file_path: str) -> list[str]:
     comb = os.path.basename(file_path).rsplit("_", 1)[0].split(".")
     return comb
@@ -401,14 +405,21 @@ def generate_from_openai_chat_completion(
     max_attempt = 5
     cur_attempt = 0
 
-    if "OPENAI_API_KEY" not in os.environ:
+    forge_api_key = os.environ.get("FORGE_API_KEY")
+    api_key = forge_api_key or os.environ.get("OPENAI_API_KEY")
+    if api_key is None:
         raise ValueError(
-            "OPENAI_API_KEY environment variable must be set when using OpenAI API."
+            "OPENAI_API_KEY or FORGE_API_KEY environment variable must be set when using OpenAI API."
         )
 
-    client = OpenAI(
-        api_key=os.environ["OPENAI_API_KEY"], base_url=os.environ["OPENAI_BASE_URL"]
-    )
+    if forge_api_key:
+        base_url = os.environ.get("FORGE_API_BASE") or FORGE_BASE_URL
+        if "/" not in model:
+            model = f"{FORGE_DEFAULT_PROVIDER}/{model}"
+    else:
+        base_url = os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1"
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
     while cur_attempt < max_attempt:
         try:
             response = client.chat.completions.create(

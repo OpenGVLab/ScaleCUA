@@ -12,6 +12,7 @@ from core.engine import (
 
 data_type_map = {
     "openai": {"image_url": "image_url"},
+    "forge": {"image_url": "image_url"},
     "anthropic": {"image_url": "image"},
 }
 
@@ -21,7 +22,7 @@ class VLMEngine:
         if engine is None:
             if engine_params is not None:
                 engine_type = engine_params.get("engine_type")
-                if engine_type == "openai":
+                if engine_type in ("openai", "forge"):
                     self.engine = LMMEngineOpenAI(**engine_params)
                 elif engine_type == "anthropic":
                     self.engine = LMMEngineAnthropic(**engine_params)
