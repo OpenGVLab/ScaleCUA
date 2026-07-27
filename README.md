@@ -97,6 +97,8 @@ Our evaluation suite covers desktop, mobile, and web environments:
   * **Web**: `WebArenaLite-v2` (A refined version of WebArena-Lite suitable for visual-based agents)
   * **Windows**: `WindowsAgentArena`
 
+For a complementary live-web browser-agent benchmark outside this evaluation suite, see [ClawBench](https://github.com/TIGER-AI-Lab/ClawBench); this external reference does not imply ScaleCUA integration or support.
+
 ## 🧠 Training
 
 The directory `agent-sft/` contains all the necessary code and configuration files to train the ScaleCUA from scratch using our ScaleCUA-Data. We support training Computer Use Agents with both [InternVL](agent-sft/internvl_chat/README.md) and [Qwen-VL](agent-sft/qwen-vl-finetune/README.md).
